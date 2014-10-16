@@ -2,6 +2,8 @@ package org.soma.tleaf.configuration;
 
 import org.soma.tleaf.couchdb.CouchDbConn;
 import org.soma.tleaf.couchdb.CouchDbConnImpl;
+import org.soma.tleaf.couchdb.UserDao;
+import org.soma.tleaf.couchdb.UserDaoImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -50,6 +52,11 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
     @Bean
     public CouchDbConn couchDbConn() {
         return new CouchDbConnImpl();
+    }
+    
+    @Bean
+    public UserDao userDao() {
+        return new UserDaoImpl();
     }
 
 }

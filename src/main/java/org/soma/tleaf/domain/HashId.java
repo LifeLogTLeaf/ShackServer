@@ -14,6 +14,9 @@ public class HashId {
 	@JsonProperty("_id")
 	private String email;
 	
+	@JsonProperty("_rev")
+	private String rev;
+	
 	@JsonProperty("hash_id")
 	private String hashId;
 
@@ -23,6 +26,18 @@ public class HashId {
 
 	public String getHashId() {
 		return hashId;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public void setHashId(String hashId) {
+		this.hashId = hashId;
+	}
+
+	public String getRev() {
+		return rev;
 	}
 
 }

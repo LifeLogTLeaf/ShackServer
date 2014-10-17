@@ -48,12 +48,37 @@ public class UserController {
 		return "signup";
 	}
 	
-	@RequestMapping( value = "user/login" ,method = RequestMethod.POST )
+	@RequestMapping( value = "user/signup" ,method = RequestMethod.POST )
 	@ResponseBody
-	public String signup ( Model model,String email1 ,String email2, String pw ) {
-		System.out.println( email1 + "@" + email2 + "\n" + pw);
+	public String signup ( Model model,String email1 ,String email2, String pw, String nickname, String gender, Integer age ) {
 		
-		return userDao.userLogin( email1 + "@" + email2 , pw );
+		System.out.println( email1 + "@" + email2 );
+		System.out.println( pw );
+		System.out.println( nickname );
+		System.out.println( gender );
+		System.out.println( age );
+		
+		return userDao.userSignUp( email1 + "@" + email2 , pw , nickname, gender, age );
+	}
+	
+	/**
+	 * 2014.10.17
+	 * Handles User Sign Out. Deletes User data
+	 */
+	@RequestMapping( value = "user/signout" )
+	public String signout ( Model model ) {
+		return "signout";
+	}
+	
+	@RequestMapping( value = "user/signout" ,method = RequestMethod.POST )
+	@ResponseBody
+	public String signout ( Model model,String email1 ,String email2, String pw ) {
+		
+		System.out.println( "User Signing out" );
+		System.out.println( email1 + "@" + email2 );
+		System.out.println( pw );
+		
+		return userDao.userSignOut( email1 + "@" + email2 , pw );
 	}
 
 }

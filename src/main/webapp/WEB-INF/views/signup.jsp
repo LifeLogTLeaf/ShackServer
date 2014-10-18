@@ -22,7 +22,7 @@
 				<td width=400><input type=text name=email1 size=20 maxlength=20>@
 					<select name=email2>
 						<option value="naver.com">네이버
-						<option value="daum.net">다음
+						<option value="hanmail.net">다음
 						<option value="gmail.com">구글
 					</select>
 				</td>

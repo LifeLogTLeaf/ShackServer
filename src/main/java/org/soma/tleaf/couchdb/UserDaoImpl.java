@@ -1,6 +1,8 @@
 package org.soma.tleaf.couchdb;
 
 import javax.inject.Inject;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
@@ -21,7 +23,7 @@ public class UserDaoImpl implements UserDao {
 	 * 2014.10.15
 	 */
 	@Override
-	public String userLogin(String email, String password) {
+	public String userLogin(String email, String password, HttpServletResponse response) {
 		// 1. Create User Database  2. Create User HashKey  3. Create UserInfo Document in User DB
 
 		HashId hashId;
@@ -43,7 +45,8 @@ public class UserDaoImpl implements UserDao {
 			hashId = couchDbConnector_hashid.get(HashId.class, email);
 		} catch ( DocumentNotFoundException e ) {
 			e.printStackTrace();
-			return "Email Doesn't Exist. Please sign up first";
+			//return "Email Doesn't Exist. Please sign up first";
+			return "redirect:signup";
 		}
 		
 		System.out.println(hashId.getHashId());
@@ -53,10 +56,16 @@ public class UserDaoImpl implements UserDao {
 		System.out.println(userInfo.getNickname() + "\n" + userInfo.getPassword() );
 		
 		if ( password.equals( userInfo.getPassword() ) ) {
-			return "Sucessfully Logged in"; // 홈 화면으로 리다이렉팅 해주면서 로그인 상태를 유지하는 방법을 생각해보자.
+			
+			Cookie cookie = new Cookie( "LoginStatus", email );
+			cookie.setMaxAge(-1);
+			
+			response.addCookie( cookie );
+			return "redirect:"; // 홈 화면으로 리다이렉팅 해주면서 로그인 상태를 유지하는 방법을 생각해보자.
 		}
 
-		return "Your Password is Wrong";
+		return "login";
+		//return "Your Password is Wrong";
 	}
 	
 	/**
@@ -105,16 +114,16 @@ public class UserDaoImpl implements UserDao {
 		couchDbInstance.createDatabase( "a" + userInfo.getHashId() );
 		// because a database name should start with an letter
 		
-		return "SignUp Successful";
+		return "redirect:";
 	}
 
 	@Override
-	public String userSignOut(String email, String pw) {
+	public String userSignOut(String email, String pw, HttpServletResponse response) {
 		// TODO Auto-generated method stub
 		// 1. Check if email&pw is Correct.  2. if Correct, delete Hashid, Database, UserInfo
 		
 		// 1. check Account Info
-		if ( !userLogin( email, pw ).equals("Sucessfully Logged in") ) return "Account Info is Wrong";
+		if ( !userLogin( email, pw, response ).equals("redirect:") ) return "Account Info is Wrong";
 		
 		try {
 			

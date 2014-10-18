@@ -16,8 +16,6 @@ public class AccessKey {
 	private String vaildFrom;
 	private String vaildTo;
 	
-	private boolean isEnabled;
-	
 	// TODO add methods that checks expire dates
 
 }

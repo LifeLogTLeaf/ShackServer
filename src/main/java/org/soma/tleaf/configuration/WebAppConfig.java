@@ -4,6 +4,10 @@ import org.soma.tleaf.couchdb.CouchDbConn;
 import org.soma.tleaf.couchdb.CouchDbConnImpl;
 import org.soma.tleaf.couchdb.UserDao;
 import org.soma.tleaf.couchdb.UserDaoImpl;
+import org.soma.tleaf.dao.RestApiDao;
+import org.soma.tleaf.dao.internal.RestApiDaoImple;
+import org.soma.tleaf.service.RestApiService;
+import org.soma.tleaf.service.internal.RestApiServiceImple;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -59,4 +63,14 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
         return new UserDaoImpl();
     }
 
+
+	@Bean
+	public RestApiService resrApiService(){
+		return new RestApiServiceImple();
+	}
+	
+	@Bean
+	public RestApiDao restApiDao(){
+		return new RestApiDaoImple();
+	}
 }

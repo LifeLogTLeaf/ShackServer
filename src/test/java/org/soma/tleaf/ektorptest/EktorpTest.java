@@ -44,7 +44,7 @@ public class EktorpTest {
 	public static void setup() throws Exception {
 		Configuration config = new PropertiesConfiguration("couchdb.properties");
 		url = config.getString("url");
-		user = config.getString("user");
+		user = config.getString("id");
 		password = config.getString("password");
 	}
 

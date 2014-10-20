@@ -56,6 +56,11 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
     }
     
     @Bean
+    public AccessKeyManager AccessKeyManagerImpl() throws Exception {
+        return new AccessKeyManagerImpl();
+    }
+    
+    @Bean
     public CouchDbConn couchDbConn() {
         return new CouchDbConnImpl();
     }
@@ -65,12 +70,6 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
         return new UserDaoImpl();
     }
     
-    @Bean
-    public AccessKeyManager AccessKeyManagerImpl() throws Exception {
-        return new AccessKeyManagerImpl();
-    }
-
-
 	@Bean
 	public RestApiService resrApiService(){
 		return new RestApiServiceImple();

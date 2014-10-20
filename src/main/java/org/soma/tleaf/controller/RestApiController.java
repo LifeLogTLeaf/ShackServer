@@ -43,12 +43,6 @@ public class RestApiController {
 	public String sayHello(@PathVariable String msg) {
 		return String.format("You put %s (GET)", msg);
 	}
-	
-	@RequestMapping(value = "/hello/{msg}", method = RequestMethod.POST)
-	@ResponseBody
-	public String sayHelloPost(@PathVariable String msg) {
-		return String.format("You put %s (POST) ", msg);
-	}
 
 	/**
 	 * Author : RichardJ
@@ -56,28 +50,31 @@ public class RestApiController {
 	 * Description : Create Data ( Any service can create their own data )
 	 * Issue : 예외처리 아직 안들어갔습니다.
 	 */
-	@RequestMapping(value = "/log", method = RequestMethod.POST)
+	@RequestMapping(value = "/user/log", method = RequestMethod.POST)
 	@ResponseBody
-	public boolean postUserLog(@RequestBody RequestDataWrapper userLogDataWrapper) {
-		logger.info("data size = " + String.valueOf(userLogDataWrapper.checkSize()));
-		boolean result = true;
-		if (userLogDataWrapper != null && userLogDataWrapper.checkSize() != -1)
-			restApiService.postUserData(userLogDataWrapper);
-		else
-			result = false;
-		return result;
+	public boolean postUserLog(@RequestBody RequestDataWrapper userLogDataWrapper,
+			@RequestParam(value = "appId", required = false) String appId,
+			@RequestParam(value = "userHashId", required = false) String userHashId,
+			@RequestParam(value = "accessKey", required = false) String accessKey) {
+		restApiService.postUserData(userLogDataWrapper);
+		return Boolean.TRUE;
 	}
-	
+
 	/**
 	 * Author : RichardJ
-	 * Date : Oct 17, 2014 1:55:06 PM
-	 * Description : 해당 도큐먼트 아이디의 데이터를 읽어온다.
-	 * Issue : 예외처리 아직 안들어갔습니다.
+	 * Date : Oct 20, 2014 18:55:06
+	 * Description : 데이터 전체를 읽어옵니다.
+	 * Issue : 파라미터명이 아직 정의되지 않았기때문에 아직 서비스 로직으로 데이터값을 넘기지 않았습니다.
 	 */
-	@RequestMapping(value = "/log", method = RequestMethod.GET)
+	@RequestMapping(value = "/user/logs", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseDataWrapper getUserLog(@RequestParam(value = "documentId" , required = true) String documentId) {
-		logger.info("documentId = " + documentId);
-		return restApiService.getUserData(documentId);
+	public ResponseDataWrapper getUserLog(@RequestParam(value = "appId", required = false) String appId,
+			@RequestParam(value = "userHashId", required = false) String userHashId,
+			@RequestParam(value = "accessKey", required = false) String accessKey,
+			@RequestParam(value = "limit", required = false) String limit,
+			@RequestParam(value = "startKey", required = false) String startKey,
+			@RequestParam(value = "endKey", required = false) String endKey) {
+		
+		return restApiService.getUserData(userHashId);
 	}
 }

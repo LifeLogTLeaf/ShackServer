@@ -28,13 +28,12 @@ public class RestApiServiceImple implements RestApiService {
 	private RestApiDao restApiDao;
 
 	public void postUserData(RequestDataWrapper dataWrapper) {
+		// 데이터 정의에 의해서 변경될 예정.
 		UserLogData logData = new UserLogData();
-		logData.setData(dataWrapper);
+		logData.setData(dataWrapper.getserviceData());
 		logData.setTime(System.currentTimeMillis());
-		// logger.info("In the Service Componet : " + logData.toString());
-
-		// Before put data we will validate data ( it's planned )
-		// 검정을 하기 위해서는 컴포지트 패턴이 필요할것 같다.
+		
+		//테이블 형식으로 검증하는 기능을 넣을 예정.
 		restApiDao.postData(logData);
 	}
 
@@ -43,11 +42,9 @@ public class RestApiServiceImple implements RestApiService {
 		UserLogData logData = restApiDao.getData(documentId);
 		ResponseDataWrapper data = new ResponseDataWrapper();
 		
-		// Before send data we will validate data ( it's planned )
-		// version check and data check .. etc
-		data.setData(logData.getData().getserviceData());
+		//테이블 형식으로 검증하는 기능을 넣을 예정.
+		data.setData(logData.getData());
 		data.setVersion("1.0.0");
-		//logger.info("In the Service Componet : " + data.toString());
 
 		return data;
 	}

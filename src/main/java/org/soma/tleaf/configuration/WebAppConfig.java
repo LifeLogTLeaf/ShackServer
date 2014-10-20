@@ -1,5 +1,7 @@
 package org.soma.tleaf.configuration;
 
+import org.soma.tleaf.accesskey.AccessKeyManager;
+import org.soma.tleaf.accesskey.AccessKeyManagerImpl;
 import org.soma.tleaf.couchdb.CouchDbConn;
 import org.soma.tleaf.couchdb.CouchDbConnImpl;
 import org.soma.tleaf.couchdb.UserDao;
@@ -61,6 +63,11 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
     @Bean
     public UserDao userDao() {
         return new UserDaoImpl();
+    }
+    
+    @Bean
+    public AccessKeyManager AccessKeyManagerImpl() throws Exception {
+        return new AccessKeyManagerImpl();
     }
 
 

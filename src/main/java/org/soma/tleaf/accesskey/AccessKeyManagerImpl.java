@@ -25,7 +25,7 @@ public class AccessKeyManagerImpl implements AccessKeyManager {
 	final String API_KEY_DB_NAME = "tleaf_apikey";
 	
 	public AccessKeyManagerImpl () throws Exception {
-		couchDbConnector_apikey = couchDbConn.getCouchDbConnetor( API_KEY_DB_NAME );
+		//couchDbConnector_apikey = couchDbConn.getCouchDbConnetor( API_KEY_DB_NAME );
 		// 연결이 되지 않을 경우 서버 내부 오류로 통보하고, 잠시 후에 다시 시도하는 것으로 해보자 ㅠㅠㅠㅠㅠㅠ
 	}
 	

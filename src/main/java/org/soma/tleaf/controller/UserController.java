@@ -1,4 +1,4 @@
-package org.soma.tleaf;
+package org.soma.tleaf.controller;
 
 import javax.inject.Inject;
 import javax.servlet.http.Cookie;

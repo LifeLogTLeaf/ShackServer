@@ -11,20 +11,17 @@ import org.codehaus.jackson.annotate.JsonProperty;
  * Created with Eclipse IDE
  * Author : RichardJ
  * Date : Oct 17, 2014 1:32:05 PM
- * Description :
+ * Description : 카우치데이터베이스에 저장되는 도큐먼트 형식을 표현하는 클래스입니다.
  */
-public class UserLogData {
+public class RawData {
 	@JsonProperty("_id")
 	private String id;
 	@JsonProperty("_rev")
 	private String revision;
-	private long time;
+	private String time;
+	@JsonProperty("app_id")
+	private String appId;
 	private Map<String, Object> data;
-
-	@Override
-	public String toString() {
-		return "id : " + id + ", " + "rev : " + revision + ", " + "time : " + time;
-	}
 
 	public String getId() {
 		return id;
@@ -42,11 +39,11 @@ public class UserLogData {
 		this.revision = revision;
 	}
 
-	public long getTime() {
+	public String getTime() {
 		return time;
 	}
 
-	public void setTime(long time) {
+	public void setTime(String time) {
 		this.time = time;
 	}
 
@@ -56,5 +53,13 @@ public class UserLogData {
 
 	public void setData(Map<String, Object> data) {
 		this.data = data;
+	}
+
+	public String getAppId() {
+		return appId;
+	}
+
+	public void setAppid(String appId) {
+		this.appId = appId;
 	}
 }

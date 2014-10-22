@@ -4,8 +4,9 @@
 package org.soma.tleaf.service;
 
 import org.soma.tleaf.domain.RequestDataWrapper;
+import org.soma.tleaf.domain.RequestParameter;
 import org.soma.tleaf.domain.ResponseDataWrapper;
-import org.soma.tleaf.domain.UserLogData;
+import org.soma.tleaf.domain.RawData;
 
 /**
  * Created with Eclipse IDE
@@ -14,7 +15,7 @@ import org.soma.tleaf.domain.UserLogData;
  * Description :
  */
 public interface RestApiService {
-	public void postUserData(RequestDataWrapper dataWrapper);
-	public ResponseDataWrapper getUserData(String documentId);
+	public ResponseDataWrapper postUserData(RequestDataWrapper dataWrapper, RequestParameter param) throws Exception;
+	public ResponseDataWrapper getUserData(RequestParameter param);
 	
 }

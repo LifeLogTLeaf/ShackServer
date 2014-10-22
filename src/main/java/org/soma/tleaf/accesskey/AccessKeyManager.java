@@ -9,9 +9,9 @@ public interface AccessKeyManager {
 	
 	public boolean isAccessKeyValid ( String accessKey, String userId );
 	
-	public AccessKey createAccessKey ( String userId, String vaildFrom, String vaildTo, boolean isVaild );
-	public AccessKey createAccessKey ( String userId, String vaildFrom, Long vaildForMillis );
-	public AccessKey createAccessKey ( String userId, String vaildTo );
-	public AccessKey createAccessKey ( String userId, Long vaildForMillis );
+	public AccessKey createAccessKey ( String userId, String vaildFrom, String vaildTo, boolean isValid );
+	public AccessKey createAccessKey ( String userId, String vaildFrom, Long vaildForMillis, boolean isValid );
+	public AccessKey createAccessKey ( String userId, String vaildTo, boolean isValid );
+	public AccessKey createAccessKey ( String userId, Long vaildForMillis, boolean isValid );
 
 }

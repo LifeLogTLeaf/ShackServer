@@ -1,6 +1,7 @@
 package org.soma.tleaf.couchdb;
 
 import java.net.MalformedURLException;
+import java.util.HashMap;
 
 import javax.inject.Inject;
 
@@ -17,32 +18,31 @@ public class CouchDbConnImpl implements CouchDbConn {
     /* properties file을 사용할때 쓴다. */
     @Inject
     private Environment environment;
+    
+    private CouchDbInstance couchDbInstance = null;
+    private HashMap<String, CouchDbConnector> couchDbConnectorHashMap = null;
 
-    /* 예외처리부분 조사. */
+    /**
+     * @author susu
+     * Date Oct 22, 2014 4:34:47 PM
+     * @return Existing Instance if made before, new Instance if first calling
+     * @throws Exception
+     */
     @Override
-    public CouchDbInstance getCouchDbInstance() throws Exception {
-        StdHttpClient httpClient = null;
-        try {
-
-            httpClient = (StdHttpClient) new StdHttpClient.Builder()
-                    .username(environment.getProperty("id"))
-                    .password(environment.getProperty("password"))
-                    .url(environment.getProperty("url"))
-                    .connectionTimeout(100000)
-                    .build();
-        } catch (MalformedURLException e) {
-            throw new Exception("Invalid URL" + environment.getProperty("url"));
-        }
-
-        CouchDbInstance dbInstance = new StdCouchDbInstance(httpClient);
-        return dbInstance;
+    public synchronized CouchDbInstance getCouchDbInstance() throws Exception {
+    	
+    	if ( couchDbInstance == null ) {
+    		couchDbInstance = createCouchDbInstance ();
+    	}
+    	
+        return couchDbInstance;
     }
-
-
-    @Override
-    public CouchDbConnector getCouchDbConnetor(String dbName) throws Exception {
-        StdHttpClient httpClient = null;
+    
+    private CouchDbInstance createCouchDbInstance () throws Exception {
+    	
+    	StdHttpClient httpClient = null;
         try {
+
             httpClient = (StdHttpClient) new StdHttpClient.Builder()
                     .username(environment.getProperty("id"))
                     .password(environment.getProperty("password"))
@@ -52,10 +52,29 @@ public class CouchDbConnImpl implements CouchDbConn {
         } catch (MalformedURLException e) {
             throw new Exception("Invalid URL" + environment.getProperty("url"));
         }
-
-        CouchDbInstance dbInstance = new StdCouchDbInstance(httpClient);
-        CouchDbConnector db = new StdCouchDbConnector(dbName, dbInstance);
-        return db;
+        
+        return new StdCouchDbInstance( httpClient );
+    	
+    }
+    
+    /**
+     * @author susu
+     * Date Oct 22, 2014 4:34:47 PM
+     * @return Existing Connector if made before, new Connector if first calling
+     * @throws Exception
+     */
+    @Override
+    public synchronized CouchDbConnector getCouchDbConnetor(String dbName) throws Exception {
+    	
+    	if ( couchDbConnectorHashMap.containsKey(dbName) ) {
+    		return couchDbConnectorHashMap.get(dbName);
+    	}
+    	
+    	getCouchDbInstance();
+    	couchDbInstance.createDatabase(dbName);
+    	couchDbConnectorHashMap.put(dbName, new StdCouchDbConnector(dbName, couchDbInstance) );
+    	
+    	return couchDbConnectorHashMap.get(dbName);
     }
 
     @Override

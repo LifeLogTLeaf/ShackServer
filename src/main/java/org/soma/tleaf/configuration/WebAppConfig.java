@@ -72,4 +72,5 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 	public RestApiDao restApiDao(){
 		return new RestApiDaoImple();
 	}
+	
 }

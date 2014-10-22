@@ -54,7 +54,7 @@ public class AccessKeyTest {
 		password = config.getString("password");
 	}
 
-	// @Test
+	@Test
 	public void createUser() throws MalformedURLException {
 		CouchDbInstance dbInstance = createDbInstance();
 		CouchDbConnector userInfoDb = new StdCouchDbConnector(USERS_DB, dbInstance);
@@ -64,7 +64,7 @@ public class AccessKeyTest {
 		// 1. 사용자 아이디를 생성한다.
 		// Create User
 		UserInfo userInfo = new UserInfo();
-		userInfo.setEmail("titf89@gmail.com");
+		userInfo.setEmail("swimyoung@gmail.com");
 		userInfo.setGender("boy");
 		userInfo.setNickname("Richard");
 		userInfo.setAge(18);
@@ -79,7 +79,7 @@ public class AccessKeyTest {
 		// 2. 사용자 아이디에 해당하는 해쉬키를 생성한다.
 		// Create HashId
 		HashId hashId = new HashId();
-		hashId.setEmail("titf89@gmail.com");
+		hashId.setEmail("swimyoung@gmail.com");
 		hashId.setHashId(userInfo.getHashId());
 
 		// Create hashIds Database

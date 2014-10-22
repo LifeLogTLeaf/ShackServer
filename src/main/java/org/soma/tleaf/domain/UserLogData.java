@@ -19,7 +19,7 @@ public class UserLogData {
 	@JsonProperty("_rev")
 	private String revision;
 	private long time;
-	private RequestDataWrapper data;
+	private Map<String, Object> data;
 
 	@Override
 	public String toString() {
@@ -50,11 +50,11 @@ public class UserLogData {
 		this.time = time;
 	}
 
-	public RequestDataWrapper getData() {
+	public Map<String, Object> getData() {
 		return data;
 	}
 
-	public void setData(RequestDataWrapper data) {
+	public void setData(Map<String, Object> data) {
 		this.data = data;
 	}
 }

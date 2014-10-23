@@ -7,9 +7,12 @@ import javax.inject.Inject;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
+import org.ektorp.DbPath;
 import org.ektorp.http.StdHttpClient;
 import org.ektorp.impl.StdCouchDbConnector;
 import org.ektorp.impl.StdCouchDbInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Repository;
 
@@ -20,7 +23,7 @@ public class CouchDbConnImpl implements CouchDbConn {
     private Environment environment;
     
     private CouchDbInstance couchDbInstance = null;
-    private HashMap<String, CouchDbConnector> couchDbConnectorHashMap = null;
+    private HashMap<String, CouchDbConnector> couchDbConnectorHashMap = new HashMap<String, CouchDbConnector>();
 
     /**
      * @author susu
@@ -57,6 +60,8 @@ public class CouchDbConnImpl implements CouchDbConn {
     	
     }
     
+    private static final Logger logger = LoggerFactory.getLogger(CouchDbConnImpl.class);
+    
     /**
      * @author susu
      * Date Oct 22, 2014 4:34:47 PM
@@ -66,15 +71,22 @@ public class CouchDbConnImpl implements CouchDbConn {
     @Override
     public synchronized CouchDbConnector getCouchDbConnetor(String dbName) throws Exception {
     	
-    	if ( couchDbConnectorHashMap.containsKey(dbName) ) {
-    		return couchDbConnectorHashMap.get(dbName);
+    	if ( !couchDbConnectorHashMap.containsKey(dbName) ) {
+    		
+    		logger.info("Doesn't have " + dbName + " creating connector");
+    		
+    		getCouchDbInstance();
+        	if ( !couchDbInstance.checkIfDbExists(new DbPath(dbName)) ) couchDbInstance.createDatabase(dbName);
+        	couchDbConnectorHashMap.put(dbName, new StdCouchDbConnector(dbName, couchDbInstance) );
+        	
+        	return couchDbConnectorHashMap.get(dbName);
+    		
     	}
     	
-    	getCouchDbInstance();
-    	couchDbInstance.createDatabase(dbName);
-    	couchDbConnectorHashMap.put(dbName, new StdCouchDbConnector(dbName, couchDbInstance) );
+    	logger.info("Already have " + dbName + " returning existing CouchDbConnector");
     	
     	return couchDbConnectorHashMap.get(dbName);
+    	
     }
 
     @Override

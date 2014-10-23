@@ -7,12 +7,12 @@ import javax.inject.Inject;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
-import org.ektorp.DbPath;
 import org.ektorp.http.StdHttpClient;
 import org.ektorp.impl.StdCouchDbConnector;
 import org.ektorp.impl.StdCouchDbInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.soma.tleaf.exception.DatabaseConnectionException;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Repository;
 
@@ -24,6 +24,8 @@ public class CouchDbConnImpl implements CouchDbConn {
 
 	private CouchDbInstance couchDbInstance = null;
 	private HashMap<String, CouchDbConnector> couchDbConnectorHashMap = new HashMap<String, CouchDbConnector>();
+	
+	private static final Logger logger = LoggerFactory.getLogger(CouchDbConnImpl.class);
 
 	/**
 	 * @author susu
@@ -32,7 +34,7 @@ public class CouchDbConnImpl implements CouchDbConn {
 	 * @throws Exception
 	 */
 	@Override
-	public synchronized CouchDbInstance getCouchDbInstance() throws Exception {
+	public synchronized CouchDbInstance getCouchDbInstance() throws DatabaseConnectionException {
 
 		if ( couchDbInstance == null ) {
 			couchDbInstance = createCouchDbInstance ();
@@ -41,7 +43,7 @@ public class CouchDbConnImpl implements CouchDbConn {
 		return couchDbInstance;
 	}
 
-	private CouchDbInstance createCouchDbInstance () throws Exception {
+	private CouchDbInstance createCouchDbInstance () throws DatabaseConnectionException {
 
 		StdHttpClient httpClient = null;
 		try {
@@ -53,14 +55,12 @@ public class CouchDbConnImpl implements CouchDbConn {
 			.connectionTimeout(100000)
 			.build();
 		} catch (MalformedURLException e) {
-			throw new Exception("Invalid URL" + environment.getProperty("url"));
+			throw new DatabaseConnectionException();
 		}
 
 		return new StdCouchDbInstance( httpClient );
 
 	}
-
-	private static final Logger logger = LoggerFactory.getLogger(CouchDbConnImpl.class);
 
 	/**
 	 * @author susu
@@ -69,7 +69,7 @@ public class CouchDbConnImpl implements CouchDbConn {
 	 * @throws Exception
 	 */
 	@Override
-	public synchronized CouchDbConnector getCouchDbConnetor(String dbName) throws Exception {
+	public synchronized CouchDbConnector getCouchDbConnetor(String dbName) throws DatabaseConnectionException {
 
 		if ( !couchDbConnectorHashMap.containsKey(dbName) ) {
 

@@ -3,6 +3,8 @@
  */
 package org.soma.tleaf.service;
 
+import java.util.Map;
+
 import org.soma.tleaf.domain.RequestDataWrapper;
 import org.soma.tleaf.domain.RequestParameter;
 import org.soma.tleaf.domain.ResponseDataWrapper;
@@ -15,7 +17,8 @@ import org.soma.tleaf.domain.RawData;
  * Description :
  */
 public interface RestApiService {
-	public ResponseDataWrapper postUserData(RequestDataWrapper dataWrapper, RequestParameter param) throws Exception;
-	public ResponseDataWrapper getUserData(RequestParameter param);
+	public Map<String, Object> postUserData(RequestDataWrapper dataWrapper, RequestParameter param) throws Exception;
+	public ResponseDataWrapper getUserData(RequestParameter param) throws Exception;
+	public ResponseDataWrapper getUserDataFromAppId(RequestParameter param) throws Exception;
 	
 }

@@ -39,8 +39,9 @@ public class RestApiServiceImple implements RestApiService {
 	 * Issue :
 	 */
 	@Override
-	public ResponseDataWrapper postUserData(RequestDataWrapper dataWrapper, RequestParameter param) throws Exception {
-		ResponseDataWrapper result = new ResponseDataWrapper();
+	public Map<String, Object> postUserData(RequestDataWrapper dataWrapper, RequestParameter param) throws Exception {
+		// Create Response Result
+		Map<String, Object> result = new HashMap<String, Object>();
 		// Create Data
 		RawData rawData = new RawData();
 		rawData.setData(dataWrapper.getserviceData());
@@ -48,26 +49,50 @@ public class RestApiServiceImple implements RestApiService {
 		rawData.setAppid(checkAppId(param.getAppId()));
 		// Set UserHashId
 		param.setUserHashId(getUserId(param.getAccessKey()));
-		// Request Create Data 
-		restApiDao.postData(rawData, param);
+		// Request Create Data and Set Response result 
+		result.put("result", "true");
+		result.put("id", restApiDao.postData(rawData, param));
 		return result;
 	}
 
 	/**
 	 * Author : RichardJ
 	 * Date : Oct 21, 2014 08:55:06
-	 * Description :
+	 * Description : 해당 사용자의 전체 데이터조회요청처리 로직입니다.
 	 * Issue :
+	 * @throws Exception 
 	 */
 	@Override
-	public ResponseDataWrapper getUserData(RequestParameter param) {
-		RawData logData = restApiDao.getData(param);
-		ResponseDataWrapper data = new ResponseDataWrapper();
-
-		data.setData(logData.getData());
-		data.setVersion("1.0.0");
-
-		return data;
+	public ResponseDataWrapper getUserData(RequestParameter param) throws Exception {
+		// Check AppId
+		checkAppId(param.getAppId());
+		// Set UserHashId
+		param.setUserHashId(getUserId(param.getAccessKey()));
+		// Create Response Result
+		ResponseDataWrapper result = new ResponseDataWrapper();
+		// Set Date to Response
+		result.setLogs(restApiDao.getAllData(param));
+		return result;
+	}
+	
+	/**
+	 * Author : RichardJ
+	 * Date : Oct 21, 2014 08:55:06
+	 * Description : 해당 사용자의 해당 앱 아이디 전체 데이터조회요청처리 로직입니다.
+	 * Issue :
+	 * @throws Exception 
+	 */
+	@Override
+	public ResponseDataWrapper getUserDataFromAppId(RequestParameter param) throws Exception {
+		// Check AppId
+		checkAppId(param.getAppId());
+		// Set UserHashId
+		param.setUserHashId(getUserId(param.getAccessKey()));
+		// Create Response Result
+		ResponseDataWrapper result = new ResponseDataWrapper();
+		// Set Date to Response
+		result.setLogs(restApiDao.getAllDataFromAppId(param));
+		return result;
 	}
 
 	/**

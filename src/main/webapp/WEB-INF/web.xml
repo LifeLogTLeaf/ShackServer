@@ -44,5 +44,16 @@
 		<servlet-name>appServlet</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
+	
+	<!-- Spring request filter -->
+    <filter>
+        <filter-name>cors</filter-name>
+        <filter-class>org.soma.tleaf.util.CorsFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>cors</filter-name>
+        <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
 
 </web-app>

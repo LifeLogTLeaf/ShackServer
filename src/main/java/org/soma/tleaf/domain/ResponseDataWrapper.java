@@ -3,7 +3,7 @@
  */
 package org.soma.tleaf.domain;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * Created with Eclipse IDE
@@ -12,26 +12,24 @@ import java.util.Map;
  * Description : 클라이언트에 데이터를전달할때 사용하는 클래스입니다. 
  */
 public class ResponseDataWrapper {
-	private String version;
-	private Map<String,Object> data;
+	private String version = "1.0.0";
+	private List<RawData> logs;
 	
 	// just for test
 	@Override
 	public String toString() {
-		return "version : " + version + ", " + "data : " + data.size();
+		return "version : " + version + ", " + "logs : " + logs.size();
 	}
 	
 	public String getVersion() {
 		return version;
 	}
-	public void setVersion(String version) {
-		this.version = version;
+
+	public List<RawData> getLogs() {
+		return logs;
 	}
-	public Map<String,Object> getData() {
-		return data;
-	}
-	public void setData(Map<String,Object> data) {
-		this.data = data;
+	public void setLogs(List<RawData> logs) {
+		this.logs = logs;
 	}
 	
 }

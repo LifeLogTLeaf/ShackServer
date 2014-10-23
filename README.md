@@ -2,6 +2,4 @@ ShackServer
 ===========
 This is TLeaf API Server
 
-author 
-Youngjin, Jang///
-Susu 
+author Swimyoung & Susu 

@@ -44,7 +44,8 @@ public class UserController {
 	
 	@RequestMapping( value = "user/login" ,method = RequestMethod.POST )
 	public String userLogin ( Model model,String email1 ,String email2, String pw, HttpServletResponse response ) {
-		System.out.println( email1 + "@" + email2 + "\n" + pw);
+		
+		System.out.println( "입력된 값" + email1 + "@" + email2 + "  " + pw);
 		
 		return userDao.userLogin( email1 + "@" + email2 , pw , response );
 	}

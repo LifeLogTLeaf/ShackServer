@@ -19,28 +19,71 @@ public class CouchDbConnImpl implements CouchDbConn {
     @Inject
     private Environment environment;
     
-    private CouchDbInstance couchDbInstance = null;
-    private HashMap<String, CouchDbConnector> couchDbConnectorHashMap = null;
+//    private CouchDbInstance couchDbInstance = null;
+//    private HashMap<String, CouchDbConnector> couchDbConnectorHashMap = new HashMap<String, CouchDbConnector>();
+//
+//    /**
+//     * @author susu
+//     * Date Oct 22, 2014 4:34:47 PM
+//     * @return Existing Instance if made before, new Instance if first calling
+//     * @throws Exception
+//     */
+//    @Override
+//    public synchronized CouchDbInstance getCouchDbInstance() throws Exception {
+//    	
+//    	if ( couchDbInstance == null ) {
+//    		couchDbInstance = createCouchDbInstance ();
+//    	}
+//    	
+//        return couchDbInstance;
+//    }
+//    
+//    private CouchDbInstance createCouchDbInstance () throws Exception {
+//    	
+//    	StdHttpClient httpClient = null;
+//        try {
+//
+//            httpClient = (StdHttpClient) new StdHttpClient.Builder()
+//                    .username(environment.getProperty("id"))
+//                    .password(environment.getProperty("password"))
+//                    .url(environment.getProperty("url"))
+//                    .connectionTimeout(100000)
+//                    .build();
+//        } catch (MalformedURLException e) {
+//            throw new Exception("Invalid URL" + environment.getProperty("url"));
+//        }
+//        
+//        return new StdCouchDbInstance( httpClient );
+//    	
+//    }
+//    
+//    /**
+//     * @author susu
+//     * Date Oct 22, 2014 4:34:47 PM
+//     * @return Existing Connector if made before, new Connector if first calling
+//     * @throws Exception
+//     */
+//    @Override
+//    public synchronized CouchDbConnector getCouchDbConnetor(String dbName) throws Exception {
+//    	
+//    	if ( couchDbConnectorHashMap.containsKey(dbName) ) {
+//    		return couchDbConnectorHashMap.get(dbName);
+//    	}
+//    	
+//    	getCouchDbInstance();
+//    	couchDbInstance.createDatabase(dbName);
+//    	couchDbConnectorHashMap.put(dbName, new StdCouchDbConnector(dbName, couchDbInstance) );
+//    	
+//    	return couchDbConnectorHashMap.get(dbName);
+//    }
+//
 
     /**
-     * @author susu
-     * Date Oct 22, 2014 4:34:47 PM
-     * @return Existing Instance if made before, new Instance if first calling
-     * @throws Exception
+     * 기존 소스코드 
      */
     @Override
-    public synchronized CouchDbInstance getCouchDbInstance() throws Exception {
-    	
-    	if ( couchDbInstance == null ) {
-    		couchDbInstance = createCouchDbInstance ();
-    	}
-    	
-        return couchDbInstance;
-    }
-    
-    private CouchDbInstance createCouchDbInstance () throws Exception {
-    	
-    	StdHttpClient httpClient = null;
+    public CouchDbInstance getCouchDbInstance() throws Exception {
+        StdHttpClient httpClient = null;
         try {
 
             httpClient = (StdHttpClient) new StdHttpClient.Builder()
@@ -52,35 +95,37 @@ public class CouchDbConnImpl implements CouchDbConn {
         } catch (MalformedURLException e) {
             throw new Exception("Invalid URL" + environment.getProperty("url"));
         }
-        
-        return new StdCouchDbInstance( httpClient );
-    	
-    }
-    
-    /**
-     * @author susu
-     * Date Oct 22, 2014 4:34:47 PM
-     * @return Existing Connector if made before, new Connector if first calling
-     * @throws Exception
-     */
-    @Override
-    public synchronized CouchDbConnector getCouchDbConnetor(String dbName) throws Exception {
-    	
-    	if ( couchDbConnectorHashMap.containsKey(dbName) ) {
-    		return couchDbConnectorHashMap.get(dbName);
-    	}
-    	
-    	getCouchDbInstance();
-    	couchDbInstance.createDatabase(dbName);
-    	couchDbConnectorHashMap.put(dbName, new StdCouchDbConnector(dbName, couchDbInstance) );
-    	
-    	return couchDbConnectorHashMap.get(dbName);
+
+        CouchDbInstance dbInstance = new StdCouchDbInstance(httpClient);
+        return dbInstance;
     }
 
+    /**
+     * 기존 소스코드
+     */
     @Override
-    public String toString() {
-        return "CouchDbConnImpl [url=" + environment.getProperty("url") + ", id=" + environment.getProperty("id") + ", password="
-                + environment.getProperty("password") + "]";
+    public CouchDbConnector getCouchDbConnetor(String dbName) throws Exception {
+        StdHttpClient httpClient = null;
+        try {
+            httpClient = (StdHttpClient) new StdHttpClient.Builder()
+                    .username(environment.getProperty("id"))
+                    .password(environment.getProperty("password"))
+                    .url(environment.getProperty("url"))
+                    .connectionTimeout(100000)
+                    .build();
+        } catch (MalformedURLException e) {
+            throw new Exception("Invalid URL" + environment.getProperty("url"));
+        }
+
+        CouchDbInstance dbInstance = new StdCouchDbInstance(httpClient);
+        CouchDbConnector db = new StdCouchDbConnector(dbName, dbInstance);
+        return db;
     }
+    
+  @Override
+  public String toString() {
+      return "CouchDbConnImpl [url=" + environment.getProperty("url") + ", id=" + environment.getProperty("id") + ", password="
+              + environment.getProperty("password") + "]";
+  }
 
 }

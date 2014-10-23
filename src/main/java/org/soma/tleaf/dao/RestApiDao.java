@@ -3,7 +3,11 @@
  */
 package org.soma.tleaf.dao;
 
-import org.soma.tleaf.domain.UserLogData;
+import java.util.List;
+
+import org.soma.tleaf.accesskey.AccessKey;
+import org.soma.tleaf.domain.RequestParameter;
+import org.soma.tleaf.domain.RawData;
 
 /**
  * Created with Eclipse IDE
@@ -12,7 +16,9 @@ import org.soma.tleaf.domain.UserLogData;
  * Description :
  */
 public interface RestApiDao {
-	public void postData(UserLogData userLogData);
-	public UserLogData getData(String documentId);
-
+	public String postData(RawData rawData, RequestParameter param) throws Exception;
+	public RawData getData(RequestParameter param);
+	public AccessKey checkAccessKey(String param) throws Exception;
+	public List<RawData> getAllData(RequestParameter param) throws Exception;
+	public List<RawData> getAllDataFromAppId(RequestParameter param) throws Exception;
 }

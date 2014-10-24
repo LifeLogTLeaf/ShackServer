@@ -4,6 +4,7 @@ import javax.inject.Inject;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import org.soma.tleaf.accesskey.AccessKey;
 import org.soma.tleaf.couchdb.UserDao;
 import org.soma.tleaf.exception.CustomException;
 import org.springframework.stereotype.Controller;
@@ -42,7 +43,7 @@ public class UserController {
 
 	@RequestMapping(value = "user/login", method = RequestMethod.POST)
 	@ResponseBody
-	public String userLogin(Model model, String email1, String email2, String pw)
+	public AccessKey userLogin(Model model, String email1, String email2, String pw)
 			throws CustomException {
 
 		return userDao.userLogin(email1 + "@" + email2, pw);

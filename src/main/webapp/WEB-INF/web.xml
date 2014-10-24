@@ -55,5 +55,16 @@
         <filter-name>cors</filter-name>
         <url-pattern>/api/*</url-pattern>
     </filter-mapping>
+    
+    <!-- Oauth needed request filter -->
+    <filter>
+        <filter-name>oauth</filter-name>
+        <filter-class>org.soma.tleaf.util.OauthFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>oauth</filter-name>
+        <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
 
 </web-app>

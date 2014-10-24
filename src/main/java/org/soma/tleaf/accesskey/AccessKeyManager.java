@@ -10,7 +10,7 @@ import org.soma.tleaf.exception.InvalidAccessKeyException;
  */
 public interface AccessKeyManager {
 	
-	public boolean isAccessKeyValid ( String accessKey, String userId ) throws InvalidAccessKeyException;
+	public boolean isAccessKeyValid ( String accessKey, String appId, String userId ) throws InvalidAccessKeyException,DatabaseConnectionException;
 	
 	// Makes access Keys. If String is in wrong format, it returns an invalid accessKey.
 	public AccessKey createAccessKey ( String userId, String vaildFrom, String vaildTo, boolean isValid ) throws DatabaseConnectionException ;

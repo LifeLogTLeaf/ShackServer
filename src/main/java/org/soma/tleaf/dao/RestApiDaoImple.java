@@ -38,9 +38,9 @@ public class RestApiDaoImple implements RestApiDao {
 	 */
 	@Override
 	public String postData(RawData rawData, RequestParameter param) throws Exception {
-		CouchDbConnector db = connector.getCouchDbConnetor(param.getUserHashId());
+		CouchDbConnector db = connector.getCouchDbConnetor("user_"+param.getUserHashId());
 		db.create(rawData);
-		;
+		
 		return rawData.getId();
 	}
 
@@ -62,16 +62,16 @@ public class RestApiDaoImple implements RestApiDao {
 	 */
 	@Override
 	public List<RawData> getAllData(RequestParameter param) throws Exception {
-		CouchDbConnector db = connector.getCouchDbConnetor(param.getUserHashId());
+		CouchDbConnector db = connector.getCouchDbConnetor("user_"+param.getUserHashId());
 		ViewQuery query = new ViewQuery().designDocId("_design/all").viewName("time").startKey(param.getStartKey())
 				.endKey(param.getEndKey()).limit(Integer.valueOf(param.getLimit())).descending(true);
 
 		List<RawData> rawDatas = db.queryView(query, RawData.class);
 		// For test print Code
-//		logger.info(""+rawDatas.size());
-//		for (RawData rd : rawDatas) {
-//			logger.info(rd.getTime());
-//		}
+		logger.info(""+rawDatas.size());
+		for (RawData rd : rawDatas) {
+			logger.info(rd.getTime());
+		}
 		return rawDatas;
 	}
 	
@@ -85,30 +85,11 @@ public class RestApiDaoImple implements RestApiDao {
 	@Override
 	public List<RawData> getAllDataFromAppId(RequestParameter param) throws Exception {
 		logger.info(""+param.getAppId());
-		CouchDbConnector db = connector.getCouchDbConnetor(param.getUserHashId());
+		CouchDbConnector db = connector.getCouchDbConnetor("user_"+param.getUserHashId());
 		// 디자인뷰 쿼리 소스가 들어갈 공간
 		// 요청 파라미터 인자를 이용해서 디자인 뷰에 인자값을 채워넣는다.
 		return null;
 	}
 
-	/**
-	 * Author : RichardJ
-	 * Date : Oct 22, 2014 10:28:35 PM
-	 * Description : 클라이언트로부터 받은 인증키가 데이터베이스에 존재하는지 확인하는 메소드입니다.
-	 */
-	@Override
-	public AccessKey checkAccessKey(String Key) throws Exception {
-		CouchDbConnector db;
-		db = connector.getCouchDbConnetor(ACCESSKEYS_DB_NAME);
-		db.createDatabaseIfNotExists();
-
-		AccessKey accessKey = null;
-		try {
-			accessKey = db.get(AccessKey.class, Key);
-		} catch (DocumentNotFoundException e) {
-
-		}
-		return accessKey;
-	}
 
 }

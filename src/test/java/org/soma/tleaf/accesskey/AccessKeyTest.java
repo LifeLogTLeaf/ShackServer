@@ -25,6 +25,7 @@ import org.soma.tleaf.domain.HashId;
 import org.soma.tleaf.domain.SimpleData;
 import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.ektorptest.EktorpQueryTest;
+import org.soma.tleaf.util.ISO8601;
 
 /**
  * Created with Eclipse IDE
@@ -38,10 +39,9 @@ public class AccessKeyTest {
 	private static String user;
 	private static String password;
 	private static String docId;
-	private static String USERS_DB = "users";
-	private static String HASHIDS_DB = "hashIds";
-	private static String ACCESSKEYS_DB = "accesskeys";
-	
+	private static String USERS_DB = "tleaf_users";
+	private static String HASHIDS_DB = "tleaf_hashIds";
+	private static String ACCESSKEYS_DB = "tleaf_apikey";
 
 	static Logger logger = LoggerFactory.getLogger(AccessKeyTest.class);
 
@@ -90,12 +90,14 @@ public class AccessKeyTest {
 
 		// 3. 사용자 데이터베이스를 사용자 아이디에 해당하는 해쉬키를 이름으로해서 생성한다.
 		// Create User Database
-		dbInstance.createDatabase("z" + hashId.getHashId());
+		dbInstance.createDatabase("user_" + hashId.getHashId());
 
 		// 4. 인증키를 생성하고 사용자와 매칭시킨다.
 		// Create AccessKey
 		AccessKey accessKey = new AccessKey();
-		accessKey.setUserId("z" + hashId.getHashId());
+		accessKey.setUserId("user_" + hashId.getHashId());
+		accessKey.setValidFrom(ISO8601.LONG_LONG_AGO);
+		accessKey.setValidTo(ISO8601.FAR_FAR_AWAY);
 		accessKey.setValid(true);
 
 		// Create hashIds Database
@@ -105,17 +107,17 @@ public class AccessKeyTest {
 		accessKeys.create(accessKey);
 	}
 
-	//@Test
+	// @Test
 	public void getUserHashIdFromAccessKey() throws MalformedURLException {
 		CouchDbInstance dbInstance = createDbInstance();
 		CouchDbConnector db = new StdCouchDbConnector(ACCESSKEYS_DB, dbInstance);
 		AccessKey accessKey = db.get(AccessKey.class, "e309674c935107822fc5b15b8e0d648d");
 		logger.info("" + accessKey.getUserId());
 		logger.info("" + accessKey.getAccessKey());
-		
+
 		// 가져온 엑세스키에서 사용자 데이터베이스 이름을 가지고 요청을 처리한다.
 		CouchDbConnector userDb = new StdCouchDbConnector(accessKey.getUserId(), dbInstance);
-		
+
 		// Dummy 생성
 		SimpleData data = new SimpleData();
 		userDb.create(data);

@@ -21,7 +21,7 @@ import org.soma.tleaf.util.OauthFilter;
  * @author susu
  *
  */
-public final class AccessKeyManagerImpl implements AccessKeyManager {
+public class AccessKeyManagerImpl implements AccessKeyManager {
 	
 	@Inject
 	private CouchDbConn couchDbConn;

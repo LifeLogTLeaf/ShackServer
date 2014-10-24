@@ -11,3 +11,5 @@ nbproject/private/
 *.swp
 *.out
 
+target/*
+/target/

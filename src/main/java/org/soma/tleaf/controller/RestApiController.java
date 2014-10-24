@@ -42,7 +42,7 @@ public class RestApiController {
 	@RequestMapping(value = "/hello/{msg}", method = RequestMethod.GET)
 	@ResponseBody
 	public String sayHello(@PathVariable String msg) throws Exception{
-		throw new ExpiredAccessKeyException();
+		return "home";
 	}
 
 	/**

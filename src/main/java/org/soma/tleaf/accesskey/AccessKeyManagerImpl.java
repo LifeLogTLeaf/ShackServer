@@ -7,10 +7,14 @@ import java.util.GregorianCalendar;
 import javax.inject.Inject;
 
 import org.ektorp.CouchDbConnector;
+import org.ektorp.DocumentNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.soma.tleaf.couchdb.CouchDbConn;
 import org.soma.tleaf.exception.DatabaseConnectionException;
 import org.soma.tleaf.exception.InvalidAccessKeyException;
 import org.soma.tleaf.util.ISO8601;
+import org.soma.tleaf.util.OauthFilter;
 
 /**
  * 2014.10.17
@@ -21,6 +25,8 @@ public class AccessKeyManagerImpl implements AccessKeyManager {
 	
 	@Inject
 	private CouchDbConn couchDbConn;
+
+	private static Logger logger = LoggerFactory.getLogger(AccessKeyManagerImpl.class);
 	
 	private CouchDbConnector couchDbConnector_apikey = null;
 	private final String API_KEY_DB_NAME = "tleaf_apikey";
@@ -32,12 +38,19 @@ public class AccessKeyManagerImpl implements AccessKeyManager {
 	}
 	
 	@Override
-	public boolean isAccessKeyValid(String accessKey, String userId) throws InvalidAccessKeyException {
+	public boolean isAccessKeyValid(String accessKey, String appId, String userId) throws InvalidAccessKeyException, DatabaseConnectionException {
 
-		AccessKey tmpAccessKey = couchDbConnector_apikey.get( AccessKey.class, accessKey );
+		setCouchDbConnector();
+		AccessKey tmpAccessKey;
+		try {
+			tmpAccessKey = couchDbConnector_apikey.get( AccessKey.class, accessKey );
+		} catch( DocumentNotFoundException e ) {
+			e.printStackTrace();
+			throw new InvalidAccessKeyException();
+		}
 		
 		// Checks if the Access Key is Valid, including times
-		if ( tmpAccessKey.isValid( userId ) )
+		if ( tmpAccessKey.isValid( userId, appId ) )
 			return true;
 		else 
 			throw new InvalidAccessKeyException();

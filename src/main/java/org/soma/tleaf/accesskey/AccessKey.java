@@ -16,6 +16,7 @@ public class AccessKey {
 	private String rev;
 	
 	private String userId;
+	private String appId;
 
 	// Both field will be in ISO 8601 format.
 	private String validFrom;
@@ -23,17 +24,14 @@ public class AccessKey {
 	
 	private boolean valid;
 	
-	public boolean isValid ( String userId ) {
+	public boolean isValid ( String userId ,String appId ) {
 		
 		// all three value must be true to return true
 		try {
 			
-			return ( 
-					valid &
-					ISO8601.isFirstEarlier(validFrom, ISO8601.now()) & 
-					ISO8601.isFirstEarlier(ISO8601.now(), validTo) &
-					this.userId == userId
-				);
+			if ( valid && ISO8601.isFirstEarlier(validFrom, ISO8601.now()) && ISO8601.isFirstEarlier(ISO8601.now(), validTo) && userId.equals(this.userId) && appId.equals(this.appId) )
+				return true;
+			else return false;
 			
 		} catch (ParseException e) {
 			
@@ -42,6 +40,14 @@ public class AccessKey {
 			
 		}
 		
+	}
+
+	public String getAppId() {
+		return appId;
+	}
+
+	public void setAppId(String appId) {
+		this.appId = appId;
 	}
 
 	public void setAccessKey(String accessKey) {

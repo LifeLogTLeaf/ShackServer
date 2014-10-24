@@ -80,7 +80,7 @@ public class CouchDbConnImpl implements CouchDbConn {
 			CouchDbConnector couchDbConnector = new StdCouchDbConnector(dbName, couchDbInstance);
 			couchDbConnector.createDatabaseIfNotExists();
 			
-			couchDbConnectorHashMap.put(dbName, couchDbConnector );
+			couchDbConnectorHashMap.put( dbName, couchDbConnector );
 
 			return couchDbConnectorHashMap.get(dbName);
 

@@ -1,20 +1,22 @@
 package org.soma.tleaf.couchdb;
 
 import javax.inject.Inject;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.DocumentNotFoundException;
 import org.soma.tleaf.domain.HashId;
 import org.soma.tleaf.domain.UserInfo;
+import org.soma.tleaf.exception.CustomException;
+import org.soma.tleaf.exception.EmailAlreadyExistException;
+import org.soma.tleaf.exception.NoSuchUserException;
+import org.soma.tleaf.exception.WrongAuthenticationInfoException;
 
 public class UserDaoImpl implements UserDao {
 
 	@Inject
 	private CouchDbConn couchDbConn;
-	
+
 	private CouchDbConnector couchDbConnector_hashid;
 	private CouchDbConnector couchDbConnector_users;
 	private CouchDbInstance couchDbInstance;
@@ -23,144 +25,126 @@ public class UserDaoImpl implements UserDao {
 	 * 2014.10.15
 	 */
 	@Override
-	public String userLogin(String email, String password, HttpServletResponse response) {
-		// 1. Create User Database  2. Create User HashKey  3. Create UserInfo Document in User DB
+	public String userLogin(String email, String password) throws CustomException {
 
 		HashId hashId;
 		
-		try {
-			
-			couchDbConnector_hashid = couchDbConn
-					.getCouchDbConnetor("tleaf_hashid");
-			
-			couchDbConnector_users = couchDbConn
-					.getCouchDbConnetor("tleaf_users");
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "Failed to Connect to User Database";
-		}
-		
+		// DatabaseConnection Exception can be Thrown
+		couchDbConnector_hashid = couchDbConn
+				.getCouchDbConnetor("tleaf_hashid");
+
+		couchDbConnector_users = couchDbConn
+				.getCouchDbConnetor("tleaf_users");
+
 		try {
 			hashId = couchDbConnector_hashid.get(HashId.class, email);
 		} catch ( DocumentNotFoundException e ) {
 			e.printStackTrace();
-			//return "Email Doesn't Exist. Please sign up first";
-			return "redirect:signup";
-		}
-		
-		System.out.println(hashId.getHashId());
-		
-		UserInfo userInfo = couchDbConnector_users.get( UserInfo.class, hashId.getHashId().toString() );
-		
-		System.out.println(userInfo.getNickname() + "\n" + userInfo.getPassword() );
-		
-		if ( password.equals( userInfo.getPassword() ) ) {
-			
-			Cookie cookie = new Cookie( "LoginStatus", email );
-			cookie.setMaxAge(-1);
-			
-			response.addCookie( cookie );
-			return "redirect:"; // 홈 화면으로 리다이렉팅 해주면서 로그인 상태를 유지하는 방법을 생각해보자.
+			// This is the case where user isn't signed up
+			throw new NoSuchUserException();
 		}
 
-		return "login";
+		System.out.println(hashId.getHashId());
+
+		UserInfo userInfo = couchDbConnector_users.get( UserInfo.class, hashId.getHashId().toString() );
+
+		System.out.println(userInfo.getNickname() + "\n" + userInfo.getPassword() );
+
+		if ( password.equals( userInfo.getPassword() ) ) {
+			return "{ \"login\" : \"sucess\" , \"userId\" : \"" + userInfo.getHashId() + "\" }";
+		}
+
+		throw new WrongAuthenticationInfoException();
 		//return "Your Password is Wrong";
 	}
-	
+
 	/**
 	 * 2014.10.16
+	 * @throws CustomException 
 	 */
 
 	@Override
 	public String userSignUp(String email, String pw, String nickname,
-			String gender, Integer age) {
+			String gender, Integer age) throws CustomException {
 
 		// 1. Create User Database  2. Create User HashKey  3. Create UserInfo Document in User DB
-		
-		try {
 
-			couchDbConnector_hashid = couchDbConn
-					.getCouchDbConnetor("tleaf_hashid");
-			
-			couchDbConnector_users = couchDbConn
-					.getCouchDbConnetor("tleaf_users");
-			
-			couchDbInstance = couchDbConn.getCouchDbInstance();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "Failed to Connect to User Database";
+		// DatabaseConnection Exception can be Thrown
+		couchDbConnector_hashid = couchDbConn
+				.getCouchDbConnetor("tleaf_hashid");
+
+		couchDbConnector_users = couchDbConn
+				.getCouchDbConnetor("tleaf_users");
+
+		couchDbInstance = couchDbConn.getCouchDbInstance();
+
+		// Checks if the E-mail already exists
+		if ( couchDbConnector_users.find( UserInfo.class, email ) != null ) {
+			throw new EmailAlreadyExistException();
 		}
-		
+
 		UserInfo userInfo = new UserInfo();
 		userInfo.setEmail(email); userInfo.setGender(gender);
 		userInfo.setNickname(nickname); userInfo.setAge(age);
 		userInfo.setPassword(pw);
-		
+
 		couchDbConnector_users.create( userInfo );
 		// create userinfo data
 		// couchDb Automatically gives out _id, _rev to userInfo
-		
+
 		System.out.println( userInfo.getHashId() );
 		System.out.println( userInfo.getRev() );
-		
+
 		HashId hashId = new HashId();
 		hashId.setEmail( email ); hashId.setHashId( userInfo.getHashId() );
 
 		couchDbConnector_hashid.create( hashId );
 		// makes mapping on email and user hashid
-		
-		couchDbInstance.createDatabase( "a" + userInfo.getHashId() );
+
+		couchDbInstance.createDatabase( "user_" + userInfo.getHashId() );
 		// because a database name should start with an letter
-		
-		return "redirect:";
+
+		return "{ \"signup\" : \"sucess\" , \"userId\" : \"" + userInfo.getHashId() + "\" }";
 	}
 
 	@Override
-	public String userSignOut(String email, String pw, HttpServletResponse response) {
+	public String userSignOut(String email, String pw) throws CustomException {
 		// TODO Auto-generated method stub
 		// 1. Check if email&pw is Correct.  2. if Correct, delete Hashid, Database, UserInfo
-		
+
 		// 1. check Account Info
-		if ( !userLogin( email, pw, response ).equals("redirect:") ) return "Account Info is Wrong";
-		
-		try {
-			
-			couchDbConnector_hashid = couchDbConn
-					.getCouchDbConnetor("tleaf_hashid");
-			
-			couchDbConnector_users = couchDbConn
-					.getCouchDbConnetor("tleaf_users");
-			
-			couchDbInstance = couchDbConn.getCouchDbInstance();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "Failed to Connect to User Database";
-		}
-		
+		userLogin( email, pw );
+
+		// DatabaseConnection Exception can be Thrown
+		couchDbConnector_hashid = couchDbConn
+				.getCouchDbConnetor("tleaf_hashid");
+
+		couchDbConnector_users = couchDbConn
+				.getCouchDbConnetor("tleaf_users");
+
+		couchDbInstance = couchDbConn.getCouchDbInstance();
+
+
 		HashId hashId = new HashId();
 		UserInfo userInfo = new UserInfo();
-		
+
 		// 2. delete user data.
 		try {
-			
+
 			hashId = couchDbConnector_hashid.get( HashId.class, email );
 			couchDbConnector_hashid.delete( hashId.getEmail(), hashId.getRev() );
-			
+
 			userInfo = couchDbConnector_users.get( UserInfo.class, hashId.getHashId() );
 			couchDbConnector_users.delete( userInfo.getHashId(), userInfo.getRev() );
-			
-			couchDbInstance.deleteDatabase( "a" + userInfo.getHashId() );
-			
-			
+
+			couchDbInstance.deleteDatabase( "user_" + userInfo.getHashId() );
+
 		} catch ( Exception e ) {
 			e.printStackTrace();
 			return "Failed to Delete User Data";
 		}
-		
-		return "Completely deleted User data";
+
+		return "{ \"signout\" : \"sucess\" , \"userId\" : \"" + userInfo.getHashId() + "\" }";
 	}
 
 }

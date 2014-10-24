@@ -8,6 +8,8 @@ import javax.inject.Inject;
 
 import org.ektorp.CouchDbConnector;
 import org.soma.tleaf.couchdb.CouchDbConn;
+import org.soma.tleaf.exception.DatabaseConnectionException;
+import org.soma.tleaf.exception.InvalidAccessKeyException;
 import org.soma.tleaf.util.ISO8601;
 
 /**
@@ -20,26 +22,30 @@ public class AccessKeyManagerImpl implements AccessKeyManager {
 	@Inject
 	private CouchDbConn couchDbConn;
 	
-	private CouchDbConnector couchDbConnector_apikey;
+	private CouchDbConnector couchDbConnector_apikey = null;
+	private final String API_KEY_DB_NAME = "tleaf_apikey";
 	
-	final String API_KEY_DB_NAME = "tleaf_apikey";
-	
-	public AccessKeyManagerImpl () throws Exception {
-		// couchDbConnector_apikey = couchDbConn.getCouchDbConnetor( API_KEY_DB_NAME );
-		// 연결이 되지 않을 경우 서버 내부 오류로 통보하고, 잠시 후에 다시 시도하는 것으로 해보자 ㅠㅠㅠㅠㅠㅠ
+	public synchronized void setCouchDbConnector () throws DatabaseConnectionException {
+		if( couchDbConnector_apikey == null ) {
+			couchDbConnector_apikey = couchDbConn.getCouchDbConnetor(API_KEY_DB_NAME);
+		}
 	}
 	
 	@Override
-	public boolean isAccessKeyValid(String accessKey, String userId) {
+	public boolean isAccessKeyValid(String accessKey, String userId) throws InvalidAccessKeyException {
+
 		AccessKey tmpAccessKey = couchDbConnector_apikey.get( AccessKey.class, accessKey );
 		
 		// Checks if the Access Key is Valid, including times
-		return tmpAccessKey.isValid( userId );
+		if ( tmpAccessKey.isValid( userId ) )
+			return true;
+		else 
+			throw new InvalidAccessKeyException();
 	}
 
 	@Override
 	public AccessKey createAccessKey(String userId, String validFrom,
-			String validTo, boolean isValid) {
+			String validTo, boolean isValid) throws DatabaseConnectionException {
 		
 		AccessKey accessKey = new AccessKey();
 		
@@ -48,6 +54,7 @@ public class AccessKeyManagerImpl implements AccessKeyManager {
 		accessKey.setValidTo(validTo);
 		accessKey.setValid(isValid);
 		
+		setCouchDbConnector();
 		couchDbConnector_apikey.create(accessKey);
 		
 		return accessKey;
@@ -55,7 +62,7 @@ public class AccessKeyManagerImpl implements AccessKeyManager {
 
 	@Override
 	public AccessKey createAccessKey(String userId, String validFrom,
-			Long validForMillis, boolean isValid) {
+			Long validForMillis, boolean isValid) throws DatabaseConnectionException {
 
 		Calendar calendar;
 		
@@ -72,12 +79,12 @@ public class AccessKeyManagerImpl implements AccessKeyManager {
 	}
 
 	@Override
-	public AccessKey createAccessKey(String userId, String validTo, boolean isValid) {
+	public AccessKey createAccessKey(String userId, String validTo, boolean isValid) throws DatabaseConnectionException {
 		return createAccessKey( userId, ISO8601.now(), validTo, isValid );
 	}
 
 	@Override
-	public AccessKey createAccessKey(String userId, Long validForMillis, boolean isValid) {
+	public AccessKey createAccessKey(String userId, Long validForMillis, boolean isValid) throws DatabaseConnectionException {
 		
 		Calendar calendar = GregorianCalendar.getInstance();
 		calendar.setTimeInMillis( calendar.getTimeInMillis() + validForMillis );

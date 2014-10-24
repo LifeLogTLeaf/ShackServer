@@ -50,6 +50,23 @@ public class CommonExceptionHandler {
 		return errorLog;
 	}
 	
+	/**
+	 * 
+	 * @author susu
+	 * Date Oct 23, 2014 10:35:14 PM
+	 * @param e
+	 * @return
+	 */
+	@ExceptionHandler({WrongAuthenticationInfoException.class})
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	@ResponseBody
+	public ErrorResponse handleWrongAuthenticationInfoException(CustomException e){
+		ErrorResponse errorLog = new ErrorResponse();
+		errorLog.setError(e.getExceptionName());
+		errorLog.setReason(e.getMessage());
+		return errorLog;
+	}
+	
 //	/**
 //	 * Author : RichardJ
 //	 * Date   : Oct 22, 2014 10:14:26 PM

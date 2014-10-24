@@ -5,6 +5,8 @@ import javax.inject.Inject;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.DocumentNotFoundException;
+import org.soma.tleaf.accesskey.AccessKey;
+import org.soma.tleaf.accesskey.AccessKeyManager;
 import org.soma.tleaf.domain.HashId;
 import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.exception.CustomException;
@@ -16,6 +18,9 @@ public class UserDaoImpl implements UserDao {
 
 	@Inject
 	private CouchDbConn couchDbConn;
+	
+	@Inject
+	private AccessKeyManager accessKeyManager;
 
 	private CouchDbConnector couchDbConnector_hashid;
 	private CouchDbConnector couchDbConnector_users;
@@ -25,7 +30,7 @@ public class UserDaoImpl implements UserDao {
 	 * 2014.10.15
 	 */
 	@Override
-	public String userLogin(String email, String password) throws CustomException {
+	public AccessKey userLogin(String email, String password) throws CustomException {
 
 		HashId hashId;
 		
@@ -51,7 +56,7 @@ public class UserDaoImpl implements UserDao {
 		System.out.println(userInfo.getNickname() + "\n" + userInfo.getPassword() );
 
 		if ( password.equals( userInfo.getPassword() ) ) {
-			return "{ \"login\" : \"sucess\" , \"userId\" : \"" + userInfo.getHashId() + "\" }";
+			return accessKeyManager.createAccessKey( userInfo.getHashId(), (long)86400000, true);
 		}
 
 		throw new WrongAuthenticationInfoException();

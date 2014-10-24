@@ -54,11 +54,11 @@ public class RestApiController {
 	@RequestMapping(value = "/user/app/log", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> postUserLog(@RequestBody RequestDataWrapper requestDataWrapper,
-			@RequestParam(value = "accessKey", required = true) String accessKey,
+			@RequestParam(value = "userId", required = true) String userId,
 			@RequestParam(value = "appId", required = true) String appId) throws Exception{
 		// Set Request Parameter from @RequestParam
 		RequestParameter param = new RequestParameter();
-		param.setAccessKey(accessKey);
+		param.setUserHashId(userId);
 		param.setAppId(appId);
 		// Delegate Request to RestApiService Object
 		return restApiService.postUserData(requestDataWrapper, param);
@@ -69,22 +69,21 @@ public class RestApiController {
 	 * Author : RichardJ
 	 * Date : Oct 20, 2014 18:55:06
 	 * Description : 해당 엑세스키를 사용하는 사용자의 전체 데이터 조회입니다.
-	 * Issue : 여기서 받는 앱아이디는 전체 데이터 조회용 ?
 	 */
 	@RequestMapping(value = "/user/logs", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseDataWrapper getUserLog(@RequestParam(value = "accessKey", required = true) String accessKey,
+	public ResponseDataWrapper getUserLog(@RequestParam(value = "userId", required = true) String userId,
 			@RequestParam(value = "appId", required = true) String appId,
 			@RequestParam(value = "limit", required = false, defaultValue="1000") String limit,
 			@RequestParam(value = "startKey", required = false, defaultValue=ISO8601.FAR_FAR_AWAY) String startKey,
 			@RequestParam(value = "endKey", required = false, defaultValue=ISO8601.LONG_LONG_AGO) String endKey) throws Exception{
 		// Set Request Parameter from @RequestParam
 		RequestParameter param = new RequestParameter();
-		param.setAccessKey(accessKey);
+		param.setUserHashId(userId);
+		param.setAppId(appId);
 		param.setStartKey(startKey);
 		param.setEndKey(endKey);
 		param.setLimit(limit);
-		param.setAppId(appId);
 		
 		// Delegate Request to RestApiService Object
 		return restApiService.getUserData(param);

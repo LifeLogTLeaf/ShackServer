@@ -76,7 +76,7 @@ public class RestControllerTest {
 		return exceptionResolver;
 	}
 
-	@Test
+	//@Test
 	// 많은 데이터를 저장하는 테스트 입니다.
 	public void testPostUserLog() throws Exception {
 		String content[] = {
@@ -106,7 +106,7 @@ public class RestControllerTest {
 	public void testPostOndeUserLog() throws Exception {
 		String content = "{ \"data\": {\"content\":\"오늘은 기쁨\", \"template\":\"다이어트\", \"tag\":{ \"weigh\":\"65\", \"mornig\":\"김치\", \"lunch\":\"김치\", \"dinner\":\"김치\" } } }";
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-				.post("/api/user/log?accessKey=e309674c935107822fc5b15b8e0eca95&appId=19891011")
+				.post("/api/user/app/log?accessKey=e309674c935107822fc5b15b8e0eca95&appId=19891011")
 				.contentType(MediaType.APPLICATION_JSON).content(content).accept(MediaType.APPLICATION_JSON);
 		this.mockMvc.perform(requestBuilder).andDo(print()).andExpect(status().isOk());
 	}

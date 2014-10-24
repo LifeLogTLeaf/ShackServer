@@ -46,9 +46,7 @@ public class RestApiServiceImple implements RestApiService {
 		RawData rawData = new RawData();
 		rawData.setData(dataWrapper.getserviceData());
 		rawData.setTime(ISO8601.now());
-		rawData.setAppid(checkAppId(param.getAppId()));
-		// Set UserHashId
-		param.setUserHashId(getUserId(param.getAccessKey()));
+		rawData.setAppid(param.getAppId());
 		// Request Create Data and Set Response result 
 		result.put("result", "true");
 		result.put("id", restApiDao.postData(rawData, param));
@@ -64,10 +62,6 @@ public class RestApiServiceImple implements RestApiService {
 	 */
 	@Override
 	public ResponseDataWrapper getUserData(RequestParameter param) throws Exception {
-		// Check AppId
-		checkAppId(param.getAppId());
-		// Set UserHashId
-		param.setUserHashId(getUserId(param.getAccessKey()));
 		// Create Response Result
 		ResponseDataWrapper result = new ResponseDataWrapper();
 		// Set Date to Response
@@ -84,45 +78,11 @@ public class RestApiServiceImple implements RestApiService {
 	 */
 	@Override
 	public ResponseDataWrapper getUserDataFromAppId(RequestParameter param) throws Exception {
-		// Check AppId
-		checkAppId(param.getAppId());
-		// Set UserHashId
-		param.setUserHashId(getUserId(param.getAccessKey()));
 		// Create Response Result
 		ResponseDataWrapper result = new ResponseDataWrapper();
 		// Set Date to Response
 		result.setLogs(restApiDao.getAllDataFromAppId(param));
 		return result;
-	}
-
-	/**
-	 * Author : RichardJ
-	 * Date : Oct 21, 2014 08:55:06
-	 * Description : 클라이언트로부터 받은 엑세스키를 가지고 데이터를 생성한 해당 사용자의 데이터베이스이름을 가져옵니다.
-	 * Issue : 인증키 검증부분은 아직 완성되지 않았습니다.
-	 */
-	public String getUserId(String key) throws Exception {
-		AccessKey accessKey;
-		accessKey = restApiDao.checkAccessKey(key);
-		if (accessKey == null) {
-			throw new InvalidAccessKeyException();
-		}
-		// getvalid()는 엑세스키에 대한 검증이 안들어간 것입니다.
-		if (accessKey.getvalid() == false) {
-			throw new ExpiredAccessKeyException();
-		}
-		return accessKey.getUserId();
-
-	}
-
-	/**
-	 * Author : RichardJ
-	 * Date   : Oct 22, 2014 2:46:06 PM
-	 * Description : 클라이언트로부터 받은 서비스식별자를 체크합니다.
-	 * issue : 아직 어떻게 식별할지 안나왔습니다.
-	 */
-	public String checkAppId(String appId) {
-		return appId;
 	}
 
 }

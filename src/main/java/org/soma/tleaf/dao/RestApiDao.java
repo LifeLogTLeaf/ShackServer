@@ -18,7 +18,6 @@ import org.soma.tleaf.domain.RawData;
 public interface RestApiDao {
 	public String postData(RawData rawData, RequestParameter param) throws Exception;
 	public RawData getData(RequestParameter param);
-	public AccessKey checkAccessKey(String param) throws Exception;
 	public List<RawData> getAllData(RequestParameter param) throws Exception;
 	public List<RawData> getAllDataFromAppId(RequestParameter param) throws Exception;
 }

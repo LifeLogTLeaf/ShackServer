@@ -1,6 +1,7 @@
 package org.soma.tleaf.exception;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 
 import org.soma.tleaf.domain.ErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,8 @@ public class CommonExceptionHandler {
 	@ExceptionHandler({ExpiredAccessKeyException.class, InvalidAccessKeyException.class,WrongAuthenticationInfoException.class,NoSuchUserException.class})
 	@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	@ResponseBody
-	public ErrorResponse handleExpiredAccessKeyException(CustomException e){
+	public ErrorResponse handleExpiredAccessKeyException(CustomException e, HttpServletResponse response){
+		response.addHeader("Access-Control-Allow-Origin", "*");
 		ErrorResponse errorLog = new ErrorResponse();
 		errorLog.setError(e.getExceptionName());
 		errorLog.setReason(e.getMessage());
@@ -39,10 +41,11 @@ public class CommonExceptionHandler {
 	 * Date   : Oct 22, 2014 10:14:26 PM
 	 * Description : 반드시 들어와야하는 요청파라미터를 생략했을때를 발생하는 오류를 처리하는 메소드입니다. 
 	 */
-	@ExceptionHandler({ParameterInsufficientException.class})
+	@ExceptionHandler({ParameterInsufficientException.class, EmailAlreadyExistException.class})
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ResponseBody
-	public ErrorResponse handleMissingServletRequestParameterException(CustomException e){
+	public ErrorResponse handleMissingServletRequestParameterException(CustomException e, HttpServletResponse response){
+		response.addHeader("Access-Control-Allow-Origin", "*");
 		ErrorResponse errorLog = new ErrorResponse();
 		errorLog.setError("MissingRequestParameter error");
 		errorLog.setReason(e.getMessage());

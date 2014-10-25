@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.soma.tleaf.domain.RequestDataWrapper;
 import org.soma.tleaf.domain.RequestParameter;
 import org.soma.tleaf.domain.ResponseDataWrapper;
-import org.soma.tleaf.exception.ExpiredAccessKeyException;
 import org.soma.tleaf.service.RestApiService;
 import org.soma.tleaf.util.ISO8601;
 import org.springframework.stereotype.Controller;
@@ -97,14 +96,17 @@ public class RestApiController {
 	@RequestMapping(value = "/user/app/logs", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseDataWrapper getUserLogFromAppId(@RequestParam(value = "accessKey", required = true) String accessKey,
+			@RequestParam(value = "userId" , required = true ) String userId,
 			@RequestParam(value = "appId", required = true) String appId,
 			@RequestParam(value = "limit", required = false, defaultValue="1000") String limit,
 			@RequestParam(value = "startKey", required = false, defaultValue=ISO8601.FAR_FAR_AWAY) String startKey,
-			@RequestParam(value = "endKey", required = false, defaultValue=ISO8601.LONG_LONG_AGO) String endKey) throws Exception{
+			@RequestParam(value = "endKey", required = false, defaultValue=ISO8601.LONG_LONG_AGO) String endKey) throws Exception {
 		// Set Request Parameter from @RequestParam
 		RequestParameter param = new RequestParameter();
+		
 		param.setAccessKey(accessKey);
 		param.setStartKey(startKey);
+		param.setUserHashId(userId);
 		param.setEndKey(endKey);
 		param.setLimit(limit);
 		param.setAppId(appId);

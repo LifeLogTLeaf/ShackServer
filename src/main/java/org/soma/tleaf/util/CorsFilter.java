@@ -29,8 +29,7 @@ public class CorsFilter extends OncePerRequestFilter {
 		logger.info("Filtered...");
 		logger.info("HTTP METHOD : " + httpServletRequest.getMethod());
 
-		if (httpServletRequest.getHeader("Access-Control-Request-Method") != null
-				&& "OPTIONS".equals(httpServletRequest.getMethod())) {
+		if ( httpServletRequest.getHeader("Access-Control-Request-Method") != null && "OPTIONS".equals(httpServletRequest.getMethod())) {
 			logger.info("Add some code to Header ");
 
 			httpServletResponse.addHeader("Access-Control-Allow-Origin", "*");

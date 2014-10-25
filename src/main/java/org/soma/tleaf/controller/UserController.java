@@ -3,6 +3,7 @@ package org.soma.tleaf.controller;
 import javax.inject.Inject;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MediaType;
 
 import org.soma.tleaf.accesskey.AccessKey;
 import org.soma.tleaf.couchdb.UserDao;
@@ -70,14 +71,15 @@ public class UserController {
 		return "signup";
 	}
 
-	@RequestMapping(value = "user/signup", method = RequestMethod.POST)
+	@RequestMapping(value = "user/signup", method = RequestMethod.POST , consumes = MediaType.APPLICATION_JSON , produces = MediaType.APPLICATION_JSON )
 	@ResponseBody
 	public String userSignup(Model model, String email1, String email2,
-			String pw, String nickname, String gender, Integer age)
+			String pw, String nickname, String gender, Integer age, HttpServletResponse response)
 			throws CustomException {
 
-		return userDao.userSignUp
-				(email1 + "@" + email2, pw, nickname, gender, age);
+		response.addHeader("Access-Control-Allow-Origin", "*");
+		
+		 return userDao.userSignUp (email1 + "@" + email2, pw, nickname, gender, age);
 	}
 
 	/**

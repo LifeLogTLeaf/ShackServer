@@ -2,15 +2,12 @@ package org.soma.tleaf.util;
 
 import java.io.IOException;
 
-import javax.inject.Inject;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +28,7 @@ public class OauthFilter implements Filter {
 	private AccessKeyManager accessKeyManager;
 
 	private static Logger logger = LoggerFactory.getLogger(OauthFilter.class);
-	
+
 	private final String USERID_PARAM_NAME = "userId";
 	private final String APPID_PARAM_NAME = "appId";
 	private final String ACCESSKEY_PARAM_NAME = "accessKey";
@@ -42,13 +39,13 @@ public class OauthFilter implements Filter {
 				getRequiredWebApplicationContext(filterConfig.getServletContext());
 		accessKeyManager = ctx.getBean(AccessKeyManager.class);
 	}
-	
+
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
-		
+
 		logger.info( "Handling Oauth Request... " );
-		
+
 		String accessKey = request.getParameter( ACCESSKEY_PARAM_NAME );
 		String userId = request.getParameter( USERID_PARAM_NAME );
 		String appId = request.getParameter( APPID_PARAM_NAME );
@@ -60,7 +57,7 @@ public class OauthFilter implements Filter {
 			throw new ServletException( 
 				"Needed Parameter is missing. Access Key, Application ID, User ID", 
 				new ParameterInsufficientException() );
-		
+
 		try {
 			
 			accessKeyManager.isAccessKeyValid(accessKey, appId, userId);
@@ -82,7 +79,6 @@ public class OauthFilter implements Filter {
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
 	}
 
 }

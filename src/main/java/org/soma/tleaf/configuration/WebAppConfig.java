@@ -8,6 +8,7 @@ import org.soma.tleaf.couchdb.UserDao;
 import org.soma.tleaf.couchdb.UserDaoImpl;
 import org.soma.tleaf.dao.RestApiDao;
 import org.soma.tleaf.dao.RestApiDaoImple;
+import org.soma.tleaf.exception.CustomExceptionFactory;
 import org.soma.tleaf.service.RestApiService;
 import org.soma.tleaf.service.RestApiServiceImple;
 import org.springframework.context.annotation.Bean;
@@ -78,6 +79,11 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 	@Bean
 	public RestApiDao restApiDao(){
 		return new RestApiDaoImple();
+	}
+	
+	@Bean
+	public CustomExceptionFactory customExceptionFactory(){
+		return new CustomExceptionFactory();
 	}
 	
 }

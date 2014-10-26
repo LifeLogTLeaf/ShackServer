@@ -66,22 +66,5 @@ public class CommonExceptionHandler {
 		return errorLog;
 	}
 
-	//	/**
-	//	 * Author : RichardJ
-	//	 * Date   : Oct 22, 2014 10:14:26 PM
-	//	 * Description : 서버 내부에 의한 오류를 처리하는 메소드입니다.
-	//	 */
-	//	@ExceptionHandler
-	//	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	//	@ResponseBody
-	//	public ErrorResponse handleExpiredAccessKeyException(Exception e){
-	//		ErrorResponse errorLog = new ErrorResponse();
-	//		errorLog.setError("Internal error");
-	//		//errorLog.setReason("You don't need to worry about this.. we will fix soon... :(");
-	//		errorLog.setReason(e.getMessage());
-	//		
-	//		return errorLog;
-	//	}
-
 
 }

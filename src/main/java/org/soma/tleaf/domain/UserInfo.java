@@ -35,12 +35,12 @@ public class UserInfo {
 		return nickname;
 	}
 
-	public String getEmail() {
-		return email;
-	}
-
 	public String getPassword() {
 		return password;
+	}
+
+	public String getEmail() {
+		return email;
 	}
 
 	public String getGender() {
@@ -61,6 +61,10 @@ public class UserInfo {
 
 	public void setNickname(String nickname) {
 		this.nickname = nickname;
+	}
+
+	public void setRev(String rev) {
+		this.rev = rev;
 	}
 
 	public void setEmail(String email) {

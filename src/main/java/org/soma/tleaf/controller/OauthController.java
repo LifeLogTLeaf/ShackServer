@@ -45,7 +45,6 @@ public class OauthController {
 		
 		if( validForMillis == null ) validForMillis = DEFAULT_DURATION;
 		return accessKeyManager.createAccessKey(userId, validForMillis, isValid);
-		//public AccessKey createAccessKey ( String userId, Long vaildForMillis, boolean isValid );
 	}
 	
 	/*

@@ -64,10 +64,12 @@ public class RestApiController {
 	 */
 	@RequestMapping(value = "/user/app/log", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> postUserLog( HttpServletRequest request, @RequestBody RequestDataWrapper requestDataWrapper,
-			@RequestParam(value = "userId", required = true) String userId,
-			@RequestParam(value = "appId", required = true) String appId) throws Exception{
+	public Map<String, Object> postUserLog( HttpServletRequest request, @RequestBody( required = true ) RequestDataWrapper requestDataWrapper,
+			@RequestBody( required = true ) String userId,
+			@RequestBody( required = true ) String appId) throws Exception{
 
+		logger.info("/user/app/log.POST");
+		
 		// HttpServletRequest.getAttribute Returns null if Values are not found
 		if( request.getAttribute("FilterException") != null )
 			throw customExceptionFactory.createCustomException( (CustomExceptionValue) request.getAttribute("FilterException") );

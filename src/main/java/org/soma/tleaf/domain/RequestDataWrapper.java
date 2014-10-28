@@ -4,7 +4,6 @@
 package org.soma.tleaf.domain;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created with Eclipse IDE

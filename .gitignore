@@ -1,1 +1,19 @@
+<<<<<<< HEAD
 /target
+=======
+#java specific
+*.class
+ 
+#netbeans ignore personal stuff
+nbproject/private/
+ 
+## generic files to ignore
+*~
+*.lock
+*.DS_Store
+*.swp
+*.out
+
+target/*
+/target/
+>>>>>>> 7bf08bf9262dd4930e6f029385f623bece1ac2cf

@@ -3,7 +3,6 @@
  */
 package org.soma.tleaf.domain;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -13,13 +12,13 @@ import java.util.Map;
  * Description : 클라이언트로부터 요청받은 데이터를 저장하는 클래스입니다.
  */
 public class RequestDataWrapper {
-	private HashMap<String, Object> serviceData;
+	private Map<String, Object> serviceData;
 
-	public HashMap<String, Object> getserviceData() {
+	public Map<String, Object> getserviceData() {
 		return serviceData;
 	}
 
-	public void setData(HashMap<String, Object> serviceData) {
+	public void setData(Map<String, Object> serviceData) {
 		this.serviceData = serviceData;
 	}	
 

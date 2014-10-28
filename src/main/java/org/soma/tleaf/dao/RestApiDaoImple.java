@@ -7,16 +7,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.DocumentNotFoundException;
 import org.ektorp.ViewQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.soma.tleaf.accesskey.AccessKey;
 import org.soma.tleaf.couchdb.CouchDbConn;
 import org.soma.tleaf.domain.RawData;
 import org.soma.tleaf.domain.RequestParameter;
-import org.soma.tleaf.util.ISO8601;
 
 /**
  * Created with Eclipse IDE
@@ -26,7 +25,7 @@ import org.soma.tleaf.util.ISO8601;
  */
 public class RestApiDaoImple implements RestApiDao {
 	private Logger logger = LoggerFactory.getLogger(RestApiDaoImple.class);
-	private static String ACCESSKEYS_DB_NAME = "accesskeys";
+	private static String ACCESSKEYS_DB_NAME = "tleaf_apikey";
 
 	@Inject
 	private CouchDbConn connector;
@@ -38,9 +37,8 @@ public class RestApiDaoImple implements RestApiDao {
 	 */
 	@Override
 	public String postData(RawData rawData, RequestParameter param) throws Exception {
-		CouchDbConnector db = connector.getCouchDbConnetor("user_"+param.getUserHashId());
+		CouchDbConnector db = connector.getCouchDbConnetor("user_" + param.getUserHashId());
 		db.create(rawData);
-		
 		return rawData.getId();
 	}
 
@@ -62,34 +60,62 @@ public class RestApiDaoImple implements RestApiDao {
 	 */
 	@Override
 	public List<RawData> getAllData(RequestParameter param) throws Exception {
-		CouchDbConnector db = connector.getCouchDbConnetor("user_"+param.getUserHashId());
-		ViewQuery query = new ViewQuery().designDocId("_design/all").viewName("time").startKey(param.getStartKey())
-				.endKey(param.getEndKey()).limit(Integer.valueOf(param.getLimit())).descending(param.isDescend());
+		CouchDbConnector db = connector.getCouchDbConnetor("user_" + param.getUserHashId());
+		ViewQuery query = new ViewQuery().designDocId("_design/shack").viewName("time").startKey(param.getStartKey()).endKey(param.getEndKey())
+				.limit(Integer.valueOf(param.getLimit())).descending(false);
 
-		List<RawData> rawDatas = db.queryView(query, RawData.class);
+		List<RawData> rawDatas;
+		try {
+			rawDatas = db.queryView(query, RawData.class);
+		} catch (DocumentNotFoundException e) {
+			// if there were no documents to the specific query
+			e.printStackTrace();
+			throw e;
+		}
+
 		// For test print Code
-		logger.info(""+rawDatas.size());
+		logger.info("" + rawDatas.size());
 		for (RawData rd : rawDatas) {
 			logger.info(rd.getTime());
 		}
 		return rawDatas;
 	}
-	
-	
+
 	/**
 	 * Author : RichardJ
 	 * Date : Oct 23, 2014 9:48:52 AM
 	 * Description : 해당 사용자 데이터베이스에서 해당 앱의 아이디의 데이터만 읽어옵니다.
-	 * Issue : 앱아이디 쿼리 조회 디자인뷰가 아직 완성 안됬습니다.
 	 */
 	@Override
 	public List<RawData> getAllDataFromAppId(RequestParameter param) throws Exception {
-		logger.info(""+param.getAppId());
-		CouchDbConnector db = connector.getCouchDbConnetor("user_"+param.getUserHashId());
-		// 디자인뷰 쿼리 소스가 들어갈 공간
-		// 요청 파라미터 인자를 이용해서 디자인 뷰에 인자값을 채워넣는다.
-		return null;
-	}
 
+		logger.info(param.getAppId() + " application query");
+		logger.info("startKey = " + "[" + param.getAppId() + "," + param.getStartKey() + "]");
+		logger.info("endKey = " + "[" + param.getAppId() + "," + param.getEndKey() + "]");
+
+		/**
+		 * 2014.10.25
+		 * 
+		 * @author susu
+		 */
+
+		CouchDbConnector db = connector.getCouchDbConnetor("user_" + param.getUserHashId());
+
+		ComplexKey startKey = ComplexKey.of(param.getAppId(), param.getStartKey());
+		ComplexKey endKey = ComplexKey.of(param.getAppId(), param.getEndKey());
+
+		ViewQuery query = new ViewQuery().designDocId("_design/shack").viewName("app").startKey(startKey).endKey(endKey).descending(true);
+
+		List<RawData> rawDatas;
+		try {
+			rawDatas = db.queryView(query, RawData.class);
+		} catch (DocumentNotFoundException e) {
+			// if there were no documents to the specific query
+			e.printStackTrace();
+			throw e;
+		}
+
+		return rawDatas;
+	}
 
 }

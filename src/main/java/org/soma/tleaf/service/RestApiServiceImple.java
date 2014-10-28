@@ -10,14 +10,11 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.soma.tleaf.accesskey.AccessKey;
 import org.soma.tleaf.dao.RestApiDao;
 import org.soma.tleaf.domain.RawData;
 import org.soma.tleaf.domain.RequestDataWrapper;
 import org.soma.tleaf.domain.RequestParameter;
 import org.soma.tleaf.domain.ResponseDataWrapper;
-import org.soma.tleaf.exception.ExpiredAccessKeyException;
-import org.soma.tleaf.exception.InvalidAccessKeyException;
 import org.soma.tleaf.util.ISO8601;
 
 /**

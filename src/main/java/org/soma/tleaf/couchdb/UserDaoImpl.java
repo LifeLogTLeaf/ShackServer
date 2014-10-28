@@ -5,6 +5,10 @@ import javax.inject.Inject;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.DocumentNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.soma.tleaf.accesskey.AccessKey;
+import org.soma.tleaf.accesskey.AccessKeyManager;
 import org.soma.tleaf.domain.HashId;
 import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.exception.CustomException;
@@ -16,16 +20,21 @@ public class UserDaoImpl implements UserDao {
 
 	@Inject
 	private CouchDbConn couchDbConn;
+	
+	@Inject
+	private AccessKeyManager accessKeyManager;
 
 	private CouchDbConnector couchDbConnector_hashid;
 	private CouchDbConnector couchDbConnector_users;
 	private CouchDbInstance couchDbInstance;
 
+	private static final Logger logger = LoggerFactory.getLogger(UserDaoImpl.class);
+	
 	/**
 	 * 2014.10.15
 	 */
 	@Override
-	public String userLogin(String email, String password) throws CustomException {
+	public AccessKey userLogin(String email, String password) throws CustomException {
 
 		HashId hashId;
 		
@@ -44,14 +53,12 @@ public class UserDaoImpl implements UserDao {
 			throw new NoSuchUserException();
 		}
 
-		System.out.println(hashId.getHashId());
-
+		logger.info( "Email : " + email + "\nPassWord : " + password );
+		
 		UserInfo userInfo = couchDbConnector_users.get( UserInfo.class, hashId.getHashId().toString() );
 
-		System.out.println(userInfo.getNickname() + "\n" + userInfo.getPassword() );
-
 		if ( password.equals( userInfo.getPassword() ) ) {
-			return "{ \"login\" : \"sucess\" , \"userId\" : \"" + userInfo.getHashId() + "\" }";
+			return accessKeyManager.createAccessKey( userInfo.getHashId(), (long)86400000, true);
 		}
 
 		throw new WrongAuthenticationInfoException();
@@ -78,8 +85,8 @@ public class UserDaoImpl implements UserDao {
 
 		couchDbInstance = couchDbConn.getCouchDbInstance();
 
-		// Checks if the E-mail already exists
-		if ( couchDbConnector_users.find( UserInfo.class, email ) != null ) {
+		// Checks if the E-mail already exists. ( HashId class has E-mail as the Document Id )
+		if ( couchDbConnector_hashid.find( HashId.class, email ) != null ) {
 			throw new EmailAlreadyExistException();
 		}
 
@@ -90,10 +97,9 @@ public class UserDaoImpl implements UserDao {
 
 		couchDbConnector_users.create( userInfo );
 		// create userinfo data
-		// couchDb Automatically gives out _id, _rev to userInfo
+		// couchDb Automatically gives out _id ( hashId ), _rev to userInfo
 
-		System.out.println( userInfo.getHashId() );
-		System.out.println( userInfo.getRev() );
+		logger.info( userInfo.getEmail() + " User is Created. Hash ID is " + userInfo.getHashId() );
 
 		HashId hashId = new HashId();
 		hashId.setEmail( email ); hashId.setHashId( userInfo.getHashId() );
@@ -102,7 +108,7 @@ public class UserDaoImpl implements UserDao {
 		// makes mapping on email and user hashid
 
 		couchDbInstance.createDatabase( "user_" + userInfo.getHashId() );
-		// because a database name should start with an letter
+		// Because a database name should start with an letter
 
 		return "{ \"signup\" : \"sucess\" , \"userId\" : \"" + userInfo.getHashId() + "\" }";
 	}
@@ -132,12 +138,12 @@ public class UserDaoImpl implements UserDao {
 		try {
 
 			hashId = couchDbConnector_hashid.get( HashId.class, email );
-			couchDbConnector_hashid.delete( hashId.getEmail(), hashId.getRev() );
-
 			userInfo = couchDbConnector_users.get( UserInfo.class, hashId.getHashId() );
-			couchDbConnector_users.delete( userInfo.getHashId(), userInfo.getRev() );
-
+			
 			couchDbInstance.deleteDatabase( "user_" + userInfo.getHashId() );
+			
+			couchDbConnector_hashid.delete( hashId.getEmail(), hashId.getRev() );
+			couchDbConnector_users.delete( userInfo.getHashId(), userInfo.getRev() );
 
 		} catch ( Exception e ) {
 			e.printStackTrace();

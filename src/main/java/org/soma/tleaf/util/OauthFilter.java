@@ -15,7 +15,6 @@ import org.soma.tleaf.accesskey.AccessKeyManager;
 import org.soma.tleaf.exception.CustomExceptionValue;
 import org.soma.tleaf.exception.DatabaseConnectionException;
 import org.soma.tleaf.exception.InvalidAccessKeyException;
-import org.soma.tleaf.exception.ParameterInsufficientException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -45,38 +44,29 @@ public class OauthFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
 
+		// TODO request.getInputStream으로 데이터를 받아서 userId, appId, accessKey 딱 세개만 전처리를 해주기!
+		
 		String accessKey = request.getParameter( ACCESSKEY_PARAM_NAME );
 		String userId = request.getParameter( USERID_PARAM_NAME );
 		String appId = request.getParameter( APPID_PARAM_NAME );
 
 		// Be Careful on this, Every Request goes into Filter. Logging might create Performance Issues
-		logger.info( accessKey ); logger.info( userId ); logger.info( appId );
+		logger.info( accessKey ); logger.info( userId ); logger.info( appId ); logger.info( request.getParameter("data"));
 
-		if ( accessKey == null || userId == null || appId == null )
+		if ( accessKey == null || userId == null || appId == null ) {
+			logger.info( "Parameter_Insufficient_Exception" );
 			request.setAttribute("FilterException", CustomExceptionValue.Parameter_Insufficient_Exception );
-
-		/*throw new ServletException( 
-				"Needed Parameter is missing. Access Key, Application ID, User ID", 
-				new ParameterInsufficientException() );*/
+		}
 
 		else {
-
 			try {
-
 				accessKeyManager.isAccessKeyValid(accessKey, appId, userId);
-
 			} catch (InvalidAccessKeyException e) {
 				e.printStackTrace();
 				request.setAttribute("FilterException", CustomExceptionValue.Invalid_AccessKey_Exception );
-				/*throw new ServletException( 
-					"Access Key, Application ID, User ID Does't match, or Your Access Key is INVALID", 
-					e );*/
 			} catch (DatabaseConnectionException e) {
 				e.printStackTrace();
 				request.setAttribute("FilterException", CustomExceptionValue.Database_Connection_Exception );
-				/*throw new ServletException( 
-					"Failed to Connect to API_KEY Database. Please Try again", 
-					e );*/
 			}
 		}
 

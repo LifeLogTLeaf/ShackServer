@@ -13,14 +13,17 @@ import org.codehaus.jackson.annotate.JsonProperty;
  * Date : Oct 17, 2014 1:32:05 PM
  * Description : 카우치데이터베이스에 저장되는 도큐먼트 형식을 표현하는 클래스입니다.
  */
+
 public class RawData {
 	@JsonProperty("_id")
 	private String id;
 	@JsonProperty("_rev")
 	private String revision;
+	@JsonProperty("time")
 	private String time;
 	@JsonProperty("app_id")
 	private String appId;
+	@JsonProperty("data")
 	private Map<String, Object> data;
 
 	public String getId() {

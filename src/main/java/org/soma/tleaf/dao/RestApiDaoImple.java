@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
+import org.ektorp.DocumentNotFoundException;
 import org.ektorp.ViewQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,7 @@ import org.soma.tleaf.domain.RequestParameter;
  */
 public class RestApiDaoImple implements RestApiDao {
 	private Logger logger = LoggerFactory.getLogger(RestApiDaoImple.class);
-	private static String ACCESSKEYS_DB_NAME = "accesskeys";
+	private static String ACCESSKEYS_DB_NAME = "tleaf_apikey";
 
 	@Inject
 	private CouchDbConn connector;
@@ -61,10 +62,18 @@ public class RestApiDaoImple implements RestApiDao {
 	@Override
 	public List<RawData> getAllData(RequestParameter param) throws Exception {
 		CouchDbConnector db = connector.getCouchDbConnetor("user_"+param.getUserHashId());
-		ViewQuery query = new ViewQuery().designDocId("_design/all").viewName("time").startKey(param.getStartKey())
+		ViewQuery query = new ViewQuery().designDocId("_design/shack").viewName("time").startKey(param.getStartKey())
 				.endKey(param.getEndKey()).limit(Integer.valueOf(param.getLimit())).descending(true);
 
-		List<RawData> rawDatas = db.queryView(query, RawData.class);
+		List<RawData> rawDatas;
+		try {
+			rawDatas = db.queryView(query, RawData.class);
+		} catch ( DocumentNotFoundException e ) {
+			// if there were no documents to the specific query
+			e.printStackTrace();
+			throw e;
+		}
+		
 		// For test print Code
 		logger.info(""+rawDatas.size());
 		for (RawData rd : rawDatas) {
@@ -78,7 +87,6 @@ public class RestApiDaoImple implements RestApiDao {
 	 * Author : RichardJ
 	 * Date : Oct 23, 2014 9:48:52 AM
 	 * Description : 해당 사용자 데이터베이스에서 해당 앱의 아이디의 데이터만 읽어옵니다.
-	 * Issue : 앱아이디 쿼리 조회 디자인뷰가 아직 완성 안됬습니다. That's NoNo
 	 */
 	@Override
 	public List<RawData> getAllDataFromAppId(RequestParameter param) throws Exception {
@@ -87,17 +95,16 @@ public class RestApiDaoImple implements RestApiDao {
 		logger.info( "startKey = " + "[" + param.getAppId() + "," + param.getStartKey() + "]" );
 		logger.info( "endKey = " + "[" + param.getAppId() + "," + param.getEndKey() + "]" );
 		
-		CouchDbConnector db = connector.getCouchDbConnetor("user_" + param.getUserHashId());
-		// 디자인뷰 쿼리 소스가 들어갈 공간
-		// 요청 파라미터 인자를 이용해서 디자인 뷰에 인자값을 채워넣는다.
-		
-		ComplexKey startKey = ComplexKey.of(param.getAppId(),param.getStartKey());
-		ComplexKey endKey = ComplexKey.of(param.getAppId(),param.getEndKey());
-		
 		/**
 		 * 2014.10.25
 		 * @author susu
 		 */
+		
+		CouchDbConnector db = connector.getCouchDbConnetor("user_" + param.getUserHashId());
+		
+		ComplexKey startKey = ComplexKey.of(param.getAppId(),param.getStartKey());
+		ComplexKey endKey = ComplexKey.of(param.getAppId(),param.getEndKey());
+		
 		ViewQuery query = new ViewQuery().
 				designDocId("_design/shack").
 				viewName("app").
@@ -105,7 +112,14 @@ public class RestApiDaoImple implements RestApiDao {
 				endKey( endKey ).
 				descending(true);
 		
-		List<RawData> rawDatas = db.queryView(query, RawData.class);
+		List<RawData> rawDatas;
+		try {
+			rawDatas = db.queryView(query, RawData.class);
+		} catch ( DocumentNotFoundException e ) {
+			// if there were no documents to the specific query
+			e.printStackTrace();
+			throw e;
+		}
 		
 		return rawDatas;
 	}

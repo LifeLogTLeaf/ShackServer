@@ -39,7 +39,7 @@ public class RestApiController {
 	private RestApiService restApiService;
 	
 	// Just For Test.
-	@RequestMapping(value = "/hello/{msg}", method = RequestMethod.GET)
+	@RequestMapping(value = "/hello/{msg}", method = RequestMethod.POST)
 	@ResponseBody
 	public String sayHello(@PathVariable String msg) throws Exception{
 		return "home";
@@ -76,7 +76,8 @@ public class RestApiController {
 			@RequestParam(value = "appId", required = true) String appId,
 			@RequestParam(value = "limit", required = false, defaultValue="1000") String limit,
 			@RequestParam(value = "startKey", required = false, defaultValue=ISO8601.FAR_FAR_AWAY) String startKey,
-			@RequestParam(value = "endKey", required = false, defaultValue=ISO8601.LONG_LONG_AGO) String endKey) throws Exception{
+			@RequestParam(value = "endKey", required = false, defaultValue=ISO8601.LONG_LONG_AGO) String endKey,
+			@RequestParam(value = "descend", required = false, defaultValue="true") boolean descend) throws Exception{
 		// Set Request Parameter from @RequestParam
 		RequestParameter param = new RequestParameter();
 		param.setUserHashId(userId);
@@ -84,6 +85,7 @@ public class RestApiController {
 		param.setStartKey(startKey);
 		param.setEndKey(endKey);
 		param.setLimit(limit);
+		param.setDescend(descend);
 		
 		// Delegate Request to RestApiService Object
 		return restApiService.getUserData(param);

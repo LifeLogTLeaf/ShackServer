@@ -57,7 +57,7 @@ public class UserController {
 
 		Cookie cookie = new Cookie("LoginStatus", "Log in first");
 		response.addCookie(cookie);
-
+	
 		return "redirect:";
 	}
 
@@ -74,7 +74,7 @@ public class UserController {
 	public String userSignup(Model model, String email1, String email2,
 			String pw, String nickname, String gender, Integer age)
 			throws CustomException {
-
+		
 		return userDao.userSignUp
 				(email1 + "@" + email2, pw, nickname, gender, age);
 	}

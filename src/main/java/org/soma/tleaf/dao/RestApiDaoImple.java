@@ -64,7 +64,7 @@ public class RestApiDaoImple implements RestApiDao {
 	public List<RawData> getAllData(RequestParameter param) throws Exception {
 		CouchDbConnector db = connector.getCouchDbConnetor("user_"+param.getUserHashId());
 		ViewQuery query = new ViewQuery().designDocId("_design/all").viewName("time").startKey(param.getStartKey())
-				.endKey(param.getEndKey()).limit(Integer.valueOf(param.getLimit())).descending(true);
+				.endKey(param.getEndKey()).limit(Integer.valueOf(param.getLimit())).descending(param.isDescend());
 
 		List<RawData> rawDatas = db.queryView(query, RawData.class);
 		// For test print Code

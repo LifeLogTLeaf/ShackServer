@@ -62,6 +62,11 @@ public class RestApiServiceImple implements RestApiService {
 	 */
 	@Override
 	public ResponseDataWrapper getUserData(RequestParameter param) throws Exception {
+		// check Descend 
+		if(!param.isDescend()){
+			param.setStartKey(ISO8601.LONG_LONG_AGO);
+			param.setEndKey(ISO8601.FAR_FAR_AWAY);
+		}
 		// Create Response Result
 		ResponseDataWrapper result = new ResponseDataWrapper();
 		// Set Date to Response

@@ -95,7 +95,7 @@ public class RestControllerTest {
 
 		for (int i = 0; i < 10; i++) {
 			MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-					.post("/api/user/log?accessKey=e309674c935107822fc5b15b8e0eca95&appId=20101023")
+					.post("api/user/app/log?accessKey=a869d8c5662f5b16660068660600e6cf&appId=19891011&userId=a869d8c5662f5b16660068660600db2d")
 					.contentType(MediaType.APPLICATION_JSON).content(content[i]).accept(MediaType.APPLICATION_JSON);
 			this.mockMvc.perform(requestBuilder).andDo(print()).andExpect(status().isOk());
 		}
@@ -106,7 +106,7 @@ public class RestControllerTest {
 	public void testPostOndeUserLog() throws Exception {
 		String content = "{ \"data\": {\"content\":\"오늘은 기쁨\", \"template\":\"다이어트\", \"tag\":{ \"weigh\":\"65\", \"mornig\":\"김치\", \"lunch\":\"김치\", \"dinner\":\"김치\" } } }";
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-				.post("/api/user/app/log?accessKey=e309674c935107822fc5b15b8e0eca95&appId=19891011")
+				.post("api/user/app/log?accessKey=a869d8c5662f5b16660068660600e6cf&appId=19891011&userId=a869d8c5662f5b16660068660600db2d")
 				.contentType(MediaType.APPLICATION_JSON).content(content).accept(MediaType.APPLICATION_JSON);
 		this.mockMvc.perform(requestBuilder).andDo(print()).andExpect(status().isOk());
 	}

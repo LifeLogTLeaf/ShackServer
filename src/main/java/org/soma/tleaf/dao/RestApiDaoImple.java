@@ -37,10 +37,13 @@ public class RestApiDaoImple implements RestApiDao {
 	 */
 	@Override
 	public String postData(RawData rawData, RequestParameter param) throws Exception {
+<<<<<<< HEAD
 		
 		CouchDbConnector db = connector.getCouchDbConnetor("user_"+param.getUserHashId());
+=======
+		CouchDbConnector db = connector.getCouchDbConnetor("user_" + param.getUserHashId());
+>>>>>>> FETCH_HEAD
 		db.create(rawData);
-		
 		return rawData.getId();
 	}
 
@@ -62,28 +65,27 @@ public class RestApiDaoImple implements RestApiDao {
 	 */
 	@Override
 	public List<RawData> getAllData(RequestParameter param) throws Exception {
-		CouchDbConnector db = connector.getCouchDbConnetor("user_"+param.getUserHashId());
-		ViewQuery query = new ViewQuery().designDocId("_design/shack").viewName("time").startKey(param.getStartKey())
-				.endKey(param.getEndKey()).limit(Integer.valueOf(param.getLimit())).descending(true);
+		CouchDbConnector db = connector.getCouchDbConnetor("user_" + param.getUserHashId());
+		ViewQuery query = new ViewQuery().designDocId("_design/shack").viewName("time").startKey(param.getStartKey()).endKey(param.getEndKey())
+				.limit(Integer.valueOf(param.getLimit())).descending(false);
 
 		List<RawData> rawDatas;
 		try {
 			rawDatas = db.queryView(query, RawData.class);
-		} catch ( DocumentNotFoundException e ) {
+		} catch (DocumentNotFoundException e) {
 			// if there were no documents to the specific query
 			e.printStackTrace();
 			throw e;
 		}
-		
+
 		// For test print Code
-		logger.info(""+rawDatas.size());
+		logger.info("" + rawDatas.size());
 		for (RawData rd : rawDatas) {
 			logger.info(rd.getTime());
 		}
 		return rawDatas;
 	}
-	
-	
+
 	/**
 	 * Author : RichardJ
 	 * Date : Oct 23, 2014 9:48:52 AM
@@ -91,39 +93,34 @@ public class RestApiDaoImple implements RestApiDao {
 	 */
 	@Override
 	public List<RawData> getAllDataFromAppId(RequestParameter param) throws Exception {
-		
-		logger.info( param.getAppId() + " application query" );
-		logger.info( "startKey = " + "[" + param.getAppId() + "," + param.getStartKey() + "]" );
-		logger.info( "endKey = " + "[" + param.getAppId() + "," + param.getEndKey() + "]" );
-		
+
+		logger.info(param.getAppId() + " application query");
+		logger.info("startKey = " + "[" + param.getAppId() + "," + param.getStartKey() + "]");
+		logger.info("endKey = " + "[" + param.getAppId() + "," + param.getEndKey() + "]");
+
 		/**
 		 * 2014.10.25
+		 * 
 		 * @author susu
 		 */
-		
+
 		CouchDbConnector db = connector.getCouchDbConnetor("user_" + param.getUserHashId());
-		
-		ComplexKey startKey = ComplexKey.of(param.getAppId(),param.getStartKey());
-		ComplexKey endKey = ComplexKey.of(param.getAppId(),param.getEndKey());
-		
-		ViewQuery query = new ViewQuery().
-				designDocId("_design/shack").
-				viewName("app").
-				startKey( startKey ).
-				endKey( endKey ).
-				descending(true);
-		
+
+		ComplexKey startKey = ComplexKey.of(param.getAppId(), param.getStartKey());
+		ComplexKey endKey = ComplexKey.of(param.getAppId(), param.getEndKey());
+
+		ViewQuery query = new ViewQuery().designDocId("_design/shack").viewName("app").startKey(startKey).endKey(endKey).descending(true);
+
 		List<RawData> rawDatas;
 		try {
 			rawDatas = db.queryView(query, RawData.class);
-		} catch ( DocumentNotFoundException e ) {
+		} catch (DocumentNotFoundException e) {
 			// if there were no documents to the specific query
 			e.printStackTrace();
 			throw e;
 		}
-		
+
 		return rawDatas;
 	}
-
 
 }

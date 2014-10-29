@@ -17,6 +17,7 @@ public class RequestParameter {
 	private String appId;
 	private String userHashId;
 	private String limit;
+	private boolean descend;
 	
 	
 	public String getAccessKey() {
@@ -60,6 +61,12 @@ public class RequestParameter {
 	}
 	public void setLimit(String limit) {
 		this.limit = limit;
+	}
+	public boolean isDescend() {
+		return descend;
+	}
+	public void setDescend(boolean descend) {
+		this.descend = descend;
 	}
 	
 }

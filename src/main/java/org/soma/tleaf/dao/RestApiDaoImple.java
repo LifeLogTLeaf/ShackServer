@@ -37,12 +37,7 @@ public class RestApiDaoImple implements RestApiDao {
 	 */
 	@Override
 	public String postData(RawData rawData, RequestParameter param) throws Exception {
-<<<<<<< HEAD
-		
-		CouchDbConnector db = connector.getCouchDbConnetor("user_"+param.getUserHashId());
-=======
 		CouchDbConnector db = connector.getCouchDbConnetor("user_" + param.getUserHashId());
->>>>>>> FETCH_HEAD
 		db.create(rawData);
 		return rawData.getId();
 	}

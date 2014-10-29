@@ -72,7 +72,7 @@ public class UserController {
 
 		Cookie cookie = new Cookie("LoginStatus", "Log in first");
 		response.addCookie(cookie);
-
+	
 		return "redirect:";
 	}
 

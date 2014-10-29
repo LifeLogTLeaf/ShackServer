@@ -44,14 +44,14 @@ public class OauthFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
 
-		// TODO request.getInputStream으로 데이터를 받아서 userId, appId, accessKey 딱 세개만 전처리를 해주기!
+//		// TODO request.getInputStream으로 데이터를 받아서 userId, appId, accessKey 딱 세개만 전처리를 해주기!
 		
 		String accessKey = request.getParameter( ACCESSKEY_PARAM_NAME );
 		String userId = request.getParameter( USERID_PARAM_NAME );
 		String appId = request.getParameter( APPID_PARAM_NAME );
 
 		// Be Careful on this, Every Request goes into Filter. Logging might create Performance Issues
-		logger.info( accessKey ); logger.info( userId ); logger.info( appId ); logger.info( request.getParameter("data"));
+		logger.info( accessKey ); logger.info( userId ); logger.info( appId ); //logger.info( request.getParameter("data"));
 
 		if ( accessKey == null || userId == null || appId == null ) {
 			logger.info( "Parameter_Insufficient_Exception" );

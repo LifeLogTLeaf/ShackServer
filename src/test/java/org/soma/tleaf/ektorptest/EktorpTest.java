@@ -56,7 +56,7 @@ public class EktorpTest {
 		for (String dbname : dbs) {
 			// logger.info("database name : " + dbname);
 			if (dbname.equals(DbName)) {
-				dbInstance.deleteDatabase(dbname);
+				//dbInstance.deleteDatabase(dbname);
 			}
 		}
 	}
@@ -106,7 +106,7 @@ public class EktorpTest {
 	}
 
 	// test for Retrieve Document
-	@Test
+	//@Test
 	public void testRetrieveDocument() throws MalformedURLException {
 		CouchDbInstance dbInstance = createDbInstance();
 		CouchDbConnector db = new StdCouchDbConnector(DbName, dbInstance);
@@ -122,7 +122,7 @@ public class EktorpTest {
 	}
 
 	// test for Update Document
-	@Test
+	//@Test
 	public void testUpdateDocumnet() throws MalformedURLException {
 		CouchDbInstance dbInstance = createDbInstance();
 		CouchDbConnector db = new StdCouchDbConnector(DbName, dbInstance);
@@ -143,7 +143,7 @@ public class EktorpTest {
 	}
 
 	// test for Delete Document
-	@Test
+	//@Test
 	public void testDeleteDocument() throws MalformedURLException {
 		CouchDbInstance dbInstance = createDbInstance();
 		CouchDbConnector db = new StdCouchDbConnector(DbName, dbInstance);

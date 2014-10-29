@@ -54,8 +54,7 @@ public class RestControllerTest {
 		CharacterEncodingFilter filter = new CharacterEncodingFilter();
 		filter.setEncoding("UTF-8");
 		filter.setForceEncoding(true);
-		mockMvc = MockMvcBuilders.standaloneSetup(restController)
-				.setHandlerExceptionResolvers(createExceptionResolver()).addFilter(filter).build();
+		mockMvc = MockMvcBuilders.standaloneSetup(restController).setHandlerExceptionResolvers(createExceptionResolver()).addFilter(filter).build();
 	}
 
 	// @ControllerAdvice 어노테이션이된 전역 예외처리 클래스를 사용하기 위해서입니다.
@@ -63,11 +62,9 @@ public class RestControllerTest {
 	public static ExceptionHandlerExceptionResolver createExceptionResolver() {
 		ExceptionHandlerExceptionResolver exceptionResolver = new ExceptionHandlerExceptionResolver() {
 			@Override
-			protected ServletInvocableHandlerMethod getExceptionHandlerMethod(HandlerMethod handlerMethod,
-					Exception exception) {
+			protected ServletInvocableHandlerMethod getExceptionHandlerMethod(HandlerMethod handlerMethod, Exception exception) {
 				// 익셉션을 CommonExceptionHandler가 처리하도록 설정
-				Method method = new ExceptionHandlerMethodResolver(CommonExceptionHandler.class)
-						.resolveMethod(exception);
+				Method method = new ExceptionHandlerMethodResolver(CommonExceptionHandler.class).resolveMethod(exception);
 				return new ServletInvocableHandlerMethod(new CommonExceptionHandler(), method);
 			}
 		};
@@ -76,7 +73,7 @@ public class RestControllerTest {
 		return exceptionResolver;
 	}
 
-	//@Test
+	// @Test
 	// 많은 데이터를 저장하는 테스트 입니다.
 	public void testPostUserLog() throws Exception {
 		String content[] = {
@@ -87,41 +84,39 @@ public class RestControllerTest {
 				"{ \"data\": {\"content\":\"오늘은 해피\", \"template\":\"다이어트\", \"tag\":{ \"weigh\":\"61\", \"mornig\":\"오리고기\", \"lunch\":\"오리고기\", \"dinner\":\"오리고기\" } } }",
 				"{ \"data\": {\"content\":\"오늘은 우울\", \"template\":\"다이어트\", \"tag\":{ \"weigh\":\"60\", \"mornig\":\"삼겹살\", \"lunch\":\"삼겹살\", \"dinner\":\"삼겹살\" } } }",
 				"{ \"data\": {\"content\":\"오늘은 행복\", \"template\":\"다이어트\", \"tag\":{ \"weigh\":\"61\", \"mornig\":\"곰국\", \"lunch\":\"곰국\", \"dinner\":\"곰국\" } } }",
-				"{ \"data\": {\"title\":\"자바 공부\", \"state\":\"진행중\"} } }",
-				"{ \"data\": {\"title\":\"씨언어 공부\", \"state\":\"진행중\"} } }",
-				"{ \"data\": {\"title\":\"자바스크립트 공부\", \"state\":\"진행중\"} } }",
-				"{ \"data\": {\"title\":\"씨플플 공부\", \"state\":\"진행중\"} } }",
+				"{ \"data\": {\"title\":\"자바 공부\", \"state\":\"진행중\"} } }", "{ \"data\": {\"title\":\"씨언어 공부\", \"state\":\"진행중\"} } }",
+				"{ \"data\": {\"title\":\"자바스크립트 공부\", \"state\":\"진행중\"} } }", "{ \"data\": {\"title\":\"씨플플 공부\", \"state\":\"진행중\"} } }",
 				"{ \"data\": {\"title\":\"파이썬 공부\", \"state\":\"진행중\"} } }" };
 
 		for (int i = 0; i < 10; i++) {
 			MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-					.post("/api/user/log?accessKey=e309674c935107822fc5b15b8e0eca95&appId=20101023")
+					.post("api/user/app/log?accessKey=a869d8c5662f5b16660068660600e6cf&appId=19891011&userId=a869d8c5662f5b16660068660600db2d")
 					.contentType(MediaType.APPLICATION_JSON).content(content[i]).accept(MediaType.APPLICATION_JSON);
 			this.mockMvc.perform(requestBuilder).andDo(print()).andExpect(status().isOk());
 		}
 	}
 
 	@Test
-	//  하나의 데이터를 저장하는 테스트 입니다.
+	// 하나의 데이터를 저장하는 테스트 입니다.
 	public void testPostOndeUserLog() throws Exception {
 		String content = "{ \"data\": {\"content\":\"오늘은 기쁨\", \"template\":\"다이어트\", \"tag\":{ \"weigh\":\"65\", \"mornig\":\"김치\", \"lunch\":\"김치\", \"dinner\":\"김치\" } } }";
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-				.post("/api/user/app/log?accessKey=e309674c935107822fc5b15b8e0eca95&appId=19891011")
+				.post("api/user/logs?accessKey=a869d8c5662f5b16660068660600e6cf&appId=19891011&userId=a869d8c5662f5b16660068660600db2d")
 				.contentType(MediaType.APPLICATION_JSON).content(content).accept(MediaType.APPLICATION_JSON);
 		this.mockMvc.perform(requestBuilder).andDo(print()).andExpect(status().isOk());
 	}
 
-	//@Test
+	// @Test
 	// 엑세스키 예외처리 상태를 확인하기 위한 테스트 입니다.
 	public void testPostUserLogWithAccessKey() throws Exception {
 		String content = "{ \"data\": {\"title\":\"자바스크립트 공부\", \"state\":\"진행중\"} } }";
 
-		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/user/log")
-				.contentType(MediaType.APPLICATION_JSON).content(content).accept(MediaType.APPLICATION_JSON);
+		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/user/log").contentType(MediaType.APPLICATION_JSON)
+				.content(content).accept(MediaType.APPLICATION_JSON);
 		this.mockMvc.perform(requestBuilder).andDo(print()).andExpect(status().isUnauthorized());
 	}
-	
-	//@Test
+
+	// @Test
 	// 사용자의 전체 로그를 가져옵니다.
 	public void testGetAllUserLogWithAccessKey() throws Exception {
 	}

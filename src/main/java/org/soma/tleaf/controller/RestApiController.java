@@ -43,6 +43,10 @@ public class RestApiController {
 
 	@Inject
 	private CustomExceptionFactory customExceptionFactory;
+	
+	private final String USERID_HEADER_NAME = "X-Tleaf-User-Id";
+	private final String APPID_HEADER_NAME = "X-Tleaf-Application-Id"; // Same as other company's API Key
+	private final String ACCESSKEY_HEADER_NAME = "X-Tleaf-Access-Token";
 
 	// Just For Test.
 	@RequestMapping(value = "/hello/{msg}", method = RequestMethod.GET)
@@ -64,9 +68,9 @@ public class RestApiController {
 	 */
 	@RequestMapping(value = "/user/app/log", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> postUserLog( HttpServletRequest request, @RequestBody( required = true ) RequestDataWrapper requestDataWrapper,
-			@RequestBody( required = true ) String userId,
-			@RequestBody( required = true ) String appId) throws Exception{
+	public Map<String, Object> postUserLog(
+			HttpServletRequest request,
+			@RequestBody( required = true ) RequestDataWrapper requestDataWrapper ) throws Exception{
 
 		logger.info("/user/app/log.POST");
 		
@@ -74,10 +78,11 @@ public class RestApiController {
 		if( request.getAttribute("FilterException") != null )
 			throw customExceptionFactory.createCustomException( (CustomExceptionValue) request.getAttribute("FilterException") );
 
-		// Set Request Parameter from @RequestParam
+		// Set Request Parameter from Request Header
 		RequestParameter param = new RequestParameter();
-		param.setUserHashId(userId);
-		param.setAppId(appId);
+		param.setUserHashId( request.getHeader(USERID_HEADER_NAME) );
+		param.setAppId( request.getHeader(APPID_HEADER_NAME) );
+		
 		// Delegate Request to RestApiService Object
 		return restApiService.postUserData(requestDataWrapper, param);
 	}
@@ -90,8 +95,7 @@ public class RestApiController {
 	 */
 	@RequestMapping(value = "/user/logs", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseDataWrapper getUserLog( HttpServletRequest request, @RequestParam(value = "userId", required = true) String userId,
-			@RequestParam(value = "appId", required = true) String appId,
+	public ResponseDataWrapper getUserLog( HttpServletRequest request,
 			@RequestParam(value = "limit", required = false, defaultValue="1000") String limit,
 			@RequestParam(value = "startKey", required = false, defaultValue=ISO8601.FAR_FAR_AWAY) String startKey,
 			@RequestParam(value = "endKey", required = false, defaultValue=ISO8601.LONG_LONG_AGO) String endKey) throws Exception{
@@ -102,8 +106,8 @@ public class RestApiController {
 		
 		// Set Request Parameter from @RequestParam
 		RequestParameter param = new RequestParameter();
-		param.setUserHashId(userId);
-		param.setAppId(appId);
+		param.setUserHashId( request.getHeader(USERID_HEADER_NAME) );
+		param.setAppId( request.getHeader(APPID_HEADER_NAME) );
 		param.setStartKey(startKey);
 		param.setEndKey(endKey);
 		param.setLimit(limit);
@@ -119,9 +123,7 @@ public class RestApiController {
 	 */
 	@RequestMapping(value = "/user/app/logs", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseDataWrapper getUserLogFromAppId( HttpServletRequest request, @RequestParam(value = "accessKey", required = true) String accessKey,
-			@RequestParam(value = "userId" , required = true ) String userId,
-			@RequestParam(value = "appId", required = true) String appId,
+	public ResponseDataWrapper getUserLogFromAppId( HttpServletRequest request,
 			@RequestParam(value = "limit", required = false, defaultValue="1000") String limit,
 			@RequestParam(value = "startKey", required = false, defaultValue=ISO8601.FAR_FAR_AWAY) String startKey,
 			@RequestParam(value = "endKey", required = false, defaultValue=ISO8601.LONG_LONG_AGO) String endKey) throws Exception {
@@ -133,12 +135,11 @@ public class RestApiController {
 		// Set Request Parameter from @RequestParam
 		RequestParameter param = new RequestParameter();
 
-		param.setAccessKey(accessKey);
 		param.setStartKey(startKey);
-		param.setUserHashId(userId);
+		param.setUserHashId( request.getHeader(USERID_HEADER_NAME) );
 		param.setEndKey(endKey);
 		param.setLimit(limit);
-		param.setAppId(appId);
+		param.setAppId( request.getHeader(APPID_HEADER_NAME) );
 
 		// Delegate Request to RestApiService Object
 		return restApiService.getUserDataFromAppId(param);

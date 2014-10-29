@@ -8,6 +8,8 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +31,9 @@ public class OauthFilter implements Filter {
 
 	private static Logger logger = LoggerFactory.getLogger(OauthFilter.class);
 
-	private final String USERID_PARAM_NAME = "userId";
-	private final String APPID_PARAM_NAME = "appId";
-	private final String ACCESSKEY_PARAM_NAME = "accessKey";
+	private final String USERID_HEADER_NAME = "x-tleaf-user-id";
+	private final String APPID_HEADER_NAME = "x-tleaf-application-id"; // Same as other company's API Key
+	private final String ACCESSKEY_HEADER_NAME = "x-tleaf-access-token";
 
 	@Override
 	public void init ( FilterConfig filterConfig ) throws ServletException {
@@ -44,18 +46,22 @@ public class OauthFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
 
-		// TODO request.getInputStream으로 데이터를 받아서 userId, appId, accessKey 딱 세개만 전처리를 해주기!
+		if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse)) {
+			throw new ServletException("OncePerRequestFilter just supports HTTP requests");
+		}
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
+		HttpServletResponse httpResponse = (HttpServletResponse) response;
 		
-		String accessKey = request.getParameter( ACCESSKEY_PARAM_NAME );
-		String userId = request.getParameter( USERID_PARAM_NAME );
-		String appId = request.getParameter( APPID_PARAM_NAME );
+		String accessKey = httpRequest.getHeader(ACCESSKEY_HEADER_NAME);
+		String userId = httpRequest.getHeader(USERID_HEADER_NAME);
+		String appId = httpRequest.getHeader(APPID_HEADER_NAME);
 
 		// Be Careful on this, Every Request goes into Filter. Logging might create Performance Issues
-		logger.info( accessKey ); logger.info( userId ); logger.info( appId ); logger.info( request.getParameter("data"));
+		logger.info( accessKey ); logger.info( userId ); logger.info( appId );
 
 		if ( accessKey == null || userId == null || appId == null ) {
 			logger.info( "Parameter_Insufficient_Exception" );
-			request.setAttribute("FilterException", CustomExceptionValue.Parameter_Insufficient_Exception );
+			httpRequest.setAttribute("FilterException", CustomExceptionValue.Parameter_Insufficient_Exception );
 		}
 
 		else {
@@ -63,14 +69,14 @@ public class OauthFilter implements Filter {
 				accessKeyManager.isAccessKeyValid(accessKey, appId, userId);
 			} catch (InvalidAccessKeyException e) {
 				e.printStackTrace();
-				request.setAttribute("FilterException", CustomExceptionValue.Invalid_AccessKey_Exception );
+				httpRequest.setAttribute("FilterException", CustomExceptionValue.Invalid_AccessKey_Exception );
 			} catch (DatabaseConnectionException e) {
 				e.printStackTrace();
-				request.setAttribute("FilterException", CustomExceptionValue.Database_Connection_Exception );
+				httpRequest.setAttribute("FilterException", CustomExceptionValue.Database_Connection_Exception );
 			}
 		}
 
-		chain.doFilter(request, response);		
+		chain.doFilter(httpRequest, httpResponse);		
 	}
 
 	@Override

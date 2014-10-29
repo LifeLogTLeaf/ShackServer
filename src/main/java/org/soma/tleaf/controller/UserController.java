@@ -10,7 +10,6 @@ import org.soma.tleaf.accesskey.AccessKey;
 import org.soma.tleaf.couchdb.UserDao;
 import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.exception.CustomException;
-import org.soma.tleaf.exception.CustomExceptionFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,9 +32,6 @@ public class UserController {
 
 	@Inject
 	private UserDao userDao;
-	
-	@Inject
-	private CustomExceptionFactory customExceptionFactory;
 	
 	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 

@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.soma.tleaf.dao.RestApiDao;
 import org.soma.tleaf.domain.RawData;
-import org.soma.tleaf.domain.RequestDataWrapper;
 import org.soma.tleaf.domain.RequestParameter;
 import org.soma.tleaf.domain.ResponseDataWrapper;
 import org.soma.tleaf.util.ISO8601;
@@ -36,17 +35,16 @@ public class RestApiServiceImple implements RestApiService {
 	 * Issue :
 	 */
 	@Override
-	public Map<String, Object> postUserData(RequestDataWrapper dataWrapper, RequestParameter param) throws Exception {
+	public Map<String, Object> postUserData( RawData rawData ) throws Exception {
+
 		// Create Response Result
 		Map<String, Object> result = new HashMap<String, Object>();
-		// Create Data
-		RawData rawData = new RawData();
-		rawData.setData(dataWrapper.getserviceData());
-		rawData.setTime(ISO8601.now());
-		rawData.setAppid(param.getAppId());
-		// Request Create Data and Set Response result 
-		result.put("result", "true");
-		result.put("id", restApiDao.postData(rawData, param));
+
+		if( rawData.getTime() == null ) rawData.setTime( ISO8601.now() );
+		
+		// Request Create Data and Set Response result
+		restApiDao.postData(result, rawData);
+		
 		return result;
 	}
 
@@ -84,6 +82,40 @@ public class RestApiServiceImple implements RestApiService {
 		ResponseDataWrapper result = new ResponseDataWrapper();
 		// Set Date to Response
 		result.setLogs(restApiDao.getAllDataFromAppId(param));
+		return result;
+	}
+
+	/**
+	 * Deletes User Log and Returns the _rev of the Deleted Doc.
+	 * @author susu
+	 * Date Oct 30, 2014
+	 * @param rawData
+	 * @throws Exception
+	 */
+	@Override
+	public Map<String, Object> deleteUserData( RawData rawData )
+			throws Exception {
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		restApiDao.deleteData(result, rawData);
+		
+		return result;
+	}
+
+	/**
+	 * Does not return any Important Information, But Tells if it Succeded
+	 * @author susu
+	 * Date Oct 30, 2014
+	 * @param rawData
+	 * @return
+	 * @throws Exception
+	 */
+	@Override
+	public Map<String, Object> updateUserData(RawData rawData) throws Exception {
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		restApiDao.updateData(result, rawData);
+
 		return result;
 	}
 

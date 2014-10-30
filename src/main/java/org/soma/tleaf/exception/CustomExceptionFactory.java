@@ -18,6 +18,7 @@ public class CustomExceptionFactory {
 		case No_Such_User_Exception : return new NoSuchUserException();
 		case Parameter_Insufficient_Exception : return new ParameterInsufficientException();
 		case Wrong_Authentication_Exception : return new WrongAuthenticationInfoException();
+		case Auth_Info_Insufficient_Exception : return new AuthInfoInsufficientException();
 		
 		}
 		

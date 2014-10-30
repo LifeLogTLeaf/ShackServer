@@ -12,9 +12,8 @@ import org.soma.tleaf.accesskey.AccessKeyManager;
 import org.soma.tleaf.domain.HashId;
 import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.exception.CustomException;
-import org.soma.tleaf.exception.EmailAlreadyExistException;
-import org.soma.tleaf.exception.NoSuchUserException;
-import org.soma.tleaf.exception.WrongAuthenticationInfoException;
+import org.soma.tleaf.exception.CustomExceptionFactory;
+import org.soma.tleaf.exception.CustomExceptionValue;
 
 public class UserDaoImpl implements UserDao {
 
@@ -24,6 +23,9 @@ public class UserDaoImpl implements UserDao {
 	@Inject
 	private AccessKeyManager accessKeyManager;
 
+	@Inject
+	private CustomExceptionFactory customExceptionFactory;
+	
 	private CouchDbConnector couchDbConnector_hashid;
 	private CouchDbConnector couchDbConnector_users;
 	private CouchDbInstance couchDbInstance;
@@ -50,7 +52,7 @@ public class UserDaoImpl implements UserDao {
 		} catch ( DocumentNotFoundException e ) {
 			e.printStackTrace();
 			// This is the case where user isn't signed up
-			throw new NoSuchUserException();
+			throw customExceptionFactory.createCustomException( CustomExceptionValue.No_Such_User_Exception );
 		}
 
 		logger.info( "Email : " + email + "\nPassWord : " + password );
@@ -61,7 +63,7 @@ public class UserDaoImpl implements UserDao {
 			return accessKeyManager.createAccessKey( userInfo.getHashId(), (long)86400000, true);
 		}
 
-		throw new WrongAuthenticationInfoException();
+		throw customExceptionFactory.createCustomException( CustomExceptionValue.Wrong_Authentication_Exception );
 		//return "Your Password is Wrong";
 	}
 
@@ -87,7 +89,7 @@ public class UserDaoImpl implements UserDao {
 
 		// Checks if the E-mail already exists. ( HashId class has E-mail as the Document Id )
 		if ( couchDbConnector_hashid.find( HashId.class, email ) != null ) {
-			throw new EmailAlreadyExistException();
+			throw customExceptionFactory.createCustomException( CustomExceptionValue.Email_Already_Exist_Exception );
 		}
 
 		UserInfo userInfo = new UserInfo();

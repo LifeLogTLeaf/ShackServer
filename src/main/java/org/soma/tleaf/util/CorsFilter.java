@@ -38,7 +38,7 @@ public class CorsFilter extends OncePerRequestFilter {
 
 			httpServletResponse.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
 			httpServletResponse.addHeader("Access-Control-Allow-Headers",
-					"origin, content-type, accept, x-requested-with, sid, mycustom, smuser");
+					"origin, content-type, accept, x-requested-with, sid, mycustom, smuser, x-tleaf-access-token, x-tleaf-user-id, x-tleaf-application-id");
 			httpServletResponse.addHeader("Access-Control-Max-Age", "1800"); // 30min
 		}
 		filterChain.doFilter(httpServletRequest, httpServletResponse);

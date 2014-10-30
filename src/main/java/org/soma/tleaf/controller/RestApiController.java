@@ -3,7 +3,6 @@
  */
 package org.soma.tleaf.controller;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -11,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.soma.tleaf.domain.RawData;
 import org.soma.tleaf.domain.RequestDataWrapper;
 import org.soma.tleaf.domain.RequestParameter;
 import org.soma.tleaf.domain.ResponseDataWrapper;
@@ -28,12 +28,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
+ * Handles API Calls Directly Related to User Data, And So Needs Access Headers(OauthFilter)
  * Created with Eclipse IDE
  * Author : RichardJ
  * Date : Oct 17, 2014 1:36:07 PM
- * Description :
  */
-
 @RequestMapping(value = "api/*")
 @Controller
 public class RestApiController {
@@ -44,6 +43,9 @@ public class RestApiController {
 
 	@Inject
 	private CustomExceptionFactory customExceptionFactory;
+
+	private final String USERID_HEADER_NAME = "X-Tleaf-User-Id";
+	private final String APPID_HEADER_NAME = "X-Tleaf-Application-Id"; // Same as other company's API Key
 
 	// Just For Test.
 	@RequestMapping(value = "/hello/{msg}", method = RequestMethod.POST)
@@ -56,7 +58,7 @@ public class RestApiController {
 
 		return msg;
 	}
-	
+
 	// Just For Test.
 	@RequestMapping(value = "/hello/post", method = RequestMethod.POST)
 	@ResponseBody
@@ -64,16 +66,72 @@ public class RestApiController {
 		if (request.getAttribute("FilterException") != null)
 			throw customExceptionFactory.createCustomException((CustomExceptionValue) request.getAttribute("FilterException"));
 
-//		RequestDataWrapper requestDataWrapper = new RequestDataWrapper();
-//		HashMap<String, Object> someData = new HashMap<String, Object>();
-//		someData.put("(1)", "one");
-//		someData.put("(2)", "two");
-//		someData.put("(3)", "three");
-//		requestDataWrapper.setData(someData);
+		//		RequestDataWrapper requestDataWrapper = new RequestDataWrapper();
+		//		HashMap<String, Object> someData = new HashMap<String, Object>();
+		//		someData.put("(1)", "one");
+		//		someData.put("(2)", "two");
+		//		someData.put("(3)", "three");
+		//		requestDataWrapper.setData(someData);
 		return requestDataWrapper;
 	}
+
+	/**
+	 * RequestParam has every information to use on POST, DELETE Methods.
+	 * Id, Revision is Needed in the Body
+	 * @author susu
+	 * Date Oct 30, 2014 3:23:20 PM
+	 * @param requestParam
+	 */
+	@RequestMapping( value = "/user/log" , method = RequestMethod.DELETE )
+	@ResponseBody
+	public Map<String, Object> deleteUserLog( HttpServletRequest request, @RequestBody RawData rawData ) throws Exception {
+
+		logger.info( "/user/log.DELETE" );
+
+		// HttpServletRequest.getAttribute Returns null if Values are not found
+		if (request.getAttribute("FilterException") != null)
+			throw customExceptionFactory.createCustomException( (CustomExceptionValue) request.getAttribute("FilterException") );
+		
+		if( rawData.getId() == null || rawData.getRevision() == null )
+			throw customExceptionFactory.createCustomException( CustomExceptionValue.Parameter_Insufficient_Exception );
+		
+		// Set Request Parameter from Request Header
+		// These Attributes are always available because of the filter. 
+		rawData.setUserId( request.getHeader(USERID_HEADER_NAME) );
+		
+		return restApiService.deleteUserData( rawData );
+		
+	}
 	
-	
+	/**
+	 * Updates User Log data. Id, Revision is Needed in the Body
+	 * @author susu
+	 * Date Oct 30, 2014 4:21:43 PM
+	 * @param rawData
+	 */
+	@RequestMapping(value = "/user/log", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> updateUserLog(
+			HttpServletRequest request,
+			@RequestBody(required = true) RawData rawData) throws Exception {
+		
+		logger.info("/user/log.UPDATE");
+
+		// HttpServletRequest.getAttribute Returns null if Values are not found
+		if (request.getAttribute("FilterException") != null)
+			throw customExceptionFactory.createCustomException((CustomExceptionValue) request.getAttribute("FilterException"));
+		
+		if( rawData.getId() == null || rawData.getRevision() == null )
+			throw customExceptionFactory.createCustomException( CustomExceptionValue.Parameter_Insufficient_Exception );
+		
+		// Set Request Parameter from Request Header
+		// These Attributes are always available because of the filter.
+		rawData.setUserId( request.getHeader(USERID_HEADER_NAME) );
+		rawData.setAppId( request.getHeader(APPID_HEADER_NAME) );
+
+		return restApiService.updateUserData(rawData);
+		
+	}
 
 	/**
 	 * Author : RichardJ
@@ -83,21 +141,23 @@ public class RestApiController {
 	 */
 	@RequestMapping(value = "/user/app/log", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> postUserLog(HttpServletRequest request,
-			@RequestBody(required = true) RequestDataWrapper requestDataWrapper,
-			@RequestParam(required = true) String userId, 
-			@RequestParam(required = true) String appId ) throws Exception {
+	public Map<String, Object> postUserLog(
+			HttpServletRequest request,
+			@RequestBody( required = true ) RawData rawData ) throws Exception{
+
+		logger.info("/user/app/log.POST");
+
 		// HttpServletRequest.getAttribute Returns null if Values are not found
 		if (request.getAttribute("FilterException") != null)
 			throw customExceptionFactory.createCustomException((CustomExceptionValue) request.getAttribute("FilterException"));
 
-		// Set Request Parameter from @RequestParam
-		RequestParameter param = new RequestParameter();
-		param.setUserHashId(userId);
-		param.setAppId(appId);
-		
+		// Set Request Parameter from Request Header
+		// These Attributes are always available because of the filter. 
+		rawData.setUserId( request.getHeader(USERID_HEADER_NAME) );
+		rawData.setAppId( request.getHeader(APPID_HEADER_NAME) );
+
 		// Delegate Request to RestApiService Object
-		return restApiService.postUserData(requestDataWrapper, param);
+		return restApiService.postUserData( rawData );
 	}
 
 	/**
@@ -107,12 +167,10 @@ public class RestApiController {
 	 */
 	@RequestMapping(value = "/user/logs", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseDataWrapper getUserLog(HttpServletRequest request, 
-			@RequestParam(value = "userId", required = true) String userId,
-			@RequestParam(value = "appId", required = true) String appId,
-			@RequestParam(value = "limit", required = false, defaultValue = "1000") String limit,
-			@RequestParam(value = "startKey", required = false, defaultValue = ISO8601.FAR_FAR_AWAY) String startKey,
-			@RequestParam(value = "endKey", required = false, defaultValue = ISO8601.LONG_LONG_AGO) String endKey) throws Exception {
+	public ResponseDataWrapper getUserLog( HttpServletRequest request,
+			@RequestParam(value = "limit", required = false, defaultValue="1000") String limit,
+			@RequestParam(value = "startKey", required = false, defaultValue=ISO8601.FAR_FAR_AWAY) String startKey,
+			@RequestParam(value = "endKey", required = false, defaultValue=ISO8601.LONG_LONG_AGO) String endKey) throws Exception{
 
 		// HttpServletRequest.getAttribute Returns null if Values are not found
 		if (request.getAttribute("FilterException") != null)
@@ -120,13 +178,13 @@ public class RestApiController {
 
 		// Set Request Parameter from @RequestParam
 		RequestParameter param = new RequestParameter();
-		param.setUserHashId(userId);
-		param.setAppId(appId);
+		param.setUserHashId( request.getHeader(USERID_HEADER_NAME) );
+		param.setAppId( request.getHeader(APPID_HEADER_NAME) );
 		param.setStartKey(startKey);
 		param.setEndKey(endKey);
 		param.setLimit(limit);
 		// Delegate Request to RestApiService Object
-		
+
 		return restApiService.getUserData(param);
 	}
 
@@ -137,11 +195,11 @@ public class RestApiController {
 	 */
 	@RequestMapping(value = "/user/app/logs", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseDataWrapper getUserLogFromAppId(HttpServletRequest request, @RequestParam(value = "accessKey", required = true) String accessKey,
-			@RequestParam(value = "userId", required = true) String userId, @RequestParam(value = "appId", required = true) String appId,
-			@RequestParam(value = "limit", required = false, defaultValue = "1000") String limit,
-			@RequestParam(value = "startKey", required = false, defaultValue = ISO8601.FAR_FAR_AWAY) String startKey,
-			@RequestParam(value = "endKey", required = false, defaultValue = ISO8601.LONG_LONG_AGO) String endKey) throws Exception {
+
+	public ResponseDataWrapper getUserLogFromAppId( HttpServletRequest request,
+			@RequestParam(value = "limit", required = false, defaultValue="1000") String limit,
+			@RequestParam(value = "startKey", required = false, defaultValue=ISO8601.FAR_FAR_AWAY) String startKey,
+			@RequestParam(value = "endKey", required = false, defaultValue=ISO8601.LONG_LONG_AGO) String endKey) throws Exception {
 
 		// HttpServletRequest.getAttribute Returns null if Values are not found
 		if (request.getAttribute("FilterException") != null)
@@ -150,12 +208,11 @@ public class RestApiController {
 		// Set Request Parameter from @RequestParam
 		RequestParameter param = new RequestParameter();
 
-		param.setAccessKey(accessKey);
 		param.setStartKey(startKey);
-		param.setUserHashId(userId);
+		param.setUserHashId( request.getHeader(USERID_HEADER_NAME) );
 		param.setEndKey(endKey);
 		param.setLimit(limit);
-		param.setAppId(appId);
+		param.setAppId( request.getHeader(APPID_HEADER_NAME) );
 
 		// Delegate Request to RestApiService Object
 		return restApiService.getUserDataFromAppId(param);

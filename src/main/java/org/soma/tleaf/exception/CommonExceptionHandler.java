@@ -24,7 +24,7 @@ public class CommonExceptionHandler {
 	 * Description : 인증키에 관한 오류를 처리하는 메소드입니다.
 	 */
 	@ExceptionHandler({ ExpiredAccessKeyException.class, InvalidAccessKeyException.class, WrongAuthenticationInfoException.class,
-			NoSuchUserException.class })
+			NoSuchUserException.class, AuthInfoInsufficientException.class })
 	@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	@ResponseBody
 	public ErrorResponse handleExpiredAccessKeyException(CustomException e, HttpServletResponse response) {
@@ -46,7 +46,7 @@ public class CommonExceptionHandler {
 	public ErrorResponse handleMissingServletRequestParameterException(CustomException e, HttpServletResponse response) {
 
 		ErrorResponse errorLog = new ErrorResponse();
-		errorLog.setError("MissingRequestParameter error");
+		errorLog.setError(e.getExceptionName());
 		errorLog.setReason(e.getMessage());
 		return errorLog;
 	}

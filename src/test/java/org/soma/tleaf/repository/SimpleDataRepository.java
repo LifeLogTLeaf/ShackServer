@@ -32,10 +32,10 @@ public class SimpleDataRepository extends CouchDbRepositorySupport<SimpleData> {
 	}
 
 	@Override
-	@View(name = "all", map = "function(doc) { if (doc) emit( doc._id, doc )}")
+	@View(name = "all", map = "function(doc) { if (doc.time) emit( doc.time, doc )}")
 	public List<SimpleData> getAll() {
 		// TODO Auto-generated method stub
-		ViewQuery q = createQuery("all");
+		ViewQuery q = createQuery("all").descending(true);
 		return db.queryView(q, SimpleData.class);
 	}
 

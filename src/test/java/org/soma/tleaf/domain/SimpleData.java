@@ -19,10 +19,8 @@ public class SimpleData {
 	private String id;
 	@JsonProperty("_rev")
 	private String revision;
-	private long time;
+	private String time;
 	private String type;
-	private String appAuthor;
-	private ArrayList<Object> datas;
 	
 	public SimpleData() {
 		super();
@@ -33,12 +31,10 @@ public class SimpleData {
 	 * @param type
 	 * @param appAuthor
 	 */
-	public SimpleData(long time, String type, String appAuthor, ArrayList<Object> datas) {
+	public SimpleData(String time, String type, String appAuthor, ArrayList<Object> datas) {
 		super();
 		this.time = time;
 		this.type = type;
-		this.appAuthor = appAuthor;
-		this.datas = datas;
 	}
 
 	public String getId() {
@@ -63,17 +59,15 @@ public class SimpleData {
 		return "SimpelData {" +
 				"id = " + id +
 				", rev = " + revision +
-				", time = "+ time +
-				", type = "+ type +
-				", appAuthor = "+ appAuthor +
-				"}";
+				", time = "+ time
+				;
 	}
 
-	public long getTime() {
+	public String getTime() {
 		return time;
 	}
 
-	public void setTime(long time) {
+	public void setTime(String time) {
 		this.time = time;
 	}
 
@@ -83,22 +77,6 @@ public class SimpleData {
 
 	public void setType(String type) {
 		this.type = type;
-	}
-
-	public String getAppAuthor() {
-		return appAuthor;
-	}
-
-	public void setAppAuthor(String appAuthor) {
-		this.appAuthor = appAuthor;
-	}
-
-	public ArrayList<Object> getDatas() {
-		return datas;
-	}
-
-	public void setDatas(ArrayList<Object> datas) {
-		this.datas = datas;
 	}
 
 }

@@ -3,12 +3,17 @@
  */
 package org.soma.tleaf.ektorptest;
 
-import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.ektorp.AttachmentInputStream;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.http.StdHttpClient;
@@ -20,7 +25,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.soma.tleaf.domain.SimpleData;
-import org.soma.tleaf.repository.SimpleDataRepository;
 
 /**
  * Created with Eclipse IDE
@@ -32,7 +36,7 @@ public class EktorpAttachmentTest {
 	private static String url;
 	private static String user;
 	private static String password;
-	private static String docId;
+	private static String docId, revId;
 	private static String DbName = "simpledb";
 
 	static Logger logger = LoggerFactory.getLogger(EktorpTest.class);
@@ -53,13 +57,13 @@ public class EktorpAttachmentTest {
 		for (String dbname : dbs) {
 			// logger.info("database name : " + dbname);
 			if (dbname.equals(DbName)) {
-				dbInstance.deleteDatabase(dbname);
+				//dbInstance.deleteDatabase(dbname);
 			}
 		}
 	}
 
 	// test for create Database
-	@Test
+	//@Test
 	public void testCrateDatabase() throws MalformedURLException {
 		CouchDbInstance dbInstance = createDbInstance();
 		CouchDbConnector db = new StdCouchDbConnector(DbName, dbInstance);
@@ -69,31 +73,61 @@ public class EktorpAttachmentTest {
 	}
 
 	// test for Create Document and Attachment in one operation
-	@Test
-	public void testCreateDocument() throws MalformedURLException {
+	//@Test
+	public void testCreateDocumentAndAttachment() throws MalformedURLException {
 		CouchDbInstance dbInstance = createDbInstance();
 		CouchDbConnector db = new StdCouchDbConnector(DbName, dbInstance);
-		SimpleDataRepository repository = new SimpleDataRepository(db);
-
+		db.createDatabaseIfNotExists();
+		
 		// Create Dummy data
 		SimpleData data = new SimpleData();
-		data.setTime(System.currentTimeMillis());
-		data.setType("init");
-		data.setAppAuthor("picture");
+		data.setType("image");
 
 		// Add Data
-		repository.add(data); // can be db.create(data);
+		db.create(data); // can be db.create(data);
 		logger.info("Created document : " + data);
 
 		// will use for another unit test
 		docId = data.getId();
+		revId = data.getRevision();
 		
+
+		InputStream image = null;
+		try {
+			image = new FileInputStream("/Users/jangyoungjin/Downloads/1.png");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		AttachmentInputStream attachment = new AttachmentInputStream(docId, image, "image/png");
+		db.createAttachment(docId, revId, attachment);
+	}
+	
+	@Test
+	public void testGetAttachment() throws MalformedURLException{
+		CouchDbInstance dbInstance = createDbInstance();
+		CouchDbConnector db = new StdCouchDbConnector(DbName, dbInstance);
+		AttachmentInputStream data = db.getAttachment("e0da8f9f1fe2b3ca4d8872de6f05aad7", "e0da8f9f1fe2b3ca4d8872de6f05aad7");
+		logger.info("length : " + data.getContentLength());
+		logger.info("length : " + data.getId());
+		
+		try {
+			logger.info("read : " + data.read());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	}
+
+	//@Test
+	public void readFild() {
+
 	}
 
 	// Get CouchDbInstance
 	private static CouchDbInstance createDbInstance() throws MalformedURLException {
-		StdHttpClient httpClient = (StdHttpClient) new StdHttpClient.Builder().username(user).password(password).url(url)
-				.connectionTimeout(100000).build();
+		StdHttpClient httpClient = (StdHttpClient) new StdHttpClient.Builder().username(user).password(password).url(url).connectionTimeout(100000)
+				.build();
 
 		return new StdCouchDbInstance(httpClient);
 	}

@@ -6,18 +6,32 @@ package org.soma.tleaf.controller;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.ObjectWriter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.soma.tleaf.configuration.WebAppConfig;
+import org.soma.tleaf.domain.SimpleRawData;
 import org.soma.tleaf.exception.CommonExceptionHandler;
+import org.soma.tleaf.util.ISO8601;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -47,6 +61,14 @@ public class RestControllerTest {
 
 	@Autowired
 	RestApiController restController;
+	
+	private final String USERID_HEADER_NAME = "x-tleaf-user-id";
+	private final String APPID_HEADER_NAME = "x-tleaf-application-id"; 
+	private final String ACCESSKEY_HEADER_NAME = "x-tleaf-access-token";
+	private String accessKey = "e0da8f9f1fe2b3ca4d8872de6f01df5c";
+	private String userId = "e0da8f9f1fe2b3ca4d8872de6f01d29f";
+	private String appId = "tiary";
+	
 
 	// MockMvc를 생성합니다.
 	@Before
@@ -73,52 +95,96 @@ public class RestControllerTest {
 		return exceptionResolver;
 	}
 
-	// @Test
-	// 많은 데이터를 저장하는 테스트 입니다.
-	public void testPostUserLog() throws Exception {
-		String content[] = {
-				"{ \"data\": {\"content\":\"오늘은 기쁨\", \"template\":\"다이어트\", \"tag\":{ \"weigh\":\"65\", \"mornig\":\"김치\", \"lunch\":\"김치\", \"dinner\":\"김치\" } } }",
-				"{ \"data\": {\"content\":\"오늘은 나쁨\", \"template\":\"다이어트\", \"tag\":{ \"weigh\":\"64\", \"mornig\":\"물\", \"lunch\":\"물\", \"dinner\":\"물\" } } }",
-				"{ \"data\": {\"content\":\"오늘은 슬픔\", \"template\":\"다이어트\", \"tag\":{ \"weigh\":\"63\", \"mornig\":\"냉면\", \"lunch\":\"냉면\" , \"dinner\":\"냉면\"  } } }",
-				"{ \"data\": {\"content\":\"오늘은 쵝오\", \"template\":\"다이어트\", \"tag\":{ \"weigh\":\"62\", \"mornig\":\"갈비\", \"lunch\":\"갈비\" , \"dinner\":\"갈비\"  } } }",
-				"{ \"data\": {\"content\":\"오늘은 해피\", \"template\":\"다이어트\", \"tag\":{ \"weigh\":\"61\", \"mornig\":\"오리고기\", \"lunch\":\"오리고기\", \"dinner\":\"오리고기\" } } }",
-				"{ \"data\": {\"content\":\"오늘은 우울\", \"template\":\"다이어트\", \"tag\":{ \"weigh\":\"60\", \"mornig\":\"삼겹살\", \"lunch\":\"삼겹살\", \"dinner\":\"삼겹살\" } } }",
-				"{ \"data\": {\"content\":\"오늘은 행복\", \"template\":\"다이어트\", \"tag\":{ \"weigh\":\"61\", \"mornig\":\"곰국\", \"lunch\":\"곰국\", \"dinner\":\"곰국\" } } }",
-				"{ \"data\": {\"title\":\"자바 공부\", \"state\":\"진행중\"} } }", "{ \"data\": {\"title\":\"씨언어 공부\", \"state\":\"진행중\"} } }",
-				"{ \"data\": {\"title\":\"자바스크립트 공부\", \"state\":\"진행중\"} } }", "{ \"data\": {\"title\":\"씨플플 공부\", \"state\":\"진행중\"} } }",
-				"{ \"data\": {\"title\":\"파이썬 공부\", \"state\":\"진행중\"} } }" };
 
-		for (int i = 0; i < 10; i++) {
-			MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-					.post("api/user/app/log?accessKey=a869d8c5662f5b16660068660600e6cf&appId=19891011&userId=a869d8c5662f5b16660068660600db2d")
-					.contentType(MediaType.APPLICATION_JSON).content(content[i]).accept(MediaType.APPLICATION_JSON);
-			this.mockMvc.perform(requestBuilder).andDo(print()).andExpect(status().isOk());
-		}
-	}
-
-	@Test
+	//@Test
 	// 하나의 데이터를 저장하는 테스트 입니다.
-	public void testPostOndeUserLog() throws Exception {
-		String content = "{ \"data\": {\"content\":\"오늘은 기쁨\", \"template\":\"다이어트\", \"tag\":{ \"weigh\":\"65\", \"mornig\":\"김치\", \"lunch\":\"김치\", \"dinner\":\"김치\" } } }";
+	public void testPostUserLog() throws Exception {
+		String URL = "/api/user/app/log";
+		String content = buildDummy();
+		logger.info(content);
+		
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-				.post("api/user/logs?accessKey=a869d8c5662f5b16660068660600e6cf&appId=19891011&userId=a869d8c5662f5b16660068660600db2d")
-				.contentType(MediaType.APPLICATION_JSON).content(content).accept(MediaType.APPLICATION_JSON);
+				.post(URL)
+				.header(ACCESSKEY_HEADER_NAME, accessKey)
+				.header(APPID_HEADER_NAME, appId)
+				.header(USERID_HEADER_NAME, userId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(content)
+				.accept(MediaType.APPLICATION_JSON);
 		this.mockMvc.perform(requestBuilder).andDo(print()).andExpect(status().isOk());
 	}
 
-	// @Test
-	// 엑세스키 예외처리 상태를 확인하기 위한 테스트 입니다.
-	public void testPostUserLogWithAccessKey() throws Exception {
-		String content = "{ \"data\": {\"title\":\"자바스크립트 공부\", \"state\":\"진행중\"} } }";
-
-		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/user/log").contentType(MediaType.APPLICATION_JSON)
-				.content(content).accept(MediaType.APPLICATION_JSON);
-		this.mockMvc.perform(requestBuilder).andDo(print()).andExpect(status().isUnauthorized());
+	
+	//@Test
+	public void accessKeyCehck() {
+		String URL = "/api/hello/world";
+		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+				.get(URL)
+				.header(ACCESSKEY_HEADER_NAME, accessKey)
+				.header(APPID_HEADER_NAME, appId)
+				.header(USERID_HEADER_NAME, userId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON);		
+		try {
+			this.mockMvc.perform(requestBuilder).andDo(print()).andExpect(status().isOk());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
-	// @Test
-	// 사용자의 전체 로그를 가져옵니다.
-	public void testGetAllUserLogWithAccessKey() throws Exception {
+
+	//@Test
+	public void fileSave() {
+		String URL = "/api/hello/file";
+		InputStream inputStream;
+		
+		MockMultipartFile file = null;
+		try {
+			inputStream = new FileInputStream("/Users/jangyoungjin/Downloads/1.png");
+			file = new MockMultipartFile("file", inputStream);	
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+				.fileUpload(URL)
+				.file(file);
+		try {
+			this.mockMvc.perform(requestBuilder)
+						.andDo(print())
+						.andExpect(status().isOk());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
+	
+	
+	private String buildDummy(){
+		Map<String, Object>data = new HashMap<String, Object>();
+		ArrayList<String> array = new ArrayList<String>();
+		data.put("type", "normal");
+		data.put("title", "오늘은 너무 행복한 하루였다.");
+		data.put("content", "난 오늘 11시에 태평역에서 가산디지털단지역으로 지하철을 타고 갔다. 도착하고 나서 짜장범벅을 먹었고 일하고 일하고 일하고 일하고 전화하고 하다가 오후 10시 37분인데 일하고 서류 만들고 이러고 있다. 배가 고파서 뭘 먹을까 배달의 민족을 10분전에 찾아보다가 별로 땡기는게 없어서 편의점에 갈까 고민중이다.");
+		data.put("emotion", "happy");
+		array.add("날씨");
+		array.add("장소");
+		array.add("만남사람이름");
+		data.put("tag", array);
+		
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		String json = null;
+		try {
+			json = ow.writeValueAsString(data);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		
+		return json;
+	}
+	
+
 
 }

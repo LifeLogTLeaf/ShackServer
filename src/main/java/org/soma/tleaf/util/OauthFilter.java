@@ -51,28 +51,30 @@ public class OauthFilter implements Filter {
 		}
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
-		
-		String accessKey = httpRequest.getHeader(ACCESSKEY_HEADER_NAME);
-		String userId = httpRequest.getHeader(USERID_HEADER_NAME);
-		String appId = httpRequest.getHeader(APPID_HEADER_NAME);
 
-		// Be Careful on this, Every Request goes into Filter. Logging might create Performance Issues
-		logger.info( accessKey ); logger.info( userId ); logger.info( appId );
+		if( !httpRequest.getMethod().matches("OPTIONS") )
+		{
+			String accessKey = httpRequest.getHeader(ACCESSKEY_HEADER_NAME);
+			String userId = httpRequest.getHeader(USERID_HEADER_NAME);
+			String appId = httpRequest.getHeader(APPID_HEADER_NAME);
 
-		if ( accessKey == null || userId == null || appId == null ) {
-			logger.info( "Parameter_Insufficient_Exception" );
-			httpRequest.setAttribute("FilterException", CustomExceptionValue.Parameter_Insufficient_Exception );
-		}
+			// Be Careful on this, Every Request goes into Filter. Logging might create Performance Issues
+			logger.info( accessKey ); logger.info( userId ); logger.info( appId );
 
-		else {
-			try {
-				accessKeyManager.isAccessKeyValid(accessKey, appId, userId);
-			} catch (InvalidAccessKeyException e) {
-				e.printStackTrace();
-				httpRequest.setAttribute("FilterException", CustomExceptionValue.Invalid_AccessKey_Exception );
-			} catch (DatabaseConnectionException e) {
-				e.printStackTrace();
-				httpRequest.setAttribute("FilterException", CustomExceptionValue.Database_Connection_Exception );
+			if ( accessKey == null || userId == null || appId == null ) {
+				httpRequest.setAttribute("FilterException", CustomExceptionValue.Auth_Info_Insufficient_Exception );
+			}
+
+			else {
+				try {
+					accessKeyManager.isAccessKeyValid(accessKey, appId, userId);
+				} catch (InvalidAccessKeyException e) {
+					e.printStackTrace();
+					httpRequest.setAttribute("FilterException", CustomExceptionValue.Invalid_AccessKey_Exception );
+				} catch (DatabaseConnectionException e) {
+					e.printStackTrace();
+					httpRequest.setAttribute("FilterException", CustomExceptionValue.Database_Connection_Exception );
+				}
 			}
 		}
 

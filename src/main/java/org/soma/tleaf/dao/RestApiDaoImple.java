@@ -4,6 +4,7 @@
 package org.soma.tleaf.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -36,10 +37,11 @@ public class RestApiDaoImple implements RestApiDao {
 	 * Description : 클라이언트로부터 받은 데이터를 디비에 저장합니다.
 	 */
 	@Override
-	public String postData(RawData rawData, RequestParameter param) throws Exception {
-		CouchDbConnector db = connector.getCouchDbConnetor("user_" + param.getUserHashId());
+	public void postData(Map<String,Object> result, RawData rawData) throws Exception {
+		CouchDbConnector db = connector.getCouchDbConnetor("user_" + rawData.getUserId());
 		db.create(rawData);
-		return rawData.getId();
+		result.put("_id", rawData.getId() );
+		result.put("_rev", rawData.getRevision() );
 	}
 
 	/**
@@ -116,6 +118,49 @@ public class RestApiDaoImple implements RestApiDao {
 		}
 
 		return rawDatas;
+	}
+
+	/**
+	 * Deletes the Specific log data.
+	 * 2014.10.30
+	 * @author susu
+	 */
+	@Override
+	public void deleteData( Map<String,Object> result, RawData rawData ) throws Exception {
+		
+		logger.info( rawData.getUserId() );
+		
+		// DatabaseConnectionException Can Occur
+		CouchDbConnector couchDbConnector_user = connector.getCouchDbConnetor("user_" + rawData.getUserId());
+		
+		// UpdateConfilct Exception??
+		result.put("_rev", couchDbConnector_user.delete( rawData.getId(), rawData.getRevision() ) );
+		
+		logger.info( "Deleted User Log. _rev = " + (String)result.get("_rev") );
+
+	}
+
+	/**
+	 * Updates the Specific Log data.
+	 * @author susu
+	 * Date Oct 30, 2014
+	 * @param rawData
+	 */
+	@Override
+	public void updateData(Map<String, Object> result, RawData rawData)
+			throws Exception {
+		
+		logger.info( rawData.getUserId() );
+		logger.info( rawData.getAppId() );
+		
+		// DatabaseConnectionException Can Occur
+		CouchDbConnector couchDbConnector_user = connector.getCouchDbConnetor("user_" + rawData.getUserId());
+		
+		// UpdateConflictException
+		couchDbConnector_user.update(rawData);
+		
+		result.put("update", "success");
+		logger.info( "User Log Update Complete" );
 	}
 
 }

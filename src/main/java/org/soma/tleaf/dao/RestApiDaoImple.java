@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.soma.tleaf.couchdb.CouchDbConn;
 import org.soma.tleaf.domain.RawData;
 import org.soma.tleaf.domain.RequestParameter;
+import org.soma.tleaf.repository.RawDataRepository;
 
 /**
  * Created with Eclipse IDE
@@ -63,8 +64,13 @@ public class RestApiDaoImple implements RestApiDao {
 	@Override
 	public List<RawData> getAllData(RequestParameter param) throws Exception {
 		CouchDbConnector db = connector.getCouchDbConnetor("user_" + param.getUserHashId());
-		ViewQuery query = new ViewQuery().designDocId("_design/shack").viewName("time").startKey(param.getStartKey()).endKey(param.getEndKey())
-				.limit(Integer.valueOf(param.getLimit())).descending(false);
+		ViewQuery query = new ViewQuery()
+				.designDocId("_design/shack")
+				.viewName("time")
+				.startKey(param.getStartKey())
+				.endKey(param.getEndKey())
+				.limit(Integer.valueOf(param.getLimit()))
+				.descending(false);
 
 		List<RawData> rawDatas;
 		try {

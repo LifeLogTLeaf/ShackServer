@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Handles API Calls Directly Related to User Data, And So Needs Access Headers(OauthFilter)
@@ -48,7 +49,7 @@ public class RestApiController {
 	private final String APPID_HEADER_NAME = "X-Tleaf-Application-Id"; // Same as other company's API Key
 
 	// Just For Test.
-	@RequestMapping(value = "/hello/{msg}", method = RequestMethod.POST)
+	@RequestMapping(value = "/hello/{msg}", method = RequestMethod.GET)
 	@ResponseBody
 	public String sayHello(HttpServletRequest request, @PathVariable String msg) throws CustomException {
 
@@ -74,6 +75,16 @@ public class RestApiController {
 		//		requestDataWrapper.setData(someData);
 		return requestDataWrapper;
 	}
+	
+	// Test
+	@RequestMapping(value = "/hello/file")
+	@ResponseBody
+	public String uploadImage(@RequestParam("file") MultipartFile imageFile){
+		return ""+imageFile.getSize();
+		
+	}
+	
+	
 
 	/**
 	 * RequestParam has every information to use on POST, DELETE Methods.
@@ -151,7 +162,6 @@ public class RestApiController {
 		if (request.getAttribute("FilterException") != null)
 			throw customExceptionFactory.createCustomException((CustomExceptionValue) request.getAttribute("FilterException"));
 
-		// Set Request Parameter from Request Header
 		// These Attributes are always available because of the filter. 
 		rawData.setUserId( request.getHeader(USERID_HEADER_NAME) );
 		rawData.setAppId( request.getHeader(APPID_HEADER_NAME) );

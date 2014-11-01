@@ -76,11 +76,10 @@ public class EktorpTest {
 	public void testCreateDocument() throws MalformedURLException {
 		CouchDbInstance dbInstance = createDbInstance();
 		CouchDbConnector db = new StdCouchDbConnector(DbName, dbInstance);
-		SimpleDataRepository repository = new SimpleDataRepository(db);
+		//SimpleDataRepository repository = new SimpleDataRepository(db);
 
 		// Create Dummy data
 		SimpleData data = new SimpleData();
-		data.setTime(System.currentTimeMillis());
 		data.setType("init");
 		ArrayList<Object> datas = new ArrayList<Object>();
 		HashMap<String, Object> someData = new HashMap<String, Object>();
@@ -92,12 +91,12 @@ public class EktorpTest {
 		datas.add("2");
 		datas.add("3");
 		datas.add(someData);
-		
-		data.setDatas(datas);
-		
+
 
 		// Add Data
-		repository.add(data); // can be db.create(data);
+		db.createDatabaseIfNotExists();
+		db.create(data);
+		//repository.add(data); // can be db.create(data);
 		logger.info("Created document : " + data);
 
 		// will use for another unit test
@@ -116,9 +115,6 @@ public class EktorpTest {
 		// db.get(SimpleData.class, docId)
 		SimpleData data = repository.get(docId);
 		logger.info("Retrieved document : " + data);
-		logger.info("Retrieved document datas size : " + data.getDatas().size());
-		logger.info("Retrieved document datas data : " + data.getDatas().get(3));
-		
 	}
 
 	// test for Update Document

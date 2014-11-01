@@ -9,12 +9,11 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
  * Created with Eclipse IDE
- * Author : RichardJ
- * Date : Oct 17, 2014 1:32:05 PM
- * Description : 카우치데이터베이스에 저장되는 도큐먼트 형식을 표현하는 클래스입니다.
+ * Author : RichardJ 
+ * Date   : Oct 30, 2014 8:23:32 PM
+ * Description : 
  */
-public class RawData {
-	
+public class SimpleRawData {
 	@JsonProperty("_id")
 	private String id;
 	

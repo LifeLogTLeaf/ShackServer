@@ -22,6 +22,7 @@ import org.soma.tleaf.exception.CustomException;
 import org.soma.tleaf.exception.CustomExceptionFactory;
 import org.soma.tleaf.exception.CustomExceptionValue;
 import org.soma.tleaf.exception.DatabaseConnectionException;
+import org.soma.tleaf.repository.RawDataRepository;
 
 /**
  * Created with Eclipse IDE
@@ -72,8 +73,13 @@ public class RestApiDaoImple implements RestApiDao {
 	@Override
 	public List<RawData> getAllData(RequestParameter param) throws Exception {
 		CouchDbConnector db = connector.getCouchDbConnetor("user_" + param.getUserHashId());
-		ViewQuery query = new ViewQuery().designDocId("_design/shack").viewName("time").startKey(param.getStartKey()).endKey(param.getEndKey())
-				.limit(Integer.valueOf(param.getLimit())).descending(false);
+		ViewQuery query = new ViewQuery()
+				.designDocId("_design/shack")
+				.viewName("time")
+				.startKey(param.getStartKey())
+				.endKey(param.getEndKey())
+				.limit(Integer.valueOf(param.getLimit()))
+				.descending(false);
 
 		List<RawData> rawDatas;
 		try {

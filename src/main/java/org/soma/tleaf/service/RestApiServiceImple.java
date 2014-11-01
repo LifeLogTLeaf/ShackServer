@@ -39,15 +39,11 @@ public class RestApiServiceImple implements RestApiService {
 	 */
 	@Override
 	public Map<String, Object> postUserData( RawData rawData ) throws Exception {
-
 		// Create Response Result
 		Map<String, Object> result = new HashMap<String, Object>();
-
 		if( rawData.getTime() == null ) rawData.setTime( ISO8601.now() );
-		
 		// Request Create Data and Set Response result
 		restApiDao.postData(result, rawData);
-		
 		return result;
 	}
 

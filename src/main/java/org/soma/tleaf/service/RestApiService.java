@@ -24,5 +24,6 @@ public interface RestApiService {
 	public ResponseDataWrapper getUserData(RequestParameter param) throws Exception;
 	public ResponseDataWrapper getUserDataFromAppId(RequestParameter param) throws Exception;
 	public UserInfo getUserInfo( String userId ) throws CustomException;
+	public RawData getRawData( String rawDataId, String userId ) throws CustomException;
 	
 }

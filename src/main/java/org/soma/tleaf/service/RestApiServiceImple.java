@@ -16,7 +16,6 @@ import org.soma.tleaf.domain.RequestParameter;
 import org.soma.tleaf.domain.ResponseDataWrapper;
 import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.exception.CustomException;
-import org.soma.tleaf.exception.DatabaseConnectionException;
 import org.soma.tleaf.util.ISO8601;
 
 /**
@@ -106,7 +105,7 @@ public class RestApiServiceImple implements RestApiService {
 	 * @author susu
 	 * Date Oct 30, 2014
 	 * @param rawData
-	 * @return
+	 * @return "update":"success"
 	 * @throws Exception
 	 */
 	@Override
@@ -118,9 +117,32 @@ public class RestApiServiceImple implements RestApiService {
 		return result;
 	}
 
+	/**
+	 * Returns the UserInfo Class from DAO. Need to Decide on Profile Image ( URL or Data ).
+	 * @author susu
+	 * Date Nov 1, 2014
+	 * @param userId
+	 * @return UserInfo
+	 * @throws CustomException
+	 */
 	@Override
 	public UserInfo getUserInfo(String userId) throws CustomException {
 		return restApiDao.getUserInfo( userId );
+	}
+
+	/**
+	 * 
+	 * @author susu
+	 * Date Nov 1, 2014
+	 * @param rawDataId
+	 * @param userId
+	 * @return RawData Json String
+	 * @throws CustomException
+	 */
+	@Override
+	public RawData getRawData(String rawDataId, String userId)
+			throws CustomException {
+		return restApiDao.getRawData(rawDataId, userId);
 	}
 
 }

@@ -18,7 +18,6 @@ import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.exception.CustomException;
 import org.soma.tleaf.exception.CustomExceptionFactory;
 import org.soma.tleaf.exception.CustomExceptionValue;
-import org.soma.tleaf.exception.DatabaseConnectionException;
 import org.soma.tleaf.service.RestApiService;
 import org.soma.tleaf.util.ISO8601;
 import org.springframework.stereotype.Controller;
@@ -87,7 +86,12 @@ public class RestApiController {
 	}
 	
 	
-
+	/**
+	 * @author susu
+	 * Date Nov 1, 2014 2:27:43 PM
+	 * @return UserInfo JSON String
+	 * @throws CustomException if No User is matched
+	 */
 	@RequestMapping( value = "/user" , method = RequestMethod.GET )
 	@ResponseBody
 	public UserInfo getUserInfo( HttpServletRequest request ) throws CustomException {
@@ -103,11 +107,32 @@ public class RestApiController {
 	}
 	
 	/**
+	 * Finds the Document with Specific Id.
+	 * @author susu
+	 * Date Nov 1, 2014 2:45:18 PM
+	 * @param rawDataId String "_id" to find the Document
+	 * @return RawData Json String
+	 * @throws CustomException NoSuchDocumentException if Document isn't Found
+	 */
+	@RequestMapping( value = "/user/log", method = RequestMethod.GET )
+	@ResponseBody
+	public RawData getRawData( HttpServletRequest request, @RequestParam String rawDataId ) throws CustomException {
+		
+		logger.info( "/user/log.GET" );
+
+		// HttpServletRequest.getAttribute Returns null if Values are not found
+		if (request.getAttribute("FilterException") != null)
+			throw customExceptionFactory.createCustomException( (CustomExceptionValue) request.getAttribute("FilterException") );
+		
+		return restApiService.getRawData( rawDataId, request.getHeader(USERID_HEADER_NAME) );
+		
+	}
+	
+	/**
 	 * RequestParam has every information to use on POST, DELETE Methods.
-	 * Id, Revision is Needed in the Body
 	 * @author susu
 	 * Date Oct 30, 2014 3:23:20 PM
-	 * @param requestParam
+	 * @param RawData Id, Revision is Needed in the Body
 	 */
 	@RequestMapping( value = "/user/log" , method = RequestMethod.DELETE )
 	@ResponseBody
@@ -134,7 +159,7 @@ public class RestApiController {
 	 * Updates User Log data. Id, Revision is Needed in the Body
 	 * @author susu
 	 * Date Oct 30, 2014 4:21:43 PM
-	 * @param rawData
+	 * @param RawData Id, Revision is Needed in the Body
 	 */
 	@RequestMapping(value = "/user/log", method = RequestMethod.POST)
 	@ResponseBody

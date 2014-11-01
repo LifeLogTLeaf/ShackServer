@@ -200,4 +200,29 @@ public class RestApiDaoImple implements RestApiDao {
 		return userInfo;
 	}
 
+	/**
+	 * Fetches the Specific Raw Data by _id
+	 * @author susu
+	 * Date Nov 1, 2014
+	 * @param rawDataId
+	 * @param userId
+	 * @return RawData Found in the user Database
+	 * @throws CustomException if no such Documnet was Found
+	 */
+	@Override
+	public RawData getRawData( String rawDataId, String userId ) throws CustomException {
+		
+		logger.info( "getting RawData by Id " + rawDataId );
+		
+		// DatabaseConnectionException Can Occur
+		CouchDbConnector couchDbConnector_user = connector.getCouchDbConnetor( "user_" + userId );
+		
+		RawData rawData = couchDbConnector_user.get( RawData.class, rawDataId );
+		
+		if ( rawData == null )
+			throw customExceptionFactory.createCustomException( CustomExceptionValue.No_Such_Document_Exception );
+		
+		return rawData;
+	}
+
 }

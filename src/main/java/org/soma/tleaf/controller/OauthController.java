@@ -9,6 +9,7 @@ import org.soma.tleaf.accesskey.AccessKeyManager;
 import org.soma.tleaf.exception.DatabaseConnectionException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -21,7 +22,7 @@ public class OauthController {
 	// 300000 = 300sec = 5min
 	// 3600000 = 1 hour
 	// 86400000 = 1 day
-	private final Long DEFAULT_DURATION = (long) 300000;
+	private final Long DEFAULT_DURATION = (long) 86400000;
 	
 	private static final Logger logger = LoggerFactory.getLogger(OauthController.class);
 	
@@ -35,16 +36,18 @@ public class OauthController {
 	 * @return AccessKey Object
 	 * @throws DatabaseConnectionException
 	 */
-	@RequestMapping("oauth")
+	@RequestMapping( value = "oauth" , method = RequestMethod.GET )
 	@ResponseBody
 	public AccessKey oauth ( @RequestParam( value = "userId" , required = true ) String userId,
+			@RequestParam( value = "appId" , required = true ) String appId,
 			@RequestParam( value = "validForMillis" , required = false ) Long validForMillis,
 			@RequestParam( value = "isValid" , required = false , defaultValue = "true" ) boolean isValid) throws DatabaseConnectionException {
 		
-		logger.info( userId );
+		// TODO We Need to Check appId that it exists in the tleaf_services Database.
 		
 		if( validForMillis == null ) validForMillis = DEFAULT_DURATION;
-		return accessKeyManager.createAccessKey(userId, validForMillis, isValid);
+		
+		return accessKeyManager.createAccessKey(userId, validForMillis, isValid, appId);
 	}
 	
 	/*

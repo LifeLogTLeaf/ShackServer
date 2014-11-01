@@ -14,12 +14,10 @@ import org.soma.tleaf.couchdb.CouchDbConn;
 import org.soma.tleaf.exception.DatabaseConnectionException;
 import org.soma.tleaf.exception.InvalidAccessKeyException;
 import org.soma.tleaf.util.ISO8601;
-import org.soma.tleaf.util.OauthFilter;
 
 /**
  * 2014.10.17
  * @author susu
- *
  */
 public class AccessKeyManagerImpl implements AccessKeyManager {
 	
@@ -58,11 +56,12 @@ public class AccessKeyManagerImpl implements AccessKeyManager {
 
 	@Override
 	public AccessKey createAccessKey(String userId, String validFrom,
-			String validTo, boolean isValid) throws DatabaseConnectionException {
+			String validTo, boolean isValid, String appId) throws DatabaseConnectionException {
 		
 		AccessKey accessKey = new AccessKey();
 		
 		accessKey.setUserId(userId);
+		accessKey.setAppId(appId);
 		accessKey.setValidFrom(validFrom);
 		accessKey.setValidTo(validTo);
 		accessKey.setValid(isValid);
@@ -70,12 +69,20 @@ public class AccessKeyManagerImpl implements AccessKeyManager {
 		setCouchDbConnector();
 		couchDbConnector_apikey.create(accessKey);
 		
+		logger.info( userId + " User, " + appId + " Access Token Created" );
+		
 		return accessKey;
+	}
+	
+	@Override
+	public AccessKey createAccessKey(String userId, Long vaildForMillis,
+			boolean isValid) throws DatabaseConnectionException {
+		return createAccessKey( userId, vaildForMillis, isValid, "shack" );
 	}
 
 	@Override
 	public AccessKey createAccessKey(String userId, String validFrom,
-			Long validForMillis, boolean isValid) throws DatabaseConnectionException {
+			Long validForMillis, boolean isValid, String appId) throws DatabaseConnectionException {
 
 		Calendar calendar;
 		
@@ -83,26 +90,25 @@ public class AccessKeyManagerImpl implements AccessKeyManager {
 			calendar = ISO8601.toCalendar( validFrom );
 		} catch (ParseException e) {
 			e.printStackTrace();
-			return createAccessKey( userId, validFrom, ISO8601.LONG_LONG_AGO, false );
+			return createAccessKey( userId, validFrom, ISO8601.LONG_LONG_AGO, false, appId );
 		}
 		
 		calendar.setTimeInMillis( calendar.getTimeInMillis() + validForMillis );
 		
-		return createAccessKey( userId, validFrom, ISO8601.fromCalendar(calendar), isValid );
+		return createAccessKey( userId, validFrom, ISO8601.fromCalendar(calendar), isValid, appId );
 	}
 
 	@Override
-	public AccessKey createAccessKey(String userId, String validTo, boolean isValid) throws DatabaseConnectionException {
-		return createAccessKey( userId, ISO8601.now(), validTo, isValid );
+	public AccessKey createAccessKey(String userId, String validTo, boolean isValid, String appId) throws DatabaseConnectionException {
+		return createAccessKey( userId, ISO8601.now(), validTo, isValid, appId );
 	}
 
 	@Override
-	public AccessKey createAccessKey(String userId, Long validForMillis, boolean isValid) throws DatabaseConnectionException {
+	public AccessKey createAccessKey(String userId, Long validForMillis, boolean isValid, String appId) throws DatabaseConnectionException {
 		
 		Calendar calendar = GregorianCalendar.getInstance();
 		calendar.setTimeInMillis( calendar.getTimeInMillis() + validForMillis );
 		
-		return createAccessKey( userId, ISO8601.now(), ISO8601.fromCalendar(calendar), isValid );
+		return createAccessKey( userId, ISO8601.now(), ISO8601.fromCalendar(calendar), isValid ,appId );
 	}
-
 }

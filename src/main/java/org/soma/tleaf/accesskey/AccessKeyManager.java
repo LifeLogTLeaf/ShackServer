@@ -12,10 +12,11 @@ public interface AccessKeyManager {
 	
 	public boolean isAccessKeyValid ( String accessKey, String appId, String userId ) throws InvalidAccessKeyException,DatabaseConnectionException;
 	
-	// Makes access Keys. If String is in wrong format, it returns an invalid accessKey.
-	public AccessKey createAccessKey ( String userId, String vaildFrom, String vaildTo, boolean isValid ) throws DatabaseConnectionException ;
-	public AccessKey createAccessKey ( String userId, String vaildFrom, Long vaildForMillis, boolean isValid ) throws DatabaseConnectionException ;
-	public AccessKey createAccessKey ( String userId, String vaildTo, boolean isValid ) throws DatabaseConnectionException ;
+	// Makes access Keys. If String is in wrong format, it returns an invalid accessKey	
 	public AccessKey createAccessKey ( String userId, Long vaildForMillis, boolean isValid ) throws DatabaseConnectionException ;
+	public AccessKey createAccessKey ( String userId, String vaildFrom, String vaildTo, boolean isValid, String appId ) throws DatabaseConnectionException ;
+	public AccessKey createAccessKey ( String userId, String vaildFrom, Long vaildForMillis, boolean isValid, String appId ) throws DatabaseConnectionException ;
+	public AccessKey createAccessKey ( String userId, String vaildTo, boolean isValid, String appId ) throws DatabaseConnectionException ;
+	public AccessKey createAccessKey ( String userId, Long vaildForMillis, boolean isValid, String appId ) throws DatabaseConnectionException ;
 
 }

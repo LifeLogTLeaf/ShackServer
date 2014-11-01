@@ -26,11 +26,15 @@ public class AccessKey {
 	
 	public boolean isValid ( String userId ,String appId ) {
 		
-		// all three value must be true to return true
+		// all FIVE values must be true to return true
 		try {
 			
-			if ( valid && ISO8601.isFirstEarlier(validFrom, ISO8601.now()) && ISO8601.isFirstEarlier(ISO8601.now(), validTo) && userId.equals(this.userId) && appId.equals(this.appId) )
-				return true;
+			if ( 	valid && 
+					ISO8601.isFirstEarlier(validFrom, ISO8601.now()) && 
+					ISO8601.isFirstEarlier(ISO8601.now(), validTo) && 
+					userId.matches(this.userId) && 
+					appId.matches(this.appId) 	) return true;
+			
 			else return false;
 			
 		} catch (ParseException e) {

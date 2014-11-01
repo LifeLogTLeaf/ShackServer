@@ -2,12 +2,9 @@ package org.soma.tleaf.util;
 
 import java.io.IOException;
 
-import javax.servlet.Filter;
+import javax.inject.Inject;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,16 +14,18 @@ import org.soma.tleaf.accesskey.AccessKeyManager;
 import org.soma.tleaf.exception.CustomExceptionValue;
 import org.soma.tleaf.exception.DatabaseConnectionException;
 import org.soma.tleaf.exception.InvalidAccessKeyException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
  * Checks Requests that need OAuth Token
  * @author susu
  * Date : Oct 24, 2014 10:10:28 PM
  */
-public class OauthFilter implements Filter {
+@Component( value = "oauthFilter" )
+public class OauthFilter extends OncePerRequestFilter {
 
+	@Inject
 	private AccessKeyManager accessKeyManager;
 
 	private static Logger logger = LoggerFactory.getLogger(OauthFilter.class);
@@ -36,22 +35,14 @@ public class OauthFilter implements Filter {
 	private final String ACCESSKEY_HEADER_NAME = "x-tleaf-access-token";
 
 	@Override
-	public void init ( FilterConfig filterConfig ) throws ServletException {
-		ApplicationContext ctx = WebApplicationContextUtils.
-				getRequiredWebApplicationContext(filterConfig.getServletContext());
-		accessKeyManager = ctx.getBean(AccessKeyManager.class);
+	public void destroy() {
 	}
 
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response,
-			FilterChain chain) throws IOException, ServletException {
-
-		if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse)) {
-			throw new ServletException("OncePerRequestFilter just supports HTTP requests");
-		}
-		HttpServletRequest httpRequest = (HttpServletRequest) request;
-		HttpServletResponse httpResponse = (HttpServletResponse) response;
-
+	protected void doFilterInternal(HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse, FilterChain filterChain)
+			throws ServletException, IOException {
+		
 		if( !httpRequest.getMethod().matches("OPTIONS") )
 		{
 			String accessKey = httpRequest.getHeader(ACCESSKEY_HEADER_NAME);
@@ -77,12 +68,9 @@ public class OauthFilter implements Filter {
 				}
 			}
 		}
-
-		chain.doFilter(httpRequest, httpResponse);		
-	}
-
-	@Override
-	public void destroy() {
+		
+		filterChain.doFilter(httpRequest, httpResponse);
+		
 	}
 
 }

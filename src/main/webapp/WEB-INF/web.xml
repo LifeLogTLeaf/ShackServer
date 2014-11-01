@@ -58,12 +58,12 @@
     
     <!-- Oauth needed request filter -->
     <filter>
-        <filter-name>oauth</filter-name>
-        <filter-class>org.soma.tleaf.util.OauthFilter</filter-class>
+        <filter-name>oauthFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
     </filter>
 
     <filter-mapping>
-        <filter-name>oauth</filter-name>
+        <filter-name>oauthFilter</filter-name>
         <url-pattern>/api/*</url-pattern>
     </filter-mapping>
 

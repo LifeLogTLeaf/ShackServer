@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.soma.tleaf.domain.RawData;
 import org.soma.tleaf.domain.RequestParameter;
+import org.soma.tleaf.domain.UserInfo;
+import org.soma.tleaf.exception.CustomException;
 
 /**
  * Created with Eclipse IDE
@@ -22,4 +24,5 @@ public interface RestApiDao {
 	public RawData getData(RequestParameter param);
 	public List<RawData> getAllData(RequestParameter param) throws Exception;
 	public List<RawData> getAllDataFromAppId(RequestParameter param) throws Exception;
+	public UserInfo getUserInfo( String userId ) throws CustomException;
 }

@@ -17,6 +17,11 @@ import org.slf4j.LoggerFactory;
 import org.soma.tleaf.couchdb.CouchDbConn;
 import org.soma.tleaf.domain.RawData;
 import org.soma.tleaf.domain.RequestParameter;
+import org.soma.tleaf.domain.UserInfo;
+import org.soma.tleaf.exception.CustomException;
+import org.soma.tleaf.exception.CustomExceptionFactory;
+import org.soma.tleaf.exception.CustomExceptionValue;
+import org.soma.tleaf.exception.DatabaseConnectionException;
 
 /**
  * Created with Eclipse IDE
@@ -27,10 +32,14 @@ import org.soma.tleaf.domain.RequestParameter;
 public class RestApiDaoImple implements RestApiDao {
 	private Logger logger = LoggerFactory.getLogger(RestApiDaoImple.class);
 	private static String ACCESSKEYS_DB_NAME = "tleaf_apikey";
+	private static String USER_DB_NAME = "tleaf_users";
 
 	@Inject
 	private CouchDbConn connector;
-
+	
+	@Inject
+	private CustomExceptionFactory customExceptionFactory;
+	
 	/**
 	 * Author : RichardJ
 	 * Date : Oct 22, 2014 10:28:35 PM
@@ -161,6 +170,28 @@ public class RestApiDaoImple implements RestApiDao {
 		
 		result.put("update", "success");
 		logger.info( "User Log Update Complete" );
+	}
+
+	/**
+	 * Fetches UserInfo Data
+	 * @author susu
+	 * Date Oct 31, 2014
+	 * @param userId
+	 * @throws CustomException 
+	 */
+	@Override
+	public UserInfo getUserInfo(String userId) throws CustomException {
+		
+		logger.info( userId + "get UserInfo" );
+		
+		// DatabaseConnectionException Can Occur
+		CouchDbConnector couchDbConnector_user = connector.getCouchDbConnetor( USER_DB_NAME );
+		
+		UserInfo userInfo = couchDbConnector_user.get( UserInfo.class, userId );
+		if( userInfo == null )
+			throw customExceptionFactory.createCustomException( CustomExceptionValue.No_Such_User_Exception );
+		
+		return userInfo;
 	}
 
 }

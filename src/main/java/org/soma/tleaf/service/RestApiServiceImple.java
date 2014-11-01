@@ -14,6 +14,9 @@ import org.soma.tleaf.dao.RestApiDao;
 import org.soma.tleaf.domain.RawData;
 import org.soma.tleaf.domain.RequestParameter;
 import org.soma.tleaf.domain.ResponseDataWrapper;
+import org.soma.tleaf.domain.UserInfo;
+import org.soma.tleaf.exception.CustomException;
+import org.soma.tleaf.exception.DatabaseConnectionException;
 import org.soma.tleaf.util.ISO8601;
 
 /**
@@ -117,6 +120,11 @@ public class RestApiServiceImple implements RestApiService {
 		restApiDao.updateData(result, rawData);
 
 		return result;
+	}
+
+	@Override
+	public UserInfo getUserInfo(String userId) throws CustomException {
+		return restApiDao.getUserInfo( userId );
 	}
 
 }

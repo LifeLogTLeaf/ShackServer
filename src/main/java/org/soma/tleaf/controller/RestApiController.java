@@ -14,9 +14,11 @@ import org.soma.tleaf.domain.RawData;
 import org.soma.tleaf.domain.RequestDataWrapper;
 import org.soma.tleaf.domain.RequestParameter;
 import org.soma.tleaf.domain.ResponseDataWrapper;
+import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.exception.CustomException;
 import org.soma.tleaf.exception.CustomExceptionFactory;
 import org.soma.tleaf.exception.CustomExceptionValue;
+import org.soma.tleaf.exception.DatabaseConnectionException;
 import org.soma.tleaf.service.RestApiService;
 import org.soma.tleaf.util.ISO8601;
 import org.springframework.stereotype.Controller;
@@ -44,8 +46,8 @@ public class RestApiController {
 	@Inject
 	private CustomExceptionFactory customExceptionFactory;
 
-	private final String USERID_HEADER_NAME = "X-Tleaf-User-Id";
-	private final String APPID_HEADER_NAME = "X-Tleaf-Application-Id"; // Same as other company's API Key
+	private final String USERID_HEADER_NAME = "x-tleaf-user-id";
+	private final String APPID_HEADER_NAME = "x-tleaf-application-id"; // Same as other company's API Key
 
 	// Just For Test.
 	@RequestMapping(value = "/hello/{msg}", method = RequestMethod.POST)
@@ -75,6 +77,20 @@ public class RestApiController {
 		return requestDataWrapper;
 	}
 
+	@RequestMapping( value = "/user" , method = RequestMethod.GET )
+	@ResponseBody
+	public UserInfo getUserInfo( HttpServletRequest request ) throws CustomException {
+
+		logger.info( "/user/log.GET" );
+
+		// HttpServletRequest.getAttribute Returns null if Values are not found
+		if (request.getAttribute("FilterException") != null)
+			throw customExceptionFactory.createCustomException( (CustomExceptionValue) request.getAttribute("FilterException") );
+
+		return restApiService.getUserInfo( request.getHeader(USERID_HEADER_NAME) );
+
+	}
+	
 	/**
 	 * RequestParam has every information to use on POST, DELETE Methods.
 	 * Id, Revision is Needed in the Body

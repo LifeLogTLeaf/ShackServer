@@ -29,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.wordnik.swagger.annotations.ApiOperation;
+
 /**
  * Handles API Calls Directly Related to User Data, And So Needs Access Headers(OauthFilter)
  * Created with Eclipse IDE
@@ -94,6 +96,7 @@ public class RestApiController {
 	 */
 	@RequestMapping( value = "/user" , method = RequestMethod.GET )
 	@ResponseBody
+	@ApiOperation( httpMethod = "GET" , value = "Gets UserInfo" )
 	public UserInfo getUserInfo( HttpServletRequest request ) throws CustomException {
 
 		logger.info( "/user/log.GET" );
@@ -116,6 +119,7 @@ public class RestApiController {
 	 */
 	@RequestMapping( value = "/user/log", method = RequestMethod.GET )
 	@ResponseBody
+	@ApiOperation( httpMethod = "GET" , value = "Fetches Document With Specific Id" )
 	public RawData getRawData( HttpServletRequest request, @RequestParam String rawDataId ) throws CustomException {
 		
 		logger.info( "/user/log.GET" );
@@ -136,6 +140,7 @@ public class RestApiController {
 	 */
 	@RequestMapping( value = "/user/log" , method = RequestMethod.DELETE )
 	@ResponseBody
+	@ApiOperation( httpMethod = "DELETE" , value = "Deletes Specific User Log Data ( With _id, _rev )" )
 	public Map<String, Object> deleteUserLog( HttpServletRequest request, @RequestBody RawData rawData ) throws Exception {
 
 		logger.info( "/user/log.DELETE" );
@@ -163,6 +168,7 @@ public class RestApiController {
 	 */
 	@RequestMapping(value = "/user/log", method = RequestMethod.POST)
 	@ResponseBody
+	@ApiOperation( httpMethod = "POST" , value = "Updates User Log Data ( With _id, _rev )" )
 	public Map<String, Object> updateUserLog(
 			HttpServletRequest request,
 			@RequestBody(required = true) RawData rawData) throws Exception {
@@ -193,6 +199,7 @@ public class RestApiController {
 	 */
 	@RequestMapping(value = "/user/app/log", method = RequestMethod.POST)
 	@ResponseBody
+	@ApiOperation( httpMethod = "POST" , value = "Creates User Log Data ( With _id , data )" )
 	public Map<String, Object> postUserLog(
 			HttpServletRequest request,
 			@RequestBody( required = true ) RawData rawData ) throws Exception{
@@ -218,6 +225,7 @@ public class RestApiController {
 	 */
 	@RequestMapping(value = "/user/logs", method = RequestMethod.GET)
 	@ResponseBody
+	@ApiOperation( httpMethod = "GET" , value = "Fetches User Log Data ( Within the Given Time )" )
 	public ResponseDataWrapper getUserLog( HttpServletRequest request,
 			@RequestParam(value = "limit", required = false, defaultValue="1000") String limit,
 			@RequestParam(value = "startKey", required = false, defaultValue=ISO8601.FAR_FAR_AWAY) String startKey,
@@ -246,7 +254,7 @@ public class RestApiController {
 	 */
 	@RequestMapping(value = "/user/app/logs", method = RequestMethod.GET)
 	@ResponseBody
-
+	@ApiOperation( httpMethod = "GET" , value = "Fetches User Log Data from AppId ( Within the Given Time AND )" )
 	public ResponseDataWrapper getUserLogFromAppId( HttpServletRequest request,
 			@RequestParam(value = "limit", required = false, defaultValue="1000") String limit,
 			@RequestParam(value = "startKey", required = false, defaultValue=ISO8601.FAR_FAR_AWAY) String startKey,

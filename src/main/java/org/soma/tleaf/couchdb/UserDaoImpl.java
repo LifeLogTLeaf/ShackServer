@@ -73,8 +73,7 @@ public class UserDaoImpl implements UserDao {
 	 */
 
 	@Override
-	public String userSignUp(String email, String pw, String nickname,
-			String gender, Integer age) throws CustomException {
+	public String userSignUp( UserInfo userInfo ) throws CustomException {
 
 		// 1. Create User Database  2. Create User HashKey  3. Create UserInfo Document in User DB
 
@@ -88,14 +87,9 @@ public class UserDaoImpl implements UserDao {
 		couchDbInstance = couchDbConn.getCouchDbInstance();
 
 		// Checks if the E-mail already exists. ( HashId class has E-mail as the Document Id )
-		if ( couchDbConnector_hashid.find( HashId.class, email ) != null ) {
+		if ( couchDbConnector_hashid.find( HashId.class, userInfo.getEmail() ) != null ) {
 			throw customExceptionFactory.createCustomException( CustomExceptionValue.Email_Already_Exist_Exception );
 		}
-
-		UserInfo userInfo = new UserInfo();
-		userInfo.setEmail(email); userInfo.setGender(gender);
-		userInfo.setNickname(nickname); userInfo.setAge(age);
-		userInfo.setPassword(pw);
 
 		couchDbConnector_users.create( userInfo );
 		// create userinfo data
@@ -104,7 +98,7 @@ public class UserDaoImpl implements UserDao {
 		logger.info( userInfo.getEmail() + " User is Created. Hash ID is " + userInfo.getHashId() );
 
 		HashId hashId = new HashId();
-		hashId.setEmail( email ); hashId.setHashId( userInfo.getHashId() );
+		hashId.setEmail( userInfo.getEmail() ); hashId.setHashId( userInfo.getHashId() );
 
 		couchDbConnector_hashid.create( hashId );
 		// makes mapping on email and user hashid

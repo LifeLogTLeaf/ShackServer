@@ -27,11 +27,11 @@ public class CouchDbConnImpl implements CouchDbConn {
 	
 	private static final Logger logger = LoggerFactory.getLogger(CouchDbConnImpl.class);
 
-	/**
+	/** Making CouchDbInstance an Singleton Object
 	 * @author susu
 	 * Date Oct 22, 2014 4:34:47 PM
-	 * @return Existing Instance if made before, new Instance if first calling
-	 * @throws Exception
+	 * @return CouchDbInstance Existing Instance if made before, new Instance if first calling
+	 * @throws DatabaseConnectionException
 	 */
 	@Override
 	public synchronized CouchDbInstance getCouchDbInstance() throws DatabaseConnectionException {
@@ -62,7 +62,7 @@ public class CouchDbConnImpl implements CouchDbConn {
 
 	}
 
-	/**
+	/** Making CouchDbConnector an Singleton Object
 	 * @author susu
 	 * Date Oct 22, 2014 4:34:47 PM
 	 * @return Existing Connector if made before, new Connector if first calling

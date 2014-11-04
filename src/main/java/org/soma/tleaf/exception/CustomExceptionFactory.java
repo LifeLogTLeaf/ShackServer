@@ -1,8 +1,9 @@
 package org.soma.tleaf.exception;
 
 /**
- * Makes Exceptions out of Enum Values
+ * Makes Exceptions out of CustomExceptionValue Enum Values
  * @author susu
+ * @returns CustomException
  * Date : Oct 26, 2014 2:06:49 PM
  */
 public class CustomExceptionFactory {

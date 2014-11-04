@@ -1,7 +1,7 @@
 package org.soma.tleaf.exception;
 
-/**
- * To manage Exceptions in One. Now We can use a Factory
+/** To manage Exceptions in One. Exceptions in this File is Managed within the Server
+ * 
  * @author susu
  * Date : Oct 26, 2014 2:02:57 PM
  */

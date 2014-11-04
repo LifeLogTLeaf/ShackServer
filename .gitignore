@@ -1,6 +1,4 @@
-<<<<<<< HEAD
 /target
-=======
 #java specific
 *.class
  
@@ -16,4 +14,3 @@ nbproject/private/
 
 target/*
 /target/
->>>>>>> 7bf08bf9262dd4930e6f029385f623bece1ac2cf

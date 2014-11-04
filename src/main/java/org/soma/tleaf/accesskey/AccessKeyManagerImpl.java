@@ -51,7 +51,7 @@ public class AccessKeyManagerImpl implements AccessKeyManager {
 		if ( tmpAccessKey.isValid( userId, appId ) )
 			return true;
 		else 
-			throw new InvalidAccessKeyException();
+			return false;
 	}
 
 	@Override

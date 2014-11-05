@@ -26,10 +26,7 @@ public class CorsFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
 			FilterChain filterChain) throws ServletException, IOException {
-		logger.info("Filtered...");
-		logger.info("HTTP METHOD : " + httpServletRequest.getMethod());
-		logger.info("HTTP METHOD : " + httpServletRequest.getHeader("user-agent"));
-
+		
 		// We should add this Header in EVERY CASE
 		httpServletResponse.addHeader("Access-Control-Allow-Origin", "*");
 		

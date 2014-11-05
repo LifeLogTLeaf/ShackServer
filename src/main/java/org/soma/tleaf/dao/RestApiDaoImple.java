@@ -79,7 +79,7 @@ public class RestApiDaoImple implements RestApiDao {
 				.startKey(param.getStartKey())
 				.endKey(param.getEndKey())
 				.limit(Integer.valueOf(param.getLimit()))
-				.descending(false);
+				.descending(param.isDescend());
 
 		List<RawData> rawDatas;
 		try {

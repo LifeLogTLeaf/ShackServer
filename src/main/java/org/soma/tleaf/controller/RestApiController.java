@@ -50,43 +50,6 @@ public class RestApiController {
 
 	private final String USERID_HEADER_NAME = "x-tleaf-user-id";
 	private final String APPID_HEADER_NAME = "x-tleaf-application-id"; // Same as other company's API Key
-
-	// Just For Test.
-	@RequestMapping(value = "/hello/{msg}", method = RequestMethod.GET)
-	@ResponseBody
-	public String sayHello(HttpServletRequest request, @PathVariable String msg) throws CustomException {
-
-		// HttpServletRequest.getAttribute Returns null if Values are not found
-		if (request.getAttribute("FilterException") != null)
-			throw customExceptionFactory.createCustomException((CustomExceptionValue) request.getAttribute("FilterException"));
-
-		return msg;
-	}
-
-	// Just For Test.
-	@RequestMapping(value = "/hello/post", method = RequestMethod.POST)
-	@ResponseBody
-	public RequestDataWrapper sayHelloPost(HttpServletRequest request, @RequestBody RequestDataWrapper requestDataWrapper) throws CustomException {
-		if (request.getAttribute("FilterException") != null)
-			throw customExceptionFactory.createCustomException((CustomExceptionValue) request.getAttribute("FilterException"));
-
-		//		RequestDataWrapper requestDataWrapper = new RequestDataWrapper();
-		//		HashMap<String, Object> someData = new HashMap<String, Object>();
-		//		someData.put("(1)", "one");
-		//		someData.put("(2)", "two");
-		//		someData.put("(3)", "three");
-		//		requestDataWrapper.setData(someData);
-		return requestDataWrapper;
-	}
-	
-	// Test
-	@RequestMapping(value = "/hello/file")
-	@ResponseBody
-	public String uploadImage(@RequestParam("file") MultipartFile imageFile){
-		return ""+imageFile.getSize();
-		
-	}
-	
 	
 	/**
 	 * @author susu
@@ -106,7 +69,6 @@ public class RestApiController {
 			throw customExceptionFactory.createCustomException( (CustomExceptionValue) request.getAttribute("FilterException") );
 
 		return restApiService.getUserInfo( request.getHeader(USERID_HEADER_NAME) );
-
 	}
 	
 	/**
@@ -121,15 +83,12 @@ public class RestApiController {
 	@ResponseBody
 	@ApiOperation( httpMethod = "GET" , value = "Fetches Document With Specific Id" )
 	public RawData getRawData( HttpServletRequest request, @RequestParam String rawDataId ) throws CustomException {
-		
 		logger.info( "/user/log.GET" );
-
 		// HttpServletRequest.getAttribute Returns null if Values are not found
 		if (request.getAttribute("FilterException") != null)
 			throw customExceptionFactory.createCustomException( (CustomExceptionValue) request.getAttribute("FilterException") );
 		
 		return restApiService.getRawData( rawDataId, request.getHeader(USERID_HEADER_NAME) );
-		
 	}
 	
 	/**
@@ -229,7 +188,8 @@ public class RestApiController {
 	public ResponseDataWrapper getUserLog( HttpServletRequest request,
 			@RequestParam(value = "limit", required = false, defaultValue="1000") String limit,
 			@RequestParam(value = "startKey", required = false, defaultValue=ISO8601.FAR_FAR_AWAY) String startKey,
-			@RequestParam(value = "endKey", required = false, defaultValue=ISO8601.LONG_LONG_AGO) String endKey) throws Exception{
+			@RequestParam(value = "endKey", required = false, defaultValue=ISO8601.LONG_LONG_AGO) String endKey, 
+			@RequestParam(value = "descend", required = false , defaultValue="true") boolean descend) throws Exception{
 
 		// HttpServletRequest.getAttribute Returns null if Values are not found
 		if (request.getAttribute("FilterException") != null)
@@ -242,6 +202,7 @@ public class RestApiController {
 		param.setStartKey(startKey);
 		param.setEndKey(endKey);
 		param.setLimit(limit);
+		param.setDescend(descend);
 		// Delegate Request to RestApiService Object
 
 		return restApiService.getUserData(param);

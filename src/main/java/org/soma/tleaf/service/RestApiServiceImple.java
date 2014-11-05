@@ -57,11 +57,14 @@ public class RestApiServiceImple implements RestApiService {
 	public ResponseDataWrapper getUserData(RequestParameter param) throws Exception {
 		// check Descend 
 		if(!param.isDescend()){
-			param.setStartKey(ISO8601.LONG_LONG_AGO);
-			param.setEndKey(ISO8601.FAR_FAR_AWAY);
+			String temp = param.getStartKey();
+			param.setStartKey(param.getEndKey());
+			param.setEndKey(temp);
 		}
+		
 		// Create Response Result
 		ResponseDataWrapper result = new ResponseDataWrapper();
+		
 		// Set Date to Response
 		result.setLogs(restApiDao.getAllData(param));
 		return result;
@@ -93,7 +96,6 @@ public class RestApiServiceImple implements RestApiService {
 	@Override
 	public Map<String, Object> deleteUserData( RawData rawData )
 			throws Exception {
-		
 		Map<String, Object> result = new HashMap<String, Object>();
 		restApiDao.deleteData(result, rawData);
 		
@@ -110,7 +112,6 @@ public class RestApiServiceImple implements RestApiService {
 	 */
 	@Override
 	public Map<String, Object> updateUserData(RawData rawData) throws Exception {
-		
 		Map<String, Object> result = new HashMap<String, Object>();
 		restApiDao.updateData(result, rawData);
 

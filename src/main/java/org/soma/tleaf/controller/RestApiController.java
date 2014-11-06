@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.soma.tleaf.domain.RawData;
-import org.soma.tleaf.domain.RequestDataWrapper;
 import org.soma.tleaf.domain.RequestParameter;
 import org.soma.tleaf.domain.ResponseDataWrapper;
 import org.soma.tleaf.domain.UserInfo;
@@ -20,14 +19,13 @@ import org.soma.tleaf.exception.CustomExceptionFactory;
 import org.soma.tleaf.exception.CustomExceptionValue;
 import org.soma.tleaf.service.RestApiService;
 import org.soma.tleaf.util.ISO8601;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.wordnik.swagger.annotations.ApiOperation;
 
@@ -51,7 +49,7 @@ public class RestApiController {
 	private final String USERID_HEADER_NAME = "x-tleaf-user-id";
 	private final String APPID_HEADER_NAME = "x-tleaf-application-id"; // Same as other company's API Key
 	
-	/**
+	/** Fetches UserInfo Data
 	 * @author susu
 	 * Date Nov 1, 2014 2:27:43 PM
 	 * @return UserInfo JSON String
@@ -70,6 +68,39 @@ public class RestApiController {
 
 		return restApiService.getUserInfo( request.getHeader(USERID_HEADER_NAME) );
 	}
+	
+	/**
+	 * Put an attachment info the Specific Document
+	 * @author susu
+	 * Date Nov 7, 2014 2:11:50 AM
+	 * @param request
+	 * @param rawData
+	 * @return
+	 * @throws Exception 
+	 */
+	@RequestMapping( value = "/user/resource" , method = RequestMethod.POST )
+	@ResponseBody
+	@ApiOperation( httpMethod = "POST" , value = "Creates Attachment for Specified _id" )
+	public ResponseEntity<Map<String, Object>> postAttachment ( HttpServletRequest request, @RequestBody RawData rawData ) throws Exception {
+		
+		logger.info( "/user/resource.POST" );
+
+		// HttpServletRequest.getAttribute Returns null if Values are not found
+		if (request.getAttribute("FilterException") != null)
+			throw customExceptionFactory.createCustomException( (CustomExceptionValue) request.getAttribute("FilterException") );
+		
+		// Basically this is an Update process so _id, _rev is needed.
+		if( rawData.getId() == null || rawData.getRevision() == null )
+			throw customExceptionFactory.createCustomException( CustomExceptionValue.Parameter_Insufficient_Exception );
+		
+		// Set Request Parameter from Request Header
+		// These Attributes are always available because of the filter.
+		rawData.setUserId( request.getHeader(USERID_HEADER_NAME) );
+		rawData.setAppId( request.getHeader(APPID_HEADER_NAME) );
+
+		return restApiService.postAttachment(rawData);
+	}
+	
 	
 	/**
 	 * Finds the Document with Specific Id.
@@ -237,5 +268,5 @@ public class RestApiController {
 		// Delegate Request to RestApiService Object
 		return restApiService.getUserDataFromAppId(param);
 	}
-
+	
 }

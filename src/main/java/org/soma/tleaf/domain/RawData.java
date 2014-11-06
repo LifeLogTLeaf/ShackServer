@@ -33,6 +33,22 @@ public class RawData {
 	@JsonProperty("data")
 	private Map<String, Object> data;
 	
+	private String attachmentId;
+	
+	private String base64String;
+
+	public String getAttachmentId() {
+		return attachmentId;
+	}
+	public void setAttachmentId(String attachmentId) {
+		this.attachmentId = attachmentId;
+	}
+	public String getBase64String() {
+		return base64String;
+	}
+	public void setBase64String(String base64String) {
+		this.base64String = base64String;
+	}
 	public String getId() {
 		return id;
 	}

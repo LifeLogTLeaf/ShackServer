@@ -3,11 +3,13 @@
  */
 package org.soma.tleaf.dao;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.ektorp.AttachmentInputStream;
 import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.DocumentNotFoundException;
@@ -21,8 +23,7 @@ import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.exception.CustomException;
 import org.soma.tleaf.exception.CustomExceptionFactory;
 import org.soma.tleaf.exception.CustomExceptionValue;
-import org.soma.tleaf.exception.DatabaseConnectionException;
-import org.soma.tleaf.repository.RawDataRepository;
+import org.springframework.http.MediaType;
 
 /**
  * Created with Eclipse IDE
@@ -223,6 +224,75 @@ public class RestApiDaoImple implements RestApiDao {
 			throw customExceptionFactory.createCustomException( CustomExceptionValue.No_Such_Document_Exception );
 		
 		return rawData;
+	}
+
+	/**
+	 * Returns User's resource in byte Array
+	 * @author susu
+	 * Date Nov 7, 2014
+	 * @param userId
+	 * @param docId
+	 * @param attachmentId
+	 * @return
+	 * @throws Exception IOException or DatabaseConnectionException
+	 */
+	@Override
+	public byte[] getUserResource(String userId, String docId,
+			String attachmentId) throws Exception {
+		
+		logger.info( "getting User Resource " + userId );
+		
+		// DatabaseConnectionException Can Occur
+		CouchDbConnector couchDbConnector_user = connector.getCouchDbConnetor( "user_" + userId );
+		
+		byte[] resource = new byte[100000];
+		
+		AttachmentInputStream attachmentStream = couchDbConnector_user.getAttachment( docId, attachmentId );
+
+		// Both Methods Throw IOExceptions.
+		// Streams should be closed or else, http connection leaks will occur
+		attachmentStream.read(resource);
+		attachmentStream.close();
+		
+		return resource;
+	}
+
+	/**
+	 * Puts an attachment into the document by updating
+	 * @author susu
+	 * Date Nov 7, 2014
+	 * @param result
+	 * @param rawData
+	 * @throws Exception
+	 */
+	@Override
+	public void postAttachment(Map<String, Object> result, RawData rawData)
+			throws Exception {
+
+		logger.info(rawData.getAppId() + " posting Attachment for "
+				+ rawData.getUserId());
+
+		// DatabaseConnectionException Can Occur
+		CouchDbConnector couchDbConnector_user = connector
+				.getCouchDbConnetor("user_" + rawData.getUserId());
+
+		// UpdateConflictException Can Occur
+		String changedRevision =
+				couchDbConnector_user.createAttachment(
+						
+						rawData.getId(), 
+						rawData.getRevision(),
+						
+						new AttachmentInputStream(
+								rawData.getAttachmentId(), 
+								new ByteArrayInputStream( rawData.getBase64String().getBytes() ),
+								MediaType.IMAGE_PNG_VALUE
+						)
+						
+				);
+
+		result.put( "_rev", changedRevision );
+
 	}
 
 }

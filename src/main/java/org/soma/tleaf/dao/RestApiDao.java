@@ -21,9 +21,11 @@ public interface RestApiDao {
 	public void postData(Map<String,Object> result, RawData rawData) throws Exception;
 	public void deleteData(Map<String,Object> result, RawData rawData ) throws Exception;
 	public void updateData(Map<String,Object> result, RawData rawData ) throws Exception;
+	public void postAttachment(Map<String,Object> result, RawData rawData ) throws Exception;
 	public RawData getData(RequestParameter param);
 	public List<RawData> getAllData(RequestParameter param) throws Exception;
 	public List<RawData> getAllDataFromAppId(RequestParameter param) throws Exception;
 	public UserInfo getUserInfo( String userId ) throws CustomException;
 	public RawData getRawData( String rawDataId, String userId ) throws CustomException;
+	public byte[] getUserResource( String userId, String docId, String attachmentId ) throws Exception;
 }

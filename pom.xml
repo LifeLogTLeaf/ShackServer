@@ -300,6 +300,6 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<finalName>shack</finalName>
+		<finalName>tleafstructure</finalName>
 	</build>
 </project>

@@ -8,7 +8,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
@@ -103,7 +102,7 @@ public class EktorpAttachmentTest {
 		db.createAttachment(docId, revId, attachment);
 	}
 	
-	@Test
+	//@Test
 	public void testGetAttachment() throws MalformedURLException{
 		CouchDbInstance dbInstance = createDbInstance();
 		CouchDbConnector db = new StdCouchDbConnector(DbName, dbInstance);

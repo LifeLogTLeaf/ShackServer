@@ -96,7 +96,7 @@ public class RestControllerTest {
 	}
 
 
-	@Test
+	// @Test
 	// 하나의 데이터를 저장하는 테스트 입니다.
 	public void testPostUserLog() throws Exception {
 		String URL = "/api/user/app/log";

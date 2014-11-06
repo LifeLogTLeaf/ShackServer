@@ -11,11 +11,9 @@ import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.codehaus.jackson.JsonNode;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.ViewQuery;
-import org.ektorp.ViewResult;
 import org.ektorp.http.StdHttpClient;
 import org.ektorp.impl.StdCouchDbConnector;
 import org.ektorp.impl.StdCouchDbInstance;
@@ -24,9 +22,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.soma.tleaf.domain.RawData;
 import org.soma.tleaf.domain.SimpleRawData;
-import org.soma.tleaf.repository.SimpleDataRepository;
 import org.soma.tleaf.repository.SimpleRawDataRepository;
 
 /**
@@ -76,7 +72,7 @@ public class EktorpQueryTest {
 	}
 
 	// Query with Embedded definition design document
-	@Test
+	//@Test
 	public void testGetAllLogByAppId() throws MalformedURLException {
 		CouchDbInstance dbInstance = createDbInstance();
 		CouchDbConnector db = new StdCouchDbConnector(DbName, dbInstance);

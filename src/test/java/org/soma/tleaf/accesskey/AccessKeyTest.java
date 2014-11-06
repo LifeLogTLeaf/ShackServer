@@ -4,16 +4,11 @@
 package org.soma.tleaf.accesskey;
 
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
-import org.ektorp.ViewQuery;
-import org.ektorp.ViewResult;
 import org.ektorp.http.StdHttpClient;
 import org.ektorp.impl.StdCouchDbConnector;
 import org.ektorp.impl.StdCouchDbInstance;
@@ -24,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.soma.tleaf.domain.HashId;
 import org.soma.tleaf.domain.SimpleData;
 import org.soma.tleaf.domain.UserInfo;
-import org.soma.tleaf.ektorptest.EktorpQueryTest;
 import org.soma.tleaf.util.ISO8601;
 
 /**

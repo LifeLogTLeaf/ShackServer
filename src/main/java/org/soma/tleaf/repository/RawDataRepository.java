@@ -10,7 +10,6 @@ import org.ektorp.ViewQuery;
 import org.ektorp.support.CouchDbRepositorySupport;
 import org.ektorp.support.View;
 import org.soma.tleaf.domain.RawData;
-import org.soma.tleaf.domain.SimpleData;
 
 /**
  * Created with Eclipse IDE

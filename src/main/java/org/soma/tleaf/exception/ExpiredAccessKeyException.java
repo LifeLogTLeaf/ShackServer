@@ -11,6 +11,11 @@ package org.soma.tleaf.exception;
  */
 
 public class ExpiredAccessKeyException extends CustomException {
+	/**
+	 * added Because it Causes build error from Jenkins
+	 */
+	private static final long serialVersionUID = -6368483031099530094L;
+
 	@Override
 	public String getMessage() {
 		return "accessKey is expired";

@@ -6,6 +6,11 @@ package org.soma.tleaf.exception;
  */
 public class WrongAuthenticationInfoException extends CustomException {
 
+	/**
+	 * added Because it Causes build error from Jenkins
+	 */
+	private static final long serialVersionUID = -7452287261410045916L;
+
 	@Override
 	public String getExceptionName() {
 		return "WrongAuthenticationInfoException Error";

@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 
 /**
@@ -37,6 +38,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
  */
 @RequestMapping(value = "api/*")
 @Controller
+@Api(value = "rest", description = "REST API that requires Authorization")
 public class RestApiController {
 	static Logger logger = LoggerFactory.getLogger(RestApiController.class);
 
@@ -79,7 +81,6 @@ public class RestApiController {
 	 * @throws Exception 
 	 */
 	@RequestMapping( value = "/user/resource" , method = RequestMethod.POST )
-	@ResponseBody
 	@ApiOperation( httpMethod = "POST" , value = "Creates Attachment for Specified _id" )
 	public ResponseEntity<Map<String, Object>> postAttachment ( HttpServletRequest request, @RequestBody RawData rawData ) throws Exception {
 		

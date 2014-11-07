@@ -48,7 +48,7 @@ public class AccessKeyTest {
 		password = config.getString("password");
 	}
 
-	@Test
+	//@Test
 	public void createUser() throws MalformedURLException {
 		CouchDbInstance dbInstance = createDbInstance();
 		CouchDbConnector userInfoDb = new StdCouchDbConnector(USERS_DB, dbInstance);

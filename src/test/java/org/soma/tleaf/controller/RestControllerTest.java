@@ -51,7 +51,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHan
  * Date : Oct 16, 2014 2:07:15 PM
  * Description :
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+//@RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = { WebAppConfig.class })
 public class RestControllerTest {
@@ -71,7 +71,7 @@ public class RestControllerTest {
 	
 
 	// MockMvc를 생성합니다.
-	@Before
+	//@Before
 	public void initMockMvc() {
 		CharacterEncodingFilter filter = new CharacterEncodingFilter();
 		filter.setEncoding("UTF-8");

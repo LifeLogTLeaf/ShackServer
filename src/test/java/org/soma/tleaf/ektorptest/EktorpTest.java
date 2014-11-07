@@ -62,7 +62,7 @@ public class EktorpTest {
 	}
 
 	// test for create Database
-	@Test
+	//@Test
 	public void testCrateDatabase() throws MalformedURLException {
 		CouchDbInstance dbInstance = createDbInstance();
 		CouchDbConnector db = new StdCouchDbConnector(DbName, dbInstance);
@@ -72,7 +72,7 @@ public class EktorpTest {
 	}
 
 	// test for Create Document
-	@Test
+	//@Test
 	public void testCreateDocument() throws MalformedURLException {
 		CouchDbInstance dbInstance = createDbInstance();
 		CouchDbConnector db = new StdCouchDbConnector(DbName, dbInstance);

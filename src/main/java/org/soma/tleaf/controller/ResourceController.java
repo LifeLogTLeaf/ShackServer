@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 
 /**
@@ -19,6 +20,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
  */
 
 @Controller
+@Api(value = "resource", description = "Resource API")
 public class ResourceController {
 
 	@Inject

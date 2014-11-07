@@ -35,7 +35,7 @@ public class FilePost {
 	static Logger logger = LoggerFactory.getLogger(FilePost.class);
 	private static final String FILEPATH = "/Users/jangyoungjin/Downloads/1.png";
 
-	@Test
+	//@Test
 	public void sendFile() {
 		HttpClient client = new DefaultHttpClient();
 		HttpParams httpParams = client.getParams();

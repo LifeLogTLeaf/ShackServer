@@ -50,7 +50,7 @@ public class OauthFilter extends OncePerRequestFilter {
 			String appId = httpRequest.getHeader(APPID_HEADER_NAME);
 
 			// Be Careful on this, Every Request goes into Filter. Logging might create Performance Issues
-			logger.info( accessKey ); logger.info( userId ); logger.info( appId );
+			logger.info( accessKey ); logger.info( userId ); logger.info( appId ); 
 
 			if ( accessKey == null || userId == null || appId == null ) {
 				httpRequest.setAttribute("FilterException", CustomExceptionValue.Auth_Info_Insufficient_Exception );

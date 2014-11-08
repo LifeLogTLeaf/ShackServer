@@ -3,12 +3,16 @@
  */
 package org.soma.tleaf.service;
 
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.ektorp.DocumentNotFoundException;
+import org.ektorp.UpdateConflictException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.soma.tleaf.dao.RestApiDao;
@@ -17,6 +21,7 @@ import org.soma.tleaf.domain.RequestParameter;
 import org.soma.tleaf.domain.ResponseDataWrapper;
 import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.exception.CustomException;
+import org.soma.tleaf.exception.DatabaseConnectionException;
 import org.soma.tleaf.util.ISO8601;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -191,12 +196,43 @@ public class RestApiServiceImple implements RestApiService {
 	 * @throws Exception
 	 */
 	@Override
-	public ResponseEntity<Map<String, Object>> postAttachment(RawData rawData)
+	public ResponseEntity<Map<String, Object>> postAttachment( RawData[] rawData, List< InputStream > streamList )
 			throws Exception {
 		
 		Map<String, Object> result = new HashMap<String, Object>();
+		// List of attachment Post Results
+		List< Map<String,String> > bulkResult = new ArrayList< Map<String,String> >();
 		
-		restApiDao.postAttachment(result, rawData);
+		int c = 0;
+		String changedRev = rawData[0].getRevision();
+		for ( InputStream i : streamList )
+		{
+			Map<String, String> tmp = new HashMap<String,String>();
+			tmp.put( "filename" , rawData[c].getAttachmentId() );
+			
+			try {
+
+				// Changes the Rivision of the Next attachment
+				rawData[c].setRevision(changedRev);
+				changedRev = restApiDao.postAttachment(rawData[c], i);
+				tmp.put("_rev", changedRev );
+			
+			} catch ( DatabaseConnectionException e ) {
+				e.printStackTrace();
+				tmp.put("failed", "DatabaseConnectionException Occured" );
+			} catch ( UpdateConflictException e ) {
+				e.printStackTrace();
+				tmp.put( "failed", "There was an Update Confilct" );
+			} catch ( Exception e ) {
+				e.printStackTrace();
+			}
+			
+			bulkResult.add( tmp );
+			c++;
+
+		}
+		
+		result.put("File Upload Results", bulkResult);
 		
 		return new ResponseEntity<Map<String,Object>>( result, HttpStatus.CREATED );
 	}

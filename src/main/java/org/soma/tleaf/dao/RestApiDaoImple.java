@@ -3,7 +3,7 @@
  */
 package org.soma.tleaf.dao;
 
-import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +23,6 @@ import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.exception.CustomException;
 import org.soma.tleaf.exception.CustomExceptionFactory;
 import org.soma.tleaf.exception.CustomExceptionValue;
-import org.springframework.http.MediaType;
 
 /**
  * Created with Eclipse IDE
@@ -33,7 +32,6 @@ import org.springframework.http.MediaType;
  */
 public class RestApiDaoImple implements RestApiDao {
 	private Logger logger = LoggerFactory.getLogger(RestApiDaoImple.class);
-	private static String ACCESSKEYS_DB_NAME = "tleaf_apikey";
 	private static String USER_DB_NAME = "tleaf_users";
 
 	@Inject
@@ -264,9 +262,10 @@ public class RestApiDaoImple implements RestApiDao {
 	 * @param result
 	 * @param rawData
 	 * @throws Exception
+	 * @returns String the Document's Changed Revision
 	 */
 	@Override
-	public void postAttachment(Map<String, Object> result, RawData rawData)
+	public String postAttachment( RawData rawData, InputStream inputStream )
 			throws Exception {
 
 		logger.info(rawData.getAppId() + " posting Attachment for "
@@ -277,7 +276,7 @@ public class RestApiDaoImple implements RestApiDao {
 				.getCouchDbConnetor("user_" + rawData.getUserId());
 
 		// UpdateConflictException Can Occur
-		String changedRevision =
+		return
 				couchDbConnector_user.createAttachment(
 						
 						rawData.getId(), 
@@ -285,13 +284,11 @@ public class RestApiDaoImple implements RestApiDao {
 						
 						new AttachmentInputStream(
 								rawData.getAttachmentId(), 
-								new ByteArrayInputStream( rawData.getBase64String().getBytes() ),
-								MediaType.IMAGE_PNG_VALUE
+								inputStream,
+								rawData.getAttachmentType()
 						)
 						
 				);
-
-		result.put( "_rev", changedRevision );
 
 	}
 

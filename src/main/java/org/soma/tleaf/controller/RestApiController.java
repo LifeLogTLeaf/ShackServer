@@ -3,6 +3,9 @@
  */
 package org.soma.tleaf.controller;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -19,6 +22,7 @@ import org.soma.tleaf.exception.CustomExceptionFactory;
 import org.soma.tleaf.exception.CustomExceptionValue;
 import org.soma.tleaf.service.RestApiService;
 import org.soma.tleaf.util.ISO8601;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -50,6 +55,8 @@ public class RestApiController {
 
 	private final String USERID_HEADER_NAME = "x-tleaf-user-id";
 	private final String APPID_HEADER_NAME = "x-tleaf-application-id"; // Same as other company's API Key
+	private final String DOCID_HEADER_NAME = "x-tleaf-document-id";
+	private final String DOCREV_HEADER_NAME = "x-tleaf-document-revision";
 	
 	/** Fetches UserInfo Data
 	 * @author susu
@@ -72,7 +79,7 @@ public class RestApiController {
 	}
 	
 	/**
-	 * Put an attachment info the Specific Document
+	 * Put an attachment info the Specific Document Using HTTP Multipart Request
 	 * @author susu
 	 * Date Nov 7, 2014 2:11:50 AM
 	 * @param request
@@ -80,26 +87,53 @@ public class RestApiController {
 	 * @return
 	 * @throws Exception 
 	 */
-	@RequestMapping( value = "/user/resource" , method = RequestMethod.POST )
+	@RequestMapping( value = "/user/file" , method = RequestMethod.POST , consumes = MediaType.MULTIPART_FORM_DATA_VALUE )
 	@ApiOperation( httpMethod = "POST" , value = "Creates Attachment for Specified _id" )
-	public ResponseEntity<Map<String, Object>> postAttachment ( HttpServletRequest request, @RequestBody RawData rawData ) throws Exception {
+	public ResponseEntity<Map<String, Object>> postAttachment ( HttpServletRequest request, @RequestParam("docId") String docId, @RequestParam("docRev") String docRev , @RequestParam("file") MultipartFile[] files ) throws Exception {
 		
-		logger.info( "/user/resource.POST" );
+		logger.info( "/user/file.POST" );
+		
+		logger.info(docId + "\n" + docRev);
 
 		// HttpServletRequest.getAttribute Returns null if Values are not found
-		if (request.getAttribute("FilterException") != null)
+		if ( request.getAttribute("FilterException") != null )
 			throw customExceptionFactory.createCustomException( (CustomExceptionValue) request.getAttribute("FilterException") );
+
+		logger.info("File upload on " + request.getHeader(DOCID_HEADER_NAME) + "    " + request.getHeader(DOCREV_HEADER_NAME));
 		
-		// Basically this is an Update process so _id, _rev is needed.
-		if( rawData.getId() == null || rawData.getRevision() == null )
+		// DocId for attachment is necessary
+		if ( request.getHeader(DOCID_HEADER_NAME) == null )
 			throw customExceptionFactory.createCustomException( CustomExceptionValue.Parameter_Insufficient_Exception );
 		
-		// Set Request Parameter from Request Header
-		// These Attributes are always available because of the filter.
-		rawData.setUserId( request.getHeader(USERID_HEADER_NAME) );
-		rawData.setAppId( request.getHeader(APPID_HEADER_NAME) );
+		
+		// Lets set the maximum File numbers to 10
+		RawData[] rawData = new RawData[10];
+		List< InputStream > byteList = new ArrayList< InputStream >();
+		
+		for ( int i = 0; i < files.length; i++ )
+		{
+			// Set Request Parameter from Request Header
+			// These Attributes are always available because of the filter.
+			RawData tmp = new RawData();
+			tmp.setUserId( request.getHeader(USERID_HEADER_NAME) );
+			tmp.setAppId( request.getHeader(APPID_HEADER_NAME) ); // To Check that this appId is same with the document's appId
+			
+			tmp.setId( docId );
+			tmp.setRevision( docRev );
+			
+			// Original File name can be null
+			tmp.setAttachmentId( files[i].getOriginalFilename() );
 
-		return restApiService.postAttachment(rawData);
+			// What if Content-Type is Null??
+			tmp.setAttachmentType( files[i].getContentType() );
+
+			InputStream tmpStream = files[i].getInputStream();
+			
+			rawData[i] = tmp;
+			byteList.add( tmpStream );
+		}
+		
+		return restApiService.postAttachment( rawData, byteList );
 	}
 	
 	

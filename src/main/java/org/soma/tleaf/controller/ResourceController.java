@@ -36,7 +36,7 @@ public class ResourceController {
 	 * @return Need to Decide how are we going to return image resources
 	 * @throws Exception 
 	 */
-	@RequestMapping( value = "user/resource" , method = RequestMethod.GET  , produces = MediaType.IMAGE_PNG_VALUE )
+	@RequestMapping( value = "user/resource" , method = RequestMethod.GET )
 	@ApiOperation( httpMethod = "GET" , value = "Gets User's Media resources" )
 	public ResponseEntity<byte[]> getResource ( @RequestParam String userId, @RequestParam String docId, @RequestParam String attachmentId ) throws Exception {
 		return restApiService.getUserResource( userId, docId, attachmentId );

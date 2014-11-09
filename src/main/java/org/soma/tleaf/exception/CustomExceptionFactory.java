@@ -21,6 +21,7 @@ public class CustomExceptionFactory {
 		case Wrong_Authentication_Exception : return new WrongAuthenticationInfoException();
 		case Auth_Info_Insufficient_Exception : return new AuthInfoInsufficientException();
 		case No_Such_Document_Exception : return new NoSuchDocumentException();
+		case Too_Much_File_Upload_Exception : return new TooMuchFileUploadedException();
 		
 		}
 		

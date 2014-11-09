@@ -28,6 +28,7 @@ public interface RestApiService {
 	public ResponseDataWrapper getUserDataFromAppId(RequestParameter param) throws Exception;
 	public UserInfo getUserInfo( String userId ) throws CustomException;
 	public RawData getRawData( String rawDataId, String userId ) throws CustomException;
-	public ResponseEntity<byte[]> getUserResource( String userId, String docId, String attachmentId ) throws Exception;
+	public ResponseEntity<byte[]> getAttachment( String userId, String docId, String attachmentId ) throws Exception;
 	public ResponseEntity<Map<String,Object>> postAttachment( RawData[] rawData, List< InputStream > fileList ) throws Exception;
+	public ResponseEntity<Map<String,Object>> deleteAttachment( RawData rawData ) throws Exception;
 }

@@ -5,6 +5,7 @@ package org.soma.tleaf.domain;
 
 import java.util.Map;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
@@ -13,6 +14,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
  * Date : Oct 17, 2014 1:32:05 PM
  * Description : 카우치데이터베이스에 저장되는 도큐먼트 형식을 표현하는 클래스입니다.
  */
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class RawData {
 	
 	@JsonProperty("_id")
@@ -33,6 +35,22 @@ public class RawData {
 	@JsonProperty("data")
 	private Map<String, Object> data;
 	
+	private String attachmentId;
+	private String attachmentType;
+
+	public String getAttachmentType() {
+		return attachmentType;
+	}
+	public void setAttachmentType(String attachmentType) {
+		this.attachmentType = attachmentType;
+	}
+	public String getAttachmentId() {
+		return attachmentId;
+	}
+	public void setAttachmentId(String attachmentId) {
+		this.attachmentId = attachmentId;
+	}
+
 	public String getId() {
 		return id;
 	}

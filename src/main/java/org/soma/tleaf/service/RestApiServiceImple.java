@@ -3,11 +3,16 @@
  */
 package org.soma.tleaf.service;
 
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.ektorp.DocumentNotFoundException;
+import org.ektorp.UpdateConflictException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.soma.tleaf.dao.RestApiDao;
@@ -16,7 +21,10 @@ import org.soma.tleaf.domain.RequestParameter;
 import org.soma.tleaf.domain.ResponseDataWrapper;
 import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.exception.CustomException;
+import org.soma.tleaf.exception.DatabaseConnectionException;
 import org.soma.tleaf.util.ISO8601;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 /**
  * Created with Eclipse IDE
@@ -132,7 +140,7 @@ public class RestApiServiceImple implements RestApiService {
 	}
 
 	/**
-	 * 
+	 * Fetches RawData with Document Id
 	 * @author susu
 	 * Date Nov 1, 2014
 	 * @param rawDataId
@@ -144,6 +152,89 @@ public class RestApiServiceImple implements RestApiService {
 	public RawData getRawData(String rawDataId, String userId)
 			throws CustomException {
 		return restApiDao.getRawData(rawDataId, userId);
+	}
+
+	
+	/**
+	 * Fetches Byte array Resource from user database Differs Status codes by Exception
+	 * @author susu
+	 * Date Nov 7, 2014
+	 * @param userId
+	 * @param docId
+	 * @param attachmentId
+	 * @return
+	 * @throws Exception 
+	 */
+	@Override
+	public ResponseEntity<byte[]> getUserResource(String userId, String docId,
+			String attachmentId) throws Exception {
+		
+		try {
+		
+			return new ResponseEntity<byte[]>( restApiDao.getUserResource(userId, docId, attachmentId), HttpStatus.FOUND );
+		
+		} catch (DocumentNotFoundException e) {
+			e.printStackTrace();
+			
+			return new ResponseEntity<byte[]>( new byte[10], HttpStatus.NOT_FOUND );
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+		
+			throw e;
+		
+		}
+	}
+
+	
+	/**
+	 * Only uses RawData's id, rev, base64String to update a document and put an attachment
+	 * @author susu
+	 * Date Nov 7, 2014
+	 * @param rawData
+	 * @return
+	 * @throws Exception
+	 */
+	@Override
+	public ResponseEntity<Map<String, Object>> postAttachment( RawData[] rawData, List< InputStream > streamList )
+			throws Exception {
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		// List of attachment Post Results
+		List< Map<String,String> > bulkResult = new ArrayList< Map<String,String> >();
+		
+		int c = 0;
+		String changedRev = rawData[0].getRevision();
+		for ( InputStream i : streamList )
+		{
+			Map<String, String> tmp = new HashMap<String,String>();
+			tmp.put( "filename" , rawData[c].getAttachmentId() );
+			
+			try {
+
+				// Changes the Rivision of the Next attachment
+				rawData[c].setRevision(changedRev);
+				changedRev = restApiDao.postAttachment(rawData[c], i);
+				tmp.put("_rev", changedRev );
+			
+			} catch ( DatabaseConnectionException e ) {
+				e.printStackTrace();
+				tmp.put("failed", "DatabaseConnectionException Occured" );
+			} catch ( UpdateConflictException e ) {
+				e.printStackTrace();
+				tmp.put( "failed", "There was an Update Confilct" );
+			} catch ( Exception e ) {
+				e.printStackTrace();
+			}
+			
+			bulkResult.add( tmp );
+			c++;
+
+		}
+		
+		result.put("File Upload Results", bulkResult);
+		
+		return new ResponseEntity<Map<String,Object>>( result, HttpStatus.CREATED );
 	}
 
 }

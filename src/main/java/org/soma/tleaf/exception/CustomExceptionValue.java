@@ -9,6 +9,6 @@ public enum CustomExceptionValue {
 	
 		Database_Connection_Exception, Email_Already_Exist_Exception , Expired_AccessKey_Exception , Invalid_AccessKey_Exception , No_Such_User_Exception ,
 		Parameter_Insufficient_Exception , Wrong_Authentication_Exception , Json_Data_Mapping_Exception , Auth_Info_Insufficient_Exception
-		, No_Such_Document_Exception
+		, No_Such_Document_Exception , Too_Much_File_Upload_Exception
 
 }

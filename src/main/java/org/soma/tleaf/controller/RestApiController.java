@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,8 +56,6 @@ public class RestApiController {
 
 	private final String USERID_HEADER_NAME = "x-tleaf-user-id";
 	private final String APPID_HEADER_NAME = "x-tleaf-application-id"; // Same as other company's API Key
-	private final String DOCID_HEADER_NAME = "x-tleaf-document-id";
-	private final String DOCREV_HEADER_NAME = "x-tleaf-document-revision";
 	
 	/** Fetches UserInfo Data
 	 * @author susu
@@ -92,19 +91,19 @@ public class RestApiController {
 	public ResponseEntity<Map<String, Object>> postAttachment ( HttpServletRequest request, @RequestParam("docId") String docId, @RequestParam("docRev") String docRev , @RequestParam("file") MultipartFile[] files ) throws Exception {
 		
 		logger.info( "/user/file.POST" );
-		
-		logger.info(docId + "\n" + docRev);
 
 		// HttpServletRequest.getAttribute Returns null if Values are not found
 		if ( request.getAttribute("FilterException") != null )
 			throw customExceptionFactory.createCustomException( (CustomExceptionValue) request.getAttribute("FilterException") );
-
-		logger.info("File upload on " + request.getHeader(DOCID_HEADER_NAME) + "    " + request.getHeader(DOCREV_HEADER_NAME));
 		
-		// DocId for attachment is necessary
-		if ( request.getHeader(DOCID_HEADER_NAME) == null )
+		// Lets set the maximum File numbers to 10
+		if ( files.length > 10 )
+			throw customExceptionFactory.createCustomException( CustomExceptionValue.Too_Much_File_Upload_Exception );
+
+		if ( docId.isEmpty() || docRev.isEmpty() )
 			throw customExceptionFactory.createCustomException( CustomExceptionValue.Parameter_Insufficient_Exception );
 		
+		logger.info("File upload on " + docId + docRev );
 		
 		// Lets set the maximum File numbers to 10
 		RawData[] rawData = new RawData[10];
@@ -135,8 +134,62 @@ public class RestApiController {
 		
 		return restApiService.postAttachment( rawData, byteList );
 	}
-	
-	
+
+	/**
+	 * Returns the Resource. it is keeped inside the html for just resource url.
+	 * Specially, this doesn't need Auth
+	 * 
+	 * @author susu Date Nov 7, 2014 12:27:41 AM
+	 * @param userId
+	 *            User HashId
+	 * @param docId
+	 *            Id of the Documnet where Resource is stored
+	 * @param attachmentId
+	 *            Resource's Id inside the document
+	 * @return Need to Decide how are we going to return image resources
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "user/file", method = RequestMethod.GET)
+	@ApiOperation(httpMethod = "GET", value = "Gets User's Media resources")
+	public ResponseEntity<byte[]> getResource(HttpServletResponse httpResponse,
+			@RequestParam(required = true) String userId,
+			@RequestParam(required = true) String docId,
+			@RequestParam(required = true) String attachmentId)
+			throws Exception {
+		return restApiService.getAttachment(userId, docId, attachmentId);
+	}
+
+	/**
+	 * 
+	 * @author susu
+	 * Date Nov 9, 2014 8:36:48 PM
+	 * @param request
+	 * @param docId
+	 * @param docRev
+	 * @param attachmentId
+	 * @return
+	 * @throws Exception 
+	 */
+	@RequestMapping(value = "/user/file", method = RequestMethod.DELETE)
+	public ResponseEntity<Map<String, Object>> deleteAttachment(
+			HttpServletRequest request, @RequestParam("docId") String docId,
+			@RequestParam("docRev") String docRev,
+			@RequestParam("attachmentId") String attachmentId ) throws Exception {
+		
+		// HttpServletRequest.getAttribute Returns null if Values are not found
+		if ( request.getAttribute("FilterException") != null )
+			throw customExceptionFactory.createCustomException( (CustomExceptionValue) request.getAttribute("FilterException") );
+		
+		RawData rawData = new RawData();
+		rawData.setAppId( request.getHeader(APPID_HEADER_NAME) );
+		rawData.setUserId( request.getHeader(USERID_HEADER_NAME) );
+		rawData.setId(docId);
+		rawData.setRevision(docRev);
+		rawData.setAttachmentId(attachmentId);
+		
+		return restApiService.deleteAttachment(rawData);
+	}
+
 	/**
 	 * Finds the Document with Specific Id.
 	 * @author susu

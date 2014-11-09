@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.ektorp.AttachmentInputStream;
 import org.ektorp.DocumentNotFoundException;
 import org.ektorp.UpdateConflictException;
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.exception.CustomException;
 import org.soma.tleaf.exception.DatabaseConnectionException;
 import org.soma.tleaf.util.ISO8601;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -166,12 +168,18 @@ public class RestApiServiceImple implements RestApiService {
 	 * @throws Exception 
 	 */
 	@Override
-	public ResponseEntity<byte[]> getUserResource(String userId, String docId,
-			String attachmentId) throws Exception {
+	public ResponseEntity<byte[]> getAttachment(String userId, String docId,
+			String attachmentId ) throws Exception {
 		
 		try {
-		
-			return new ResponseEntity<byte[]>( restApiDao.getUserResource(userId, docId, attachmentId), HttpStatus.FOUND );
+			AttachmentInputStream attachmentStream = restApiDao.getAttachment(userId, docId, attachmentId);
+			
+			byte[] attachmentBytes = new byte[ (int) attachmentStream.getContentLength() + 1000 ];
+			attachmentStream.read( attachmentBytes );
+			
+			HttpHeaders header = new HttpHeaders(); header.set("content-type", attachmentStream.getContentType() );
+			
+			return new ResponseEntity<byte[]>( attachmentBytes, header, HttpStatus.FOUND );
 		
 		} catch (DocumentNotFoundException e) {
 			e.printStackTrace();
@@ -200,6 +208,17 @@ public class RestApiServiceImple implements RestApiService {
 			throws Exception {
 		
 		Map<String, Object> result = new HashMap<String, Object>();
+		
+		// Check if the Client tried to Update a Document of other Applications
+		String updatingDoc = getRawData( rawData[0].getId() , rawData[0].getUserId() ).getAppId();
+		if ( !updatingDoc.matches(rawData[0].getAppId()) ) {
+			result.put( "forbidden", "You can't update a Documnet of Other Application" );
+			logger.info( rawData[0].getAppId() + " Tried to Update " + updatingDoc );
+			
+			// Or maybe Change it to CustomException??
+			return new ResponseEntity<Map<String,Object>>( result, HttpStatus.FORBIDDEN );
+		}
+		
 		// List of attachment Post Results
 		List< Map<String,String> > bulkResult = new ArrayList< Map<String,String> >();
 		
@@ -235,6 +254,27 @@ public class RestApiServiceImple implements RestApiService {
 		result.put("File Upload Results", bulkResult);
 		
 		return new ResponseEntity<Map<String,Object>>( result, HttpStatus.CREATED );
+	}
+
+	@Override
+	public ResponseEntity<Map<String, Object>> deleteAttachment( RawData rawData ) throws Exception {
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		String updatingDoc = getRawData( rawData.getId() , rawData.getUserId() ).getAppId();
+		logger.info( rawData.getAppId() + " Tried to Update " + updatingDoc );
+		
+		if ( !updatingDoc.matches(rawData.getAppId()) ) {
+			
+			result.put( "forbidden", "You can't update a Documnet of Other Application" );
+			// Or maybe Change it to CustomException??
+			return new ResponseEntity<Map<String,Object>>( result, HttpStatus.FORBIDDEN );
+		}
+		
+		// DatabaseConnectionException, UpdateConfilctException
+		result.put("Attachment Delete", restApiDao.deleteAttachment(rawData) );
+		
+		return new ResponseEntity<Map<String,Object>>( result, HttpStatus.OK );
 	}
 
 }

@@ -23,6 +23,7 @@ import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.exception.CustomException;
 import org.soma.tleaf.exception.CustomExceptionFactory;
 import org.soma.tleaf.exception.CustomExceptionValue;
+import org.soma.tleaf.exception.DatabaseConnectionException;
 
 /**
  * Created with Eclipse IDE
@@ -235,7 +236,7 @@ public class RestApiDaoImple implements RestApiDao {
 	 * @throws Exception IOException or DatabaseConnectionException
 	 */
 	@Override
-	public byte[] getUserResource(String userId, String docId,
+	public AttachmentInputStream getAttachment(String userId, String docId,
 			String attachmentId) throws Exception {
 		
 		logger.info( "getting User Resource " + userId );
@@ -246,13 +247,8 @@ public class RestApiDaoImple implements RestApiDao {
 		byte[] resource = new byte[100000];
 		
 		AttachmentInputStream attachmentStream = couchDbConnector_user.getAttachment( docId, attachmentId );
-
-		// Both Methods Throw IOExceptions.
-		// Streams should be closed or else, http connection leaks will occur
-		attachmentStream.read(resource);
-		attachmentStream.close();
+		return attachmentStream;
 		
-		return resource;
 	}
 
 	/**
@@ -290,6 +286,25 @@ public class RestApiDaoImple implements RestApiDao {
 						
 				);
 
+	}
+
+	@Override
+	public String deleteAttachment( RawData rawData ) throws DatabaseConnectionException {
+		
+		logger.info(rawData.getAppId() + " deleting Attachment for "
+				+ rawData.getUserId());
+
+		// DatabaseConnectionException Can Occur
+		CouchDbConnector couchDbConnector_user = connector
+				.getCouchDbConnetor("user_" + rawData.getUserId());
+		
+		// UpdateConflictException Can Occur
+		return 
+				couchDbConnector_user.deleteAttachment(
+						rawData.getId(), 
+						rawData.getRevision(), 
+						rawData.getAttachmentId() 
+						);
 	}
 
 }

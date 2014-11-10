@@ -23,6 +23,12 @@
 	</repositories>
 
 	<dependencies>
+		<!-- Elastic Search Client -->
+		<dependency>
+			<groupId>org.elasticsearch</groupId>
+			<artifactId>elasticsearch</artifactId>
+			<version>1.3.4</version>
+		</dependency>
 
 		<!-- Apache Commons Upload -->
 		<dependency>
@@ -221,6 +227,7 @@
 			<version>0.9.1</version>
 			<scope>test</scope>
 		</dependency>
+		
 		<!-- For java Http unitTest -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>

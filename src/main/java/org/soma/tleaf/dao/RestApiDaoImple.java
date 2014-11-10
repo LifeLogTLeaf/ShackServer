@@ -3,11 +3,13 @@
  */
 package org.soma.tleaf.dao;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.ektorp.AttachmentInputStream;
 import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.DocumentNotFoundException;
@@ -22,7 +24,6 @@ import org.soma.tleaf.exception.CustomException;
 import org.soma.tleaf.exception.CustomExceptionFactory;
 import org.soma.tleaf.exception.CustomExceptionValue;
 import org.soma.tleaf.exception.DatabaseConnectionException;
-import org.soma.tleaf.repository.RawDataRepository;
 
 /**
  * Created with Eclipse IDE
@@ -32,7 +33,6 @@ import org.soma.tleaf.repository.RawDataRepository;
  */
 public class RestApiDaoImple implements RestApiDao {
 	private Logger logger = LoggerFactory.getLogger(RestApiDaoImple.class);
-	private static String ACCESSKEYS_DB_NAME = "tleaf_apikey";
 	private static String USER_DB_NAME = "tleaf_users";
 
 	@Inject
@@ -223,6 +223,88 @@ public class RestApiDaoImple implements RestApiDao {
 			throw customExceptionFactory.createCustomException( CustomExceptionValue.No_Such_Document_Exception );
 		
 		return rawData;
+	}
+
+	/**
+	 * Returns User's resource in byte Array
+	 * @author susu
+	 * Date Nov 7, 2014
+	 * @param userId
+	 * @param docId
+	 * @param attachmentId
+	 * @return
+	 * @throws Exception IOException or DatabaseConnectionException
+	 */
+	@Override
+	public AttachmentInputStream getAttachment(String userId, String docId,
+			String attachmentId) throws Exception {
+		
+		logger.info( "getting User Resource " + userId );
+		
+		// DatabaseConnectionException Can Occur
+		CouchDbConnector couchDbConnector_user = connector.getCouchDbConnetor( "user_" + userId );
+		
+		byte[] resource = new byte[100000];
+		
+		AttachmentInputStream attachmentStream = couchDbConnector_user.getAttachment( docId, attachmentId );
+		return attachmentStream;
+		
+	}
+
+	/**
+	 * Puts an attachment into the document by updating
+	 * @author susu
+	 * Date Nov 7, 2014
+	 * @param result
+	 * @param rawData
+	 * @throws Exception
+	 * @returns String the Document's Changed Revision
+	 */
+	@Override
+	public String postAttachment( RawData rawData, InputStream inputStream )
+			throws Exception {
+
+		logger.info(rawData.getAppId() + " posting Attachment for "
+				+ rawData.getUserId());
+
+		// DatabaseConnectionException Can Occur
+		CouchDbConnector couchDbConnector_user = connector
+				.getCouchDbConnetor("user_" + rawData.getUserId());
+
+		// UpdateConflictException Can Occur
+		return
+				couchDbConnector_user.createAttachment(
+						
+						rawData.getId(), 
+						rawData.getRevision(),
+						
+						new AttachmentInputStream(
+								rawData.getAttachmentId(), 
+								inputStream,
+								rawData.getAttachmentType()
+						)
+						
+				);
+
+	}
+
+	@Override
+	public String deleteAttachment( RawData rawData ) throws DatabaseConnectionException {
+		
+		logger.info(rawData.getAppId() + " deleting Attachment for "
+				+ rawData.getUserId());
+
+		// DatabaseConnectionException Can Occur
+		CouchDbConnector couchDbConnector_user = connector
+				.getCouchDbConnetor("user_" + rawData.getUserId());
+		
+		// UpdateConflictException Can Occur
+		return 
+				couchDbConnector_user.deleteAttachment(
+						rawData.getId(), 
+						rawData.getRevision(), 
+						rawData.getAttachmentId() 
+						);
 	}
 
 }

@@ -67,16 +67,16 @@ public class CommonExceptionHandler {
 		return errorLog;
 	}
 
-//	/**
-//	 * Author : RichardJ
-//	 * Date : Oct 28, 2014 9:13:02 PM
-//	 * Description :
-//	 * 
-//	 * @param e 우리가 해결하지 모한 예외
-//	 * @param response
-//	 * @return
-//	 */
-//	@ExceptionHandler
+	/**
+	 * Author : RichardJ
+	 * Date : Oct 28, 2014 9:13:02 PM
+	 * Description :
+	 * 
+	 * @param e 우리가 해결하지 모한 예외
+	 * @param response
+	 * @return
+	 */
+//	@ExceptionHandler()
 //	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 //	@ResponseBody
 //	public ErrorResponse handleInternalException(Exception e, HttpServletResponse response) {

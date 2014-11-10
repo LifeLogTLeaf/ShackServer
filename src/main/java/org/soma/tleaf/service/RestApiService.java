@@ -3,6 +3,8 @@
  */
 package org.soma.tleaf.service;
 
+import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
 import org.soma.tleaf.domain.RawData;
@@ -10,6 +12,7 @@ import org.soma.tleaf.domain.RequestParameter;
 import org.soma.tleaf.domain.ResponseDataWrapper;
 import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.exception.CustomException;
+import org.springframework.http.ResponseEntity;
 
 /**
  * Created with Eclipse IDE
@@ -25,5 +28,7 @@ public interface RestApiService {
 	public ResponseDataWrapper getUserDataFromAppId(RequestParameter param) throws Exception;
 	public UserInfo getUserInfo( String userId ) throws CustomException;
 	public RawData getRawData( String rawDataId, String userId ) throws CustomException;
-	
+	public ResponseEntity<byte[]> getAttachment( String userId, String docId, String attachmentId ) throws Exception;
+	public ResponseEntity<Map<String,Object>> postAttachment( RawData[] rawData, List< InputStream > fileList ) throws Exception;
+	public ResponseEntity<Map<String,Object>> deleteAttachment( RawData rawData ) throws Exception;
 }

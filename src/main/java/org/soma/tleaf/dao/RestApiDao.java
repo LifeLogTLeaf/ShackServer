@@ -28,6 +28,7 @@ public interface RestApiDao {
 	public List<RawData> getAllData(RequestParameter param) throws Exception;
 	public List<RawData> getAllDataFromAppId(RequestParameter param) throws Exception;
 	public UserInfo getUserInfo( String userId ) throws CustomException;
+	public UserInfo updateUserInfo( RawData rawData ) throws CustomException;
 	public RawData getRawData( String rawDataId, String userId ) throws CustomException;
 	public AttachmentInputStream getAttachment( String userId, String docId, String attachmentId ) throws Exception;
 	public String deleteAttachment( RawData rawData ) throws Exception;

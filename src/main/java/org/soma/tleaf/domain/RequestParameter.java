@@ -20,7 +20,6 @@ public class RequestParameter {
 	private String userHashId;
 	private String limit;
 	private boolean descend;
-	
 	private Map<String, Object> serviceData;
 
 	public Map<String, Object> getserviceData() {

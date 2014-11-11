@@ -3,7 +3,6 @@
  */
 package org.soma.tleaf.accesskey;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -22,13 +21,11 @@ import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.node.Node;
 import org.junit.BeforeClass;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.soma.tleaf.domain.HashId;
-import org.soma.tleaf.domain.SimpleData;
+import org.soma.tleaf.domain.SimpleRawData;
 import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.util.ISO8601;
 
@@ -170,7 +167,7 @@ public class AccessKeyTest {
 		CouchDbConnector userDb = new StdCouchDbConnector(accessKey.getUserId(), dbInstance);
 
 		// Dummy 생성
-		SimpleData data = new SimpleData();
+		SimpleRawData data = new SimpleRawData();
 		userDb.create(data);
 	}
 

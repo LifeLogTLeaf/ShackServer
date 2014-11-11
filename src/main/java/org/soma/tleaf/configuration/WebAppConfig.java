@@ -8,6 +8,8 @@ import org.soma.tleaf.couchdb.UserDao;
 import org.soma.tleaf.couchdb.UserDaoImpl;
 import org.soma.tleaf.dao.RestApiDao;
 import org.soma.tleaf.dao.RestApiDaoImple;
+import org.soma.tleaf.esdb.EsdbConn;
+import org.soma.tleaf.esdb.EsdbConnimple;
 import org.soma.tleaf.exception.CustomExceptionFactory;
 import org.soma.tleaf.service.RestApiService;
 import org.soma.tleaf.service.RestApiServiceImple;
@@ -27,7 +29,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @Configuration
 @EnableWebMvc  //same as <mvc:annotation-driven/>
 @ComponentScan(basePackages = {"org.soma.tleaf"})//same as <context:component-scan base-package="com.tleaf.lifelog"/>
-@PropertySource("classpath:couchdb.properties")
+@PropertySource({"classpath:couchdb.properties", "classpath:esdb.properties"})
 public class WebAppConfig extends WebMvcConfigurerAdapter {
 
 	@Override
@@ -92,6 +94,11 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 	@Bean
 	public CustomExceptionFactory customExceptionFactory(){
 		return new CustomExceptionFactory();
+	}
+	
+	@Bean
+	public EsdbConn esdbConn(){
+		return new EsdbConnimple();
 	}
 
 }

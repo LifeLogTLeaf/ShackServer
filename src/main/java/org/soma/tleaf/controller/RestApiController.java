@@ -75,6 +75,35 @@ public class RestApiController {
 		return restApiService.getUserInfo( request.getHeader(USERID_HEADER_NAME) );
 	}
 	
+	/** Update User Information
+	 * @author : RichardJ
+	 * Date   : Nov 11, 2014 6:18:23 PM
+	 * @param request
+	 * @param appServiceInfo
+	 * @return
+	 * @throws CustomException
+	 */
+	@RequestMapping( value = "/user" , method = RequestMethod.POST )
+	@ResponseBody
+	@ApiOperation( httpMethod = "POST" , value = "update UserInfo" )
+	public UserInfo updateUserInfo( HttpServletRequest request,
+			@RequestBody(required = false) RawData rawData ) throws CustomException {
+		
+		logger.info("data : "+rawData.toString());	
+		
+		// HttpServletRequest.getAttribute Returns null if Values are not found
+		if (request.getAttribute("FilterException") != null)
+			throw customExceptionFactory.createCustomException( (CustomExceptionValue) request.getAttribute("FilterException") );
+		
+		rawData.setAppId( request.getHeader(APPID_HEADER_NAME) );
+		rawData.setUserId( request.getHeader(USERID_HEADER_NAME) );
+		
+		
+		return restApiService.updateUserInfo( rawData );
+	}
+	
+	
+	
 	/**
 	 * Put an attachment info the Specific Document Using HTTP Multipart Request
 	 * @author susu
@@ -336,7 +365,8 @@ public class RestApiController {
 	public ResponseDataWrapper getUserLogFromAppId( HttpServletRequest request,
 			@RequestParam(value = "limit", required = false, defaultValue="1000") String limit,
 			@RequestParam(value = "startKey", required = false, defaultValue=ISO8601.FAR_FAR_AWAY) String startKey,
-			@RequestParam(value = "endKey", required = false, defaultValue=ISO8601.LONG_LONG_AGO) String endKey) throws Exception {
+			@RequestParam(value = "endKey", required = false, defaultValue=ISO8601.LONG_LONG_AGO) String endKey,
+			@RequestParam(value = "descend", required = false , defaultValue="true") boolean descend) throws Exception {
 
 		// HttpServletRequest.getAttribute Returns null if Values are not found
 		if (request.getAttribute("FilterException") != null)
@@ -347,8 +377,10 @@ public class RestApiController {
 
 		param.setStartKey(startKey);
 		param.setUserHashId( request.getHeader(USERID_HEADER_NAME) );
+		param.setStartKey(startKey);
 		param.setEndKey(endKey);
 		param.setLimit(limit);
+		param.setDescend(descend);
 		param.setAppId( request.getHeader(APPID_HEADER_NAME) );
 
 		// Delegate Request to RestApiService Object

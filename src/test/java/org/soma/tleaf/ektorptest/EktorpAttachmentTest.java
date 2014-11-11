@@ -20,10 +20,9 @@ import org.ektorp.impl.StdCouchDbConnector;
 import org.ektorp.impl.StdCouchDbInstance;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.soma.tleaf.domain.SimpleData;
+import org.soma.tleaf.domain.SimpleRawData;
 
 /**
  * Created with Eclipse IDE
@@ -79,8 +78,8 @@ public class EktorpAttachmentTest {
 		db.createDatabaseIfNotExists();
 		
 		// Create Dummy data
-		SimpleData data = new SimpleData();
-		data.setType("image");
+		SimpleRawData data = new SimpleRawData();
+		data.setAppId("image");
 
 		// Add Data
 		db.create(data); // can be db.create(data);

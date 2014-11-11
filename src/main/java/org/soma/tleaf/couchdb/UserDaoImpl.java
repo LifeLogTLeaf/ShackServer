@@ -11,6 +11,7 @@ import org.soma.tleaf.accesskey.AccessKey;
 import org.soma.tleaf.accesskey.AccessKeyManager;
 import org.soma.tleaf.domain.HashId;
 import org.soma.tleaf.domain.UserInfo;
+import org.soma.tleaf.esdb.EsdbConn;
 import org.soma.tleaf.exception.CustomException;
 import org.soma.tleaf.exception.CustomExceptionFactory;
 import org.soma.tleaf.exception.CustomExceptionValue;
@@ -25,6 +26,9 @@ public class UserDaoImpl implements UserDao {
 
 	@Inject
 	private CustomExceptionFactory customExceptionFactory;
+	
+	@Inject
+	private EsdbConn esdbConn;
 	
 	private CouchDbConnector couchDbConnector_hashid;
 	private CouchDbConnector couchDbConnector_users;
@@ -106,6 +110,10 @@ public class UserDaoImpl implements UserDao {
 		couchDbInstance.createDatabase( "user_" + userInfo.getHashId() );
 		// Because a database name should start with an letter
 
+		/* Young edited */
+		// elasticSearch DB create
+		esdbConn.replication("user_" + userInfo.getHashId());
+		
 		return "{ \"signup\" : \"sucess\" , \"userId\" : \"" + userInfo.getHashId() + "\" }";
 	}
 
@@ -148,5 +156,7 @@ public class UserDaoImpl implements UserDao {
 
 		return "{ \"signout\" : \"sucess\" , \"userId\" : \"" + userInfo.getHashId() + "\" }";
 	}
+	
+	
 
 }

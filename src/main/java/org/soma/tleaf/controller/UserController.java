@@ -85,7 +85,6 @@ public class UserController {
 	public String userSignout( @RequestBody UserInfo userInfo) throws CustomException {
 
 		return userDao.userSignOut( userInfo.getEmail(), userInfo.getPassword() );
-
-	}
+	}	
 
 }

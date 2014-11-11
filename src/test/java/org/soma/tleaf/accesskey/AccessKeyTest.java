@@ -2,7 +2,9 @@
  * 
  */
 package org.soma.tleaf.accesskey;
+import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 
 import org.apache.commons.configuration.Configuration;
@@ -12,12 +14,18 @@ import org.ektorp.CouchDbInstance;
 import org.ektorp.http.StdHttpClient;
 import org.ektorp.impl.StdCouchDbConnector;
 import org.ektorp.impl.StdCouchDbInstance;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.junit.BeforeClass;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.soma.tleaf.domain.HashId;
-import org.soma.tleaf.domain.SimpleData;
+import org.soma.tleaf.domain.SimpleRawData;
 import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.util.ISO8601;
 
@@ -44,7 +52,7 @@ public class AccessKeyTest {
 	public static void setup() throws Exception {
 		Configuration config = new PropertiesConfiguration("couchdb.properties");
 		url = config.getString("url");
-		user = config.getString("id");
+		user = config.getString("user");
 		password = config.getString("password");
 	}
 
@@ -58,7 +66,7 @@ public class AccessKeyTest {
 		// 1. 사용자 아이디를 생성한다.
 		// Create User
 		UserInfo userInfo = new UserInfo();
-		userInfo.setEmail("swimyoung@gmail.com");
+		userInfo.setEmail("zzang@gmail.com");
 		userInfo.setGender("boy");
 		userInfo.setNickname("Richard");
 		userInfo.setAge(18);
@@ -73,7 +81,7 @@ public class AccessKeyTest {
 		// 2. 사용자 아이디에 해당하는 해쉬키를 생성한다.
 		// Create HashId
 		HashId hashId = new HashId();
-		hashId.setEmail("swimyoung@gmail.com");
+		hashId.setEmail("zzang@gmail.com");
 		hashId.setHashId(userInfo.getHashId());
 
 		// Create hashIds Database
@@ -86,7 +94,10 @@ public class AccessKeyTest {
 		// Create User Database
 		dbInstance.createDatabase("user_" + hashId.getHashId());
 
-		// 4. 인증키를 생성하고 사용자와 매칭시킨다.
+		// 4. 사용자 데이터베이스와 일레스틱 데이터베이스를 리버 연결한다.
+		initEsDB("user_" + hashId.getHashId());
+		
+		// 5. 인증키를 생성하고 사용자와 매칭시킨다.
 		// Create AccessKey
 		AccessKey accessKey = new AccessKey();
 		accessKey.setUserId("user_" + hashId.getHashId());
@@ -99,6 +110,49 @@ public class AccessKeyTest {
 
 		// Create Access Key
 		accessKeys.create(accessKey);
+	}
+	
+	public void initEsDB(String userDb){
+		XContentBuilder builder = null;
+		try {
+			 builder = jsonBuilder()
+				    .startObject()
+				        .field("type", "couchdb")
+				        .startObject("couchdb")
+				        	.field("host", "localhost")
+				        	.field("port", 5984)
+				        	.field("db", userDb)
+				        .endObject()	
+				        .startObject("index")
+				        	.field("index", userDb)
+				        	.field("type", userDb)
+				        	.field("bulk_size", "100")
+				        	.field("bulk_timeout", "10ms")
+				        .endObject()		
+				    .endObject();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String json = null;
+		try {
+			json = builder.string();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		Settings settings = ImmutableSettings
+                .settingsBuilder()
+                .put("cluster.name","elasticsearch_jangyoungjin")
+                .build();
+		
+		Client client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress("localhost",9300));
+		
+		IndexResponse response = client.prepareIndex("_river", userDb, "_meta")
+                .setSource(json)
+                .execute()
+                .actionGet();
 	}
 
 	// @Test
@@ -113,7 +167,7 @@ public class AccessKeyTest {
 		CouchDbConnector userDb = new StdCouchDbConnector(accessKey.getUserId(), dbInstance);
 
 		// Dummy 생성
-		SimpleData data = new SimpleData();
+		SimpleRawData data = new SimpleRawData();
 		userDb.create(data);
 	}
 

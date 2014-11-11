@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package org.soma.tleaf.domain;
 
 import java.util.ArrayList;
@@ -6,8 +9,14 @@ import java.util.Map;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 
+/**
+ * Created with Eclipse IDE
+ * Author : RichardJ 
+ * Date   : Nov 11, 2014 4:33:47 PM
+ * Description : 
+ */
 @JsonIgnoreProperties(ignoreUnknown=true) 	
-public class UserInfo {
+public class SimpleUserInfo {
 	
 	@JsonProperty("_id")
 	private String hashId;
@@ -29,7 +38,7 @@ public class UserInfo {
 
 	@JsonProperty("age")
 	private Integer age;
-
+	
 	@JsonProperty("services")
 	private ArrayList<Map> services;
 

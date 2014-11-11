@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -16,13 +17,12 @@ import org.ektorp.http.StdHttpClient;
 import org.ektorp.impl.StdCouchDbConnector;
 import org.ektorp.impl.StdCouchDbInstance;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.soma.tleaf.domain.SimpleData;
-import org.soma.tleaf.repository.SimpleDataRepository;
+import org.soma.tleaf.domain.SimpleUserInfo;
+import org.soma.tleaf.util.ISO8601;
 
 /**
  * Created with Eclipse IDE
@@ -35,7 +35,7 @@ public class EktorpTest {
 	private static String user;
 	private static String password;
 	private static String docId;
-	private static String DbName = "simpledb";
+	private static String DbName = "swimyoung_test";
 
 	static Logger logger = LoggerFactory.getLogger(EktorpTest.class);
 
@@ -44,7 +44,7 @@ public class EktorpTest {
 	public static void setup() throws Exception {
 		Configuration config = new PropertiesConfiguration("couchdb.properties");
 		url = config.getString("url");
-		user = config.getString("id");
+		user = config.getString("user");
 		password = config.getString("password");
 	}
 
@@ -76,32 +76,21 @@ public class EktorpTest {
 	public void testCreateDocument() throws MalformedURLException {
 		CouchDbInstance dbInstance = createDbInstance();
 		CouchDbConnector db = new StdCouchDbConnector(DbName, dbInstance);
-		//SimpleDataRepository repository = new SimpleDataRepository(db);
 
 		// Create Dummy data
-		SimpleData data = new SimpleData();
-		data.setType("init");
-		ArrayList<Object> datas = new ArrayList<Object>();
-		HashMap<String, Object> someData = new HashMap<String, Object>();
-		someData.put("(1)", "one");
-		someData.put("(2)", "two");
-		someData.put("(3)", "three");
+		SimpleUserInfo userInfo = new SimpleUserInfo();
+		userInfo.setAge(26);
+		userInfo.setEmail("hulk@avengers.org");
+		userInfo.setGender("man");
+		userInfo.setPassword("secreat");
+		userInfo.setNickname("red_hulk");
 		
-		datas.add("1");
-		datas.add("2");
-		datas.add("3");
-		datas.add(someData);
-
-
+		
 		// Add Data
 		db.createDatabaseIfNotExists();
-		db.create(data);
-		//repository.add(data); // can be db.create(data);
-		logger.info("Created document : " + data);
-
+		db.create(userInfo);
 		// will use for another unit test
-		docId = data.getId();
-
+		
 	}
 
 	// test for Retrieve Document
@@ -109,33 +98,51 @@ public class EktorpTest {
 	public void testRetrieveDocument() throws MalformedURLException {
 		CouchDbInstance dbInstance = createDbInstance();
 		CouchDbConnector db = new StdCouchDbConnector(DbName, dbInstance);
-		SimpleDataRepository repository = new SimpleDataRepository(db);
 
 		// Get Specific document using document id
-		// db.get(SimpleData.class, docId)
-		SimpleData data = repository.get(docId);
-		logger.info("Retrieved document : " + data);
+		SimpleUserInfo userInfo = db.get(SimpleUserInfo.class, "e756171d1eb520baecff8c1d1b01a36d");
 	}
 
 	// test for Update Document
-	//@Test
+	@Test
 	public void testUpdateDocumnet() throws MalformedURLException {
 		CouchDbInstance dbInstance = createDbInstance();
 		CouchDbConnector db = new StdCouchDbConnector(DbName, dbInstance);
-		SimpleDataRepository repository = new SimpleDataRepository(db);
+		String user_id = "e756171d1eb520baecff8c1d1b01b199";
+		String app_id = "twitter";
+		
+		// Front will create this data.
+		Map<String, Object> serviceData = new HashMap<String, Object>();
+		serviceData.put("appId", app_id);
+		serviceData.put("fbAccesskey", "asjdhbajshbdhjasbkjgblajdlkanslkgnlkabk");
+		serviceData.put("lastCreatedTime", ISO8601.LONG_LONG_AGO);
+		serviceData.put("lastUpdatedTime", ISO8601.LONG_LONG_AGO);
+		
+		// get services 
+		SimpleUserInfo userInfo = db.get(SimpleUserInfo.class, user_id);
+		ArrayList<Map> services = userInfo.getServices();
+		
+		// if services doesn't exist, make new services array
+		if(services == null) services = new ArrayList<Map>();
+		
+		// add app service data
+		int index= -1;
+		for(int i=0; i<services.size(); i++){
+			logger.info(""+services.get(i).get("appId"));
+			if(services.get(i).get("appId").equals(app_id)) index = i;
+		}
+		
+		if (index > -1){
+			services.set(index, serviceData);
+		} else {
+			services.add(serviceData);
+		}
+		
+		userInfo.setServices(services);
+		
+		
+		db.update(userInfo);
 
-		// Get Specific document using document id
-		SimpleData data = repository.get(docId);
-		data.setType("chaged");
-
-		// Update Document
-		//db.update(data);
-		repository.update(data);
-		logger.info("Updated document : " + data);
-
-		// Get Specific document using document id
-		data = repository.get(docId);
-		Assert.assertEquals(data.getType(), "chaged");
 	}
 
 	// test for Delete Document
@@ -143,15 +150,9 @@ public class EktorpTest {
 	public void testDeleteDocument() throws MalformedURLException {
 		CouchDbInstance dbInstance = createDbInstance();
 		CouchDbConnector db = new StdCouchDbConnector(DbName, dbInstance);
-		SimpleDataRepository repository = new SimpleDataRepository(db);
 
-		SimpleData data = repository.get(docId);
-		data.setType("deleted");
-		//db.delete(data);
-		repository.remove(data);
-		logger.info("Deleted document : " + data);
-
-		Assert.assertNull(db.get(SimpleData.class, docId));
+		SimpleUserInfo userInfo = db.get(SimpleUserInfo.class, docId);
+		db.delete(userInfo);
 	}
 
 	// Get CouchDbInstance

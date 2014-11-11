@@ -89,6 +89,13 @@ public class RestApiServiceImple implements RestApiService {
 	 */
 	@Override
 	public ResponseDataWrapper getUserDataFromAppId(RequestParameter param) throws Exception {
+		// check Descend 
+		if(!param.isDescend()){
+			String temp = param.getStartKey();
+			param.setStartKey(param.getEndKey());
+			param.setEndKey(temp);
+		}
+		
 		// Create Response Result
 		ResponseDataWrapper result = new ResponseDataWrapper();
 		// Set Date to Response
@@ -140,6 +147,22 @@ public class RestApiServiceImple implements RestApiService {
 	public UserInfo getUserInfo(String userId) throws CustomException {
 		return restApiDao.getUserInfo( userId );
 	}
+	
+	
+	
+	/** 
+	 * @author : RichardJ
+	 * Date    : Nov 11, 2014 6:21:11 PM
+	 * @param RawData
+	 * @return
+	 * @throws CustomException
+	 */
+	@Override
+	public UserInfo updateUserInfo(RawData rawData) throws CustomException {
+		return restApiDao.updateUserInfo( rawData );
+	}
+	
+	
 
 	/**
 	 * Fetches RawData with Document Id

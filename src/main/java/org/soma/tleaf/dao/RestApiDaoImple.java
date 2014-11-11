@@ -4,6 +4,7 @@
 package org.soma.tleaf.dao;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.soma.tleaf.couchdb.CouchDbConn;
 import org.soma.tleaf.domain.RawData;
 import org.soma.tleaf.domain.RequestParameter;
+import org.soma.tleaf.domain.SimpleUserInfo;
 import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.exception.CustomException;
 import org.soma.tleaf.exception.CustomExceptionFactory;
@@ -132,6 +134,12 @@ public class RestApiDaoImple implements RestApiDao {
 			throw e;
 		}
 
+		// For test print Code
+		logger.info("" + rawDatas.size());
+		for (RawData rd : rawDatas) {
+			logger.info(rd.getTime());
+		}
+				
 		return rawDatas;
 	}
 
@@ -199,6 +207,47 @@ public class RestApiDaoImple implements RestApiDao {
 		
 		return userInfo;
 	}
+	
+	/**@author : RichardJ
+	 * Date    : Nov 11, 2014 6:22:16 PM
+	 * @param RawData
+	 * @return
+	 * @throws CustomException
+	 */
+	public UserInfo updateUserInfo(RawData rawData) throws CustomException {
+		CouchDbConnector couchDbConnector_user = connector.getCouchDbConnetor( USER_DB_NAME );
+		String userId = rawData.getUserId();
+		String appId = rawData.getAppId();
+		
+		// get user information from CouchDB
+		UserInfo userInfo = couchDbConnector_user.get(UserInfo.class, userId);
+		// get services data
+		ArrayList<Map> services = userInfo.getServices();
+				
+		int index= -1;
+		
+		// if services doesn't exist, make new services array
+		if(services == null){
+			services = new ArrayList<Map>();
+		}else {
+			for(int i=0; i<services.size(); i++){
+				if(services.get(i).get("appId").equals(appId)) index = i;
+			}
+		}
+				
+		// add app service data		
+		if (index > -1){
+			services.set(index, rawData.getData());
+		} else {
+			services.add(rawData.getData());
+		}
+				
+		userInfo.setServices(services);
+		couchDbConnector_user.update(userInfo);
+		return userInfo;
+	}
+	
+	
 
 	/**
 	 * Fetches the Specific Raw Data by _id

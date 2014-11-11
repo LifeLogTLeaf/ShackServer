@@ -158,7 +158,7 @@ public class RestApiController {
 	}
 
 	/**
-	 * 
+	 * Deletes the specific Attachment. Returns the revision of the deleted Doc
 	 * @author susu
 	 * Date Nov 9, 2014 8:36:48 PM
 	 * @param request

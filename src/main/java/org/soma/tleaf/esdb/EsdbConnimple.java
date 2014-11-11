@@ -65,7 +65,7 @@ public class EsdbConnimple implements EsdbConn {
 		
 		Settings settings = ImmutableSettings
                 .settingsBuilder()
-                .put("cluster.name","elasticsearch_jangyoungjin")
+                .put("cluster.name","elasticsearch")
                 .build();
 		
 		Client client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(environment.getProperty("es_domain"),9300));

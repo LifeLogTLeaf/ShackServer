@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 
 /**
@@ -44,7 +43,6 @@ import com.wordnik.swagger.annotations.ApiOperation;
  */
 @RequestMapping(value = "api/*")
 @Controller
-@Api(value = "rest", description = "REST API that requires Authorization")
 public class RestApiController {
 	static Logger logger = LoggerFactory.getLogger(RestApiController.class);
 

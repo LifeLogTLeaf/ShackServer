@@ -12,8 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.soma.tleaf.accesskey.AccessKeyManager;
 import org.soma.tleaf.exception.CustomExceptionValue;
-import org.soma.tleaf.exception.DatabaseConnectionException;
-import org.soma.tleaf.exception.InvalidAccessKeyException;
+import org.soma.tleaf.redis.RedisCache;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -27,6 +26,9 @@ public class OauthFilter extends OncePerRequestFilter {
 
 	@Inject
 	private AccessKeyManager accessKeyManager;
+	
+	@Inject
+	private RedisCache redisCache;
 
 	private static Logger logger = LoggerFactory.getLogger(OauthFilter.class);
 
@@ -57,15 +59,8 @@ public class OauthFilter extends OncePerRequestFilter {
 			}
 
 			else {
-				try {
-					accessKeyManager.isAccessKeyValid(accessKey, appId, userId);
-				} catch (InvalidAccessKeyException e) {
-					e.printStackTrace();
+				if ( !redisCache.isAccessKeyValid(accessKey, appId, userId) )
 					httpRequest.setAttribute("FilterException", CustomExceptionValue.Invalid_AccessKey_Exception );
-				} catch (DatabaseConnectionException e) {
-					e.printStackTrace();
-					httpRequest.setAttribute("FilterException", CustomExceptionValue.Database_Connection_Exception );
-				}
 			}
 		}
 		

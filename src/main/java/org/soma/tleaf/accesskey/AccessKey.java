@@ -8,42 +8,68 @@ import org.soma.tleaf.util.ISO8601;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class AccessKey {
-	
+
 	@JsonProperty("_id")
 	private String accessKey;
-	
+
 	@JsonProperty("_rev")
 	private String rev;
-	
+
 	private String userId;
 	private String appId;
 
 	// Both field will be in ISO 8601 format.
 	private String validFrom;
 	private String validTo;
-	
+
 	private boolean valid;
-	
-	public boolean isValid ( String userId ,String appId ) {
-		
-		// all FIVE values must be true to return true
+
+	public boolean isValid ( String accessKey, String appId, String userId ) {
+
+		// all FIX values must be true to return true
 		try {
-			
+
 			if ( 	valid && 
-					ISO8601.isFirstEarlier(validFrom, ISO8601.now()) && 
-					ISO8601.isFirstEarlier(ISO8601.now(), validTo) && 
+					vaildTime() &&
+					accessKey.matches(this.accessKey) &&
 					userId.matches(this.userId) && 
 					appId.matches(this.appId) 	) return true;
-			
+
 			else return false;
-			
+
 		} catch (ParseException e) {
-			
+
 			e.printStackTrace();
 			return false;
-			
+
 		}
-		
+
+	}
+
+	public boolean isValid ( AccessKey accessKey ) {
+
+		// all FIX values must be true to return true
+		try {
+
+			if ( 	valid && 
+					vaildTime() &&
+					accessKey.getAccessKey().matches(this.accessKey) &&
+					accessKey.getUserId().matches(this.userId) && 
+					accessKey.getAppId().matches(this.appId) 	) return true;
+
+			else return false;
+
+		} catch (ParseException e) {
+
+			e.printStackTrace();
+			return false;
+
+		}
+
+	}
+
+	private boolean vaildTime () throws ParseException {
+		return ISO8601.isFirstEarlier(validFrom, ISO8601.now()) && ISO8601.isFirstEarlier(ISO8601.now(), validTo);
 	}
 
 	public String getAppId() {
@@ -97,7 +123,7 @@ public class AccessKey {
 	public String getValidTo() {
 		return validTo;
 	}
-	
+
 	public boolean getvalid() {
 		return valid;
 	}

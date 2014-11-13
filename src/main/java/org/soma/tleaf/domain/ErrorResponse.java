@@ -3,8 +3,6 @@
  */
 package org.soma.tleaf.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * Created with Eclipse IDE
  * Author : RichardJ 

@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.mangofactory.swagger.configuration.SpringSwaggerConfig;
 import com.mangofactory.swagger.plugin.EnableSwagger;
@@ -12,9 +11,8 @@ import com.mangofactory.swagger.plugin.SwaggerSpringMvcPlugin;
 import com.wordnik.swagger.model.ApiInfo;
 
 @Configuration
-@EnableWebMvc
 @EnableSwagger
-@ComponentScan( basePackages = {"org.soma.tleaf.controller"} )
+@ComponentScan( basePackages = {"org.soma.tleaf"} )
 public class SwaggerConfig {
 
 	private SpringSwaggerConfig springSwaggerConfig;

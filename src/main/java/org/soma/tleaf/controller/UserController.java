@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.wordnik.swagger.annotations.ApiOperation;
+//import com.wordnik.swagger.annotations.ApiOperation;
 
 /** Handles User related methods. ( login, signup, signout )
  * 2014.10.14
@@ -43,7 +43,7 @@ public class UserController {
 	 */
 	@RequestMapping(value = "user/login", method = RequestMethod.POST )
 	@ResponseBody
-	@ApiOperation( httpMethod = "POST" , value = "User Login" )
+	//@ApiOperation( httpMethod = "POST" , value = "User Login" )
 	public AccessKey userLogin( @RequestBody UserInfo userInfo )
 			throws CustomException {
 
@@ -62,7 +62,7 @@ public class UserController {
 	 */
 	@RequestMapping(value = "user/signup", method = RequestMethod.POST )
 	@ResponseBody
-	@ApiOperation( httpMethod = "POST" , value = "New User SignUp" )
+	//@ApiOperation( httpMethod = "POST" , value = "New User SignUp" )
 	public String userSignup( @RequestBody UserInfo userInfo )
 			throws CustomException {
 		
@@ -81,7 +81,7 @@ public class UserController {
 	 */
 	@RequestMapping(value = "user/signout", method = RequestMethod.DELETE )
 	@ResponseBody
-	@ApiOperation( httpMethod = "DELETE" , value = "Delete Existing User" )
+	//@ApiOperation( httpMethod = "DELETE" , value = "Delete Existing User" )
 	public String userSignout( @RequestBody UserInfo userInfo) throws CustomException {
 
 		return userDao.userSignOut( userInfo.getEmail(), userInfo.getPassword() );

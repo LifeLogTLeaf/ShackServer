@@ -3,11 +3,13 @@ package org.soma.tleaf.accesskey;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.DocumentNotFoundException;
+import org.ektorp.Revision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.soma.tleaf.couchdb.CouchDbConn;
@@ -16,6 +18,7 @@ import org.soma.tleaf.exception.InvalidAccessKeyException;
 import org.soma.tleaf.util.ISO8601;
 
 /**
+ * Deals with CRUD of AccessKeys
  * 2014.10.17
  * @author susu
  */
@@ -36,22 +39,31 @@ public class AccessKeyManagerImpl implements AccessKeyManager {
 	}
 	
 	@Override
-	public boolean isAccessKeyValid(String accessKey, String appId, String userId) throws InvalidAccessKeyException, DatabaseConnectionException {
+	public boolean isAccessKeyValid( AccessKey accessKey ) throws InvalidAccessKeyException, DatabaseConnectionException {
 
 		setCouchDbConnector();
 		AccessKey tmpAccessKey;
 		try {
-			tmpAccessKey = couchDbConnector_apikey.get( AccessKey.class, accessKey );
+			tmpAccessKey = couchDbConnector_apikey.get( AccessKey.class, accessKey.getAccessKey() );
 		} catch( DocumentNotFoundException e ) {
 			e.printStackTrace();
 			throw new InvalidAccessKeyException();
 		}
 		
 		// Checks if the Access Key is Valid, including times
-		if ( tmpAccessKey.isValid( userId, appId ) )
+		if ( tmpAccessKey.isValid( accessKey ) )
 			return true;
 		else 
 			return false;
+	}
+
+	@Override
+	public boolean isAccessKeyValid(String accessKey, String appId,
+			String userId) throws InvalidAccessKeyException, DatabaseConnectionException {
+		
+		AccessKey tmp = new AccessKey(); tmp.setAccessKey(accessKey); tmp.setAppId(appId); tmp.setUserId(userId);
+		
+		return isAccessKeyValid(tmp);
 	}
 
 	@Override
@@ -111,4 +123,31 @@ public class AccessKeyManagerImpl implements AccessKeyManager {
 		
 		return createAccessKey( userId, ISO8601.now(), ISO8601.fromCalendar(calendar), isValid ,appId );
 	}
+
+	@Override
+	public void deleteAccessKey( String accessKey, String revision ) {
+		
+		List<Revision> revList = couchDbConnector_apikey.getRevisions(accessKey);
+		
+		for( Revision rev : revList ) {
+			if ( rev.isOnDisk() )
+				couchDbConnector_apikey.delete( accessKey, rev.getRev() );
+		}
+		
+		logger.info("Deleted Access Token " + accessKey );
+	}
+
+	@Override
+	public AccessKey findAccessKey(String accessKey) throws DatabaseConnectionException {
+		
+		setCouchDbConnector();
+		
+		try {
+			return couchDbConnector_apikey.get( AccessKey.class, accessKey );
+		} catch ( DocumentNotFoundException e ) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 }

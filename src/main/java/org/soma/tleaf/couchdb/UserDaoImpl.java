@@ -5,6 +5,7 @@ import javax.inject.Inject;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.DocumentNotFoundException;
+import org.ektorp.ReplicationCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.soma.tleaf.accesskey.AccessKey;
@@ -33,6 +34,8 @@ public class UserDaoImpl implements UserDao {
 	private CouchDbConnector couchDbConnector_hashid;
 	private CouchDbConnector couchDbConnector_users;
 	private CouchDbInstance couchDbInstance;
+	
+	private final String DESIGNDOC_DB_NAME = "tleaf_designdoc";
 
 	private static final Logger logger = LoggerFactory.getLogger(UserDaoImpl.class);
 	
@@ -110,6 +113,15 @@ public class UserDaoImpl implements UserDao {
 		couchDbInstance.createDatabase( "user_" + userInfo.getHashId() );
 		// Because a database name should start with an letter
 
+		// Import Default Design Documents into user database.
+		couchDbInstance.replicate( 
+				new ReplicationCommand.Builder()
+					.source(DESIGNDOC_DB_NAME)
+					.target( "user_" +  userInfo.getHashId() )
+					.continuous(false)
+					.build() 
+				);
+		
 		/* Young edited */
 		// elasticSearch DB create
 		esdbConn.replication("user_" + userInfo.getHashId());
@@ -144,9 +156,8 @@ public class UserDaoImpl implements UserDao {
 			hashId = couchDbConnector_hashid.get( HashId.class, email );
 			userInfo = couchDbConnector_users.get( UserInfo.class, hashId.getHashId() );
 			
-			couchDbInstance.deleteDatabase( "user_" + userInfo.getHashId() );
-			
 			couchDbConnector_hashid.delete( hashId.getEmail(), hashId.getRev() );
+			couchDbInstance.deleteDatabase( "user_" + userInfo.getHashId() );
 			couchDbConnector_users.delete( userInfo.getHashId(), userInfo.getRev() );
 
 		} catch ( Exception e ) {

@@ -21,7 +21,9 @@ public interface AccessKeyManager {
 	 * @throws InvalidAccessKeyException If AccessKey doesn't exist
 	 * @throws DatabaseConnectionException If Failed to Connect to the Database
 	 */
-	public boolean isAccessKeyValid ( String accessKey, String appId, String userId ) throws InvalidAccessKeyException,DatabaseConnectionException;
+	public boolean isAccessKeyValid ( AccessKey accessKey ) throws InvalidAccessKeyException,DatabaseConnectionException;
+	
+	public boolean isAccessKeyValid ( String accessKey, String appId, String userId ) throws InvalidAccessKeyException, DatabaseConnectionException;
 	
 	// Makes access Keys. If String is in wrong format, it returns an invalid accessKey	
 	public AccessKey createAccessKey ( String userId, Long vaildForMillis, boolean isValid ) throws DatabaseConnectionException ;
@@ -42,4 +44,15 @@ public interface AccessKeyManager {
 	 */
 	public AccessKey createAccessKey ( String userId, Long vaildForMillis, boolean isValid, String appId ) throws DatabaseConnectionException ;
 
+	public void deleteAccessKey ( String accessKey, String revision );
+	
+	/**
+	 * Fetches AccessKey Object by Id
+	 * @author susu
+	 * Date Nov 12, 2014 9:48:25 PM
+	 * @param accessKey
+	 * @return AccessKey Object. if it doesn't Exist, return null
+	 * @throws DatabaseConnectionException 
+	 */
+	public AccessKey findAccessKey ( String accessKey ) throws DatabaseConnectionException;
 }

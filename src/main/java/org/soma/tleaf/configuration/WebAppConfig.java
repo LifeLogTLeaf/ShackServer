@@ -29,12 +29,12 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @Configuration
 @EnableWebMvc  //same as <mvc:annotation-driven/>
 @ComponentScan(basePackages = {"org.soma.tleaf"})//same as <context:component-scan base-package="com.tleaf.lifelog"/>
-@PropertySource({"classpath:couchdb.properties", "classpath:esdb.properties"})
+@PropertySource({"classpath:couchdb.properties", "classpath:esdb.properties", "classpath:redis.properties"})
 public class WebAppConfig extends WebMvcConfigurerAdapter {
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		//...
+		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
 	}
 
 	//Set default servlet handler, this is the same as <mvc:default-servlet-handler/>

@@ -111,7 +111,7 @@ public class RedisCache implements Cache {
 		else {
 
 			logger.info("Found Key in Redis. Mapping.");
-			accessKey = gson.fromJson(accessKeyString.substring( accessKeyString.indexOf("{") ), AccessKey.class);
+			accessKey = gson.fromJson(accessKeyString, AccessKey.class);
 		}
 		
 		return new SimpleValueWrapper( accessKey );

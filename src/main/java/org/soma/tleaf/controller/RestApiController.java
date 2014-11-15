@@ -21,6 +21,7 @@ import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.exception.CustomException;
 import org.soma.tleaf.exception.CustomExceptionFactory;
 import org.soma.tleaf.exception.CustomExceptionValue;
+import org.soma.tleaf.exception.DatabaseConnectionException;
 import org.soma.tleaf.service.RestApiService;
 import org.soma.tleaf.util.ISO8601;
 import org.springframework.http.MediaType;
@@ -102,7 +103,21 @@ public class RestApiController {
 		return restApiService.updateUserInfo( rawData );
 	}
 	
-	
+	/**
+	 * Returns how much logs each application has saved 
+	 * @author susu
+	 * Date Nov 14, 2014 1:49:40 AM
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping( value = "/user/statistic" , method = RequestMethod.GET )
+	public ResponseEntity<Map<String,Object>> getUserStat ( HttpServletRequest request ) throws Exception {
+		
+		RequestParameter param = new RequestParameter();
+		param.setUserHashId( request.getHeader(USERID_HEADER_NAME) );
+		return restApiService.appCount(param);
+	}
 	
 	/**
 	 * Put an attachment info the Specific Document Using HTTP Multipart Request
@@ -323,6 +338,27 @@ public class RestApiController {
 		return restApiService.postUserData( rawData );
 	}
 
+	@RequestMapping( value = "/user/date", method = RequestMethod.GET )
+	public ResponseEntity<List<RawData>> getUserDataByDate ( HttpServletRequest request, 
+			@RequestParam( value="date",required = true ) String[] date ) throws Exception {
+		
+		// HttpServletRequest.getAttribute Returns null if Values are not found
+		if (request.getAttribute("FilterException") != null)
+			throw customExceptionFactory.createCustomException((CustomExceptionValue) request.getAttribute("FilterException"));
+		
+		logger.info("/user/date.GET");
+		
+//		if ( date.length > 6 )
+//			throw customExceptionFactory.createCustomException( CustomExceptionValue.)
+		
+		RequestParameter param = new RequestParameter();
+		param.setUserHashId( request.getHeader(USERID_HEADER_NAME) );
+		param.setAppId( request.getHeader(APPID_HEADER_NAME) );
+		param.setDate(date);
+		
+		return restApiService.getUserDataFromDate(param);
+	}
+	
 	/**
 	 * Author : RichardJ
 	 * Date : Oct 20, 2014 18:55:06

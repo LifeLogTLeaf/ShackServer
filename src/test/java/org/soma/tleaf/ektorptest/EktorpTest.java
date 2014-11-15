@@ -104,7 +104,7 @@ public class EktorpTest {
 	}
 
 	// test for Update Document
-	@Test
+	//@Test
 	public void testUpdateDocumnet() throws MalformedURLException {
 		CouchDbInstance dbInstance = createDbInstance();
 		CouchDbConnector db = new StdCouchDbConnector(DbName, dbInstance);

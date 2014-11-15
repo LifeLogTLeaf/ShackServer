@@ -102,6 +102,11 @@ public class RestApiServiceImple implements RestApiService {
 		result.setLogs(restApiDao.getAllDataFromAppId(param));
 		return result;
 	}
+	
+	@Override
+	public ResponseEntity<List<RawData>> getUserDataFromDate(RequestParameter param) throws Exception {
+		return new ResponseEntity<List<RawData>>( restApiDao.getDataByDate(param), HttpStatus.OK );
+	}
 
 	/**
 	 * Deletes User Log and Returns the _rev of the Deleted Doc.
@@ -148,8 +153,6 @@ public class RestApiServiceImple implements RestApiService {
 		return restApiDao.getUserInfo( userId );
 	}
 	
-	
-	
 	/** 
 	 * @author : RichardJ
 	 * Date    : Nov 11, 2014 6:21:11 PM
@@ -161,8 +164,6 @@ public class RestApiServiceImple implements RestApiService {
 	public UserInfo updateUserInfo(RawData rawData) throws CustomException {
 		return restApiDao.updateUserInfo( rawData );
 	}
-	
-	
 
 	/**
 	 * Fetches RawData with Document Id
@@ -178,7 +179,6 @@ public class RestApiServiceImple implements RestApiService {
 			throws CustomException {
 		return restApiDao.getRawData(rawDataId, userId);
 	}
-
 	
 	/**
 	 * Fetches Byte array Resource from user database Differs Status codes by Exception
@@ -216,7 +216,6 @@ public class RestApiServiceImple implements RestApiService {
 		
 		}
 	}
-
 	
 	/**
 	 * Only uses RawData's id, rev, base64String to update a document and put an attachment
@@ -279,6 +278,14 @@ public class RestApiServiceImple implements RestApiService {
 		return new ResponseEntity<Map<String,Object>>( result, HttpStatus.CREATED );
 	}
 
+	/**
+	 * Deletes the specific Attachment. If appId doesn't match, FORBID it.
+	 * @author susu
+	 * Date Nov 14, 2014
+	 * @param rawData
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	public ResponseEntity<Map<String, Object>> deleteAttachment( RawData rawData ) throws Exception {
 		
@@ -298,6 +305,19 @@ public class RestApiServiceImple implements RestApiService {
 		result.put("Attachment Delete", restApiDao.deleteAttachment(rawData) );
 		
 		return new ResponseEntity<Map<String,Object>>( result, HttpStatus.OK );
+	}
+
+	/**
+	 * Returns how much log data an application has made.
+	 * @author susu
+	 * Date Nov 14, 2014
+	 * @param param
+	 * @return
+	 * @throws DatabaseConnectionException
+	 */
+	@Override
+	public ResponseEntity<Map<String, Object>> appCount(RequestParameter param) throws DatabaseConnectionException {
+		return new ResponseEntity< Map<String,Object>>( restApiDao.appCount(param), HttpStatus.OK );
 	}
 
 }

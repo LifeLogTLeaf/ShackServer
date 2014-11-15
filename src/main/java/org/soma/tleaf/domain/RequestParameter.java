@@ -19,9 +19,22 @@ public class RequestParameter {
 	private String appId;
 	private String userHashId;
 	private String limit;
+	private String[] date;
 	private boolean descend;
 	private Map<String, Object> serviceData;
-
+	
+	public String[] getDate() {
+		return date;
+	}
+	public void setDate(String[] date) {
+		this.date = date;
+	}
+	public Map<String, Object> getServiceData() {
+		return serviceData;
+	}
+	public void setServiceData(Map<String, Object> serviceData) {
+		this.serviceData = serviceData;
+	}
 	public Map<String, Object> getserviceData() {
 		return serviceData;
 	}

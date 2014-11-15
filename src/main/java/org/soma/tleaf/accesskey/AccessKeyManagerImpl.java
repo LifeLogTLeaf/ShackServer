@@ -3,6 +3,7 @@ package org.soma.tleaf.accesskey;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -13,19 +14,34 @@ import org.ektorp.Revision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.soma.tleaf.couchdb.CouchDbConn;
+import org.soma.tleaf.dao.OauthDao;
+import org.soma.tleaf.exception.CustomException;
+import org.soma.tleaf.exception.CustomExceptionFactory;
+import org.soma.tleaf.exception.CustomExceptionValue;
 import org.soma.tleaf.exception.DatabaseConnectionException;
 import org.soma.tleaf.exception.InvalidAccessKeyException;
 import org.soma.tleaf.util.ISO8601;
+
+import redis.clients.jedis.Jedis;
 
 /**
  * Deals with CRUD of AccessKeys
  * 2014.10.17
  * @author susu
  */
-public class AccessKeyManagerImpl implements AccessKeyManager {
+public class AccessKeyManagerImpl implements AccessKeyManager, OauthManager {
 	
 	@Inject
 	private CouchDbConn couchDbConn;
+	
+	@Inject
+	private OauthDao oauthDao;
+	
+	@Inject
+	private CustomExceptionFactory customExceptionFactory;
+	
+	@Inject
+	private Jedis jedis;
 
 	private static Logger logger = LoggerFactory.getLogger(AccessKeyManagerImpl.class);
 	
@@ -148,6 +164,33 @@ public class AccessKeyManagerImpl implements AccessKeyManager {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	@Override
+	public String createLoginAccessCode(String appId) {
+		String rnd = String.valueOf( (int)( Math.random() * 10000000 ) );
+		jedis.set(rnd, appId);
+		return rnd;
+	}
+
+	@Override
+	public boolean checkLoginAccessCode(String accessCode) throws CustomException {
+		
+		String tmp = jedis.get( accessCode );
+		if ( tmp == null ) {
+			throw customExceptionFactory.createCustomException( CustomExceptionValue.Login_Access_Code_Not_Found_Exception );
+		}
+		else if ( accessCode.matches(tmp) ) {
+			jedis.del( accessCode );
+			return true;
+		}
+		
+		throw customExceptionFactory.createCustomException( CustomExceptionValue.Login_Access_Code_Incorrect_Exception );
+	}
+
+	@Override
+	public boolean isAppIdValid(String appId) throws DatabaseConnectionException {
+		return oauthDao.isAppIdValid(appId);
 	}
 
 }

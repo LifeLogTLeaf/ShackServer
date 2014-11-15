@@ -12,6 +12,7 @@ import org.soma.tleaf.domain.RawData;
 import org.soma.tleaf.domain.RequestParameter;
 import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.exception.CustomException;
+import org.soma.tleaf.exception.DatabaseConnectionException;
 
 /**
  * Created with Eclipse IDE
@@ -32,4 +33,6 @@ public interface RestApiDao {
 	public RawData getRawData( String rawDataId, String userId ) throws CustomException;
 	public AttachmentInputStream getAttachment( String userId, String docId, String attachmentId ) throws Exception;
 	public String deleteAttachment( RawData rawData ) throws Exception;
+	public Map<String, Object> appCount ( RequestParameter param ) throws DatabaseConnectionException;
+	public List<RawData> getDataByDate( RequestParameter param ) throws Exception;
 }

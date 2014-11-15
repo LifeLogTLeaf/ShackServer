@@ -1,0 +1,8 @@
+/*로그인 폼에 걸맞지 않다면 x표시를 제출한다*/
+.form-invalid{
+    position: absolute; top: 10px; left: 295px; z-index: 10; color: #ED9595;
+}
+/*로그인 폼에 맞다면 v표시를 제출한다*/
+.form-valid{
+    position: absolute; top: 10px; left: 295px; z-index: 10; color: #62C15B;
+}

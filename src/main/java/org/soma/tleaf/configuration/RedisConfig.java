@@ -17,24 +17,6 @@ public class RedisConfig {
 	private @Value("${redis.host-name}") String redisHostName;
 	private @Value("${redis.port}") int redisPort;
 	
-//	@Bean
-//	public JedisConnectionFactory jedisConnFactory () {
-//		JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory();
-//		jedisConnectionFactory.setUsePool(true);
-//		jedisConnectionFactory.setHostName(redisHostName);
-//		jedisConnectionFactory.setPort(redisPort);
-//		return jedisConnectionFactory;
-//	}
-//	
-//	@Bean
-//	public RedisTemplate<String,String> redisTemplate () {
-//		RedisTemplate<String,String> redisTemplate = new RedisTemplate<String, String>();
-//		redisTemplate.setConnectionFactory( jedisConnFactory() );
-//		redisTemplate.setKeySerializer(new StringRedisSerializer());
-//		redisTemplate.setValueSerializer(new StringRedisSerializer());
-//		return redisTemplate;
-//	}
-	
 	@Bean
 	public RedisCache redisCache () {
 		return new RedisCache( jedis() );

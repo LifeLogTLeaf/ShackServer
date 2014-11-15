@@ -1,0 +1,169 @@
+/*일기 읽기 페이지에서 태그들 내의 간격을 넓혀준다*/
+.btn-margin{
+    margin: 0px 4px 0px 0px;
+}
+
+.fc-day-number{
+    /*background: #f56954;*/
+    /*border-radius: 60%;*/
+
+}
+.hello{
+    /*top: inherit !important;*/
+}
+
+/*일기 목록의 사진에 반투명 필터효과를 적용*/
+.img-bottom-filter{
+    position: relative; top: -40px; height: 40px; opacity: 0.3;
+}
+/*카드, 리스트뷰에서 포스트 테두리를 다듬는다*/
+.post-radius{
+    border-radius: 3% 3% 0px 0px !important;
+}
+
+/*항목들 간의 padding-left값을 0으로 갱신 */
+.non-padding-left{
+    padding-left: 0px;
+}
+/*항목들 간의 padding-right값을 0으로 갱신 */
+.non-padding-right{
+    padding-right: 0px;
+}
+
+.leftmenu{
+    width: 163px;
+}
+
+.col-lg-offset-1_5{
+    margin-left: 12.555555%;
+}
+
+/*헤더의 아이콘 배경화면을 바꾼다*/
+.header-icon:hover{
+    background: #004164;
+}
+/*로고의 배경화면을 바꾼다*/
+.logo:hover ,.success-icon:hover{
+    background: #004164 !important;
+}
+.bg-grass{
+    background: #93CC8D;
+}
+.bg-customblue{
+    background: #3E739D;
+}
+.textarea{
+    width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;
+}
+
+/*페이지 로딩 애니메이션*/
+.animate-enter,
+.animate-leave
+{
+    -webkit-transition: 500ms cubic-bezier(0.645, 0.045, 0.355, 1.000) all;
+    -moz-transition: 500ms cubic-bezier(0.645, 0.045, 0.355, 1.000) all;
+    -ms-transition: 500ms cubic-bezier(0.645, 0.045, 0.355, 1.000) all;
+    -o-transition: 500ms cubic-bezier(0.645, 0.045, 0.355, 1.000) all;
+    transition: 500ms cubic-bezier(0.645, 0.045, 0.355, 1.000) all;
+    position: relative;
+    display: block;
+}
+
+.animate-enter.animate-enter-active,
+.animate-leave {
+    opacity: 1;
+    top: 0;
+    height: 30px;
+}
+
+.animate-leave.animate-leave-active,
+.animate-enter {
+    opacity: 0;
+    top: -80px;
+    height: 0px;
+}
+/*./페이지 로딩 애니메이션*/
+
+
+.big-text-size{
+    font-size: 600%;
+}
+
+.text-deep-blue{
+    color: #153562;
+}
+.text-white-gray{
+    color:#D4D4D4;
+}
+.text-white-blue{
+    color:#5D97E8;
+}
+.text-light-green{
+    color: #33A16B;
+}
+.bg-white-gray{
+    background:#AEAEAE;
+}
+.bg-red-pink{
+    background: #D76470;
+}
+.text-red-pink{
+    color: #CC737D;
+}
+.text-white-pink{
+    color: #FB8F81;
+}
+/*chart페이지의 통계항목 ul태그값*/
+.ul-chart{
+    display: block;
+    float: left;
+    margin-right: -2px;
+}
+.hr-chart{
+    width: 2px;
+    height: 360px;
+    float: left;
+}
+.text-align-center{
+    text-align: center;
+}
+
+.list-margin-minus{
+    list-style: none; margin-bottom: -78px;
+}
+.icon-chart-postion{
+    position: relative;
+    width: 0px;
+    float: right;
+    top: -30px;
+    right:25px;
+}
+.d3-chart{
+    float: left;
+}
+
+
+.field-area{
+    margin-top: -6.5%;
+    margin-left: -2%;
+    margin-right: -2%;
+    margin-bottom: -2%;
+    padding-top: 12%;
+    padding-bottom: 16%;
+
+}
+
+/* Chrome, Safari, Opera */
+@-webkit-keyframes mymove-rev {
+    0% {-webkit-transform: rotateY(360deg);}
+}
+
+/* Standard syntax */
+@keyframes mymove-rev {
+    0% {transform: rotateY(360deg);}
+}
+
+.trans-icon:not(:hover){
+    -webkit-animation: mymove-rev 1s; /* Chrome, Safari, Opera */
+    animation: mymove-rev 1s ;
+}

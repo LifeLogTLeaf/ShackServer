@@ -2,12 +2,15 @@ package org.soma.tleaf.configuration;
 
 import org.soma.tleaf.accesskey.AccessKeyManager;
 import org.soma.tleaf.accesskey.AccessKeyManagerImpl;
+import org.soma.tleaf.accesskey.OauthManager;
 import org.soma.tleaf.couchdb.CouchDbConn;
 import org.soma.tleaf.couchdb.CouchDbConnImpl;
-import org.soma.tleaf.couchdb.UserDao;
-import org.soma.tleaf.couchdb.UserDaoImpl;
+import org.soma.tleaf.dao.OauthDao;
+import org.soma.tleaf.dao.OauthDaoImpl;
 import org.soma.tleaf.dao.RestApiDao;
 import org.soma.tleaf.dao.RestApiDaoImple;
+import org.soma.tleaf.dao.UserDao;
+import org.soma.tleaf.dao.UserDaoImpl;
 import org.soma.tleaf.esdb.EsdbConn;
 import org.soma.tleaf.esdb.EsdbConnimple;
 import org.soma.tleaf.exception.CustomExceptionFactory;
@@ -56,7 +59,7 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 	public InternalResourceViewResolver getInternalResourceViewResolver() {
 		InternalResourceViewResolver resolver = new InternalResourceViewResolver();
 		resolver.setPrefix("/WEB-INF/views/");
-		resolver.setSuffix(".jsp");
+		resolver.setSuffix(".html");
 		return resolver;
 	}
 
@@ -80,6 +83,11 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 	public AccessKeyManager accessKeyManager() {
 		return new AccessKeyManagerImpl();
 	}
+	
+	@Bean
+	public OauthManager oauthManager() {
+		return new AccessKeyManagerImpl();
+	}
 
 	@Bean
 	public RestApiService resrApiService(){
@@ -99,6 +107,11 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 	@Bean
 	public EsdbConn esdbConn(){
 		return new EsdbConnimple();
+	}
+	
+	@Bean
+	public OauthDao oauthDao() {
+		return new OauthDaoImpl();
 	}
 
 }

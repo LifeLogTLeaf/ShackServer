@@ -5,7 +5,7 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.soma.tleaf.accesskey.AccessKey;
-import org.soma.tleaf.couchdb.UserDao;
+import org.soma.tleaf.dao.UserDao;
 import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.exception.CustomException;
 import org.springframework.stereotype.Controller;
@@ -63,7 +63,7 @@ public class UserController {
 	@RequestMapping(value = "user/signup", method = RequestMethod.POST )
 	@ResponseBody
 	//@ApiOperation( httpMethod = "POST" , value = "New User SignUp" )
-	public String userSignup( @RequestBody UserInfo userInfo )
+	public AccessKey userSignup( @RequestBody UserInfo userInfo )
 			throws CustomException {
 		
 		logger.info( userInfo.getEmail() );

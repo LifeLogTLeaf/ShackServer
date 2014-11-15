@@ -5,6 +5,7 @@ package org.soma.tleaf.dao;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,12 +16,12 @@ import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.DocumentNotFoundException;
 import org.ektorp.ViewQuery;
+import org.ektorp.ViewResult.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.soma.tleaf.couchdb.CouchDbConn;
 import org.soma.tleaf.domain.RawData;
 import org.soma.tleaf.domain.RequestParameter;
-import org.soma.tleaf.domain.SimpleUserInfo;
 import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.exception.CustomException;
 import org.soma.tleaf.exception.CustomExceptionFactory;
@@ -111,12 +112,6 @@ public class RestApiDaoImple implements RestApiDao {
 		logger.info(param.getAppId() + " application query");
 		logger.info("startKey = " + "[" + param.getAppId() + "," + param.getStartKey() + "]");
 		logger.info("endKey = " + "[" + param.getAppId() + "," + param.getEndKey() + "]");
-
-		/**
-		 * 2014.10.25
-		 * 
-		 * @author susu
-		 */
 
 		CouchDbConnector db = connector.getCouchDbConnetor("user_" + param.getUserHashId());
 
@@ -246,8 +241,6 @@ public class RestApiDaoImple implements RestApiDao {
 		couchDbConnector_user.update(userInfo);
 		return userInfo;
 	}
-	
-	
 
 	/**
 	 * Fetches the Specific Raw Data by _id
@@ -293,8 +286,6 @@ public class RestApiDaoImple implements RestApiDao {
 		// DatabaseConnectionException Can Occur
 		CouchDbConnector couchDbConnector_user = connector.getCouchDbConnetor( "user_" + userId );
 		
-		byte[] resource = new byte[100000];
-		
 		AttachmentInputStream attachmentStream = couchDbConnector_user.getAttachment( docId, attachmentId );
 		return attachmentStream;
 		
@@ -337,6 +328,14 @@ public class RestApiDaoImple implements RestApiDao {
 
 	}
 
+	/**
+	 * Deletes the Specific Attachment. id, rev is both needed
+	 * @author susu
+	 * Date Nov 13, 2014
+	 * @param rawData
+	 * @return
+	 * @throws DatabaseConnectionException
+	 */
 	@Override
 	public String deleteAttachment( RawData rawData ) throws DatabaseConnectionException {
 		
@@ -354,6 +353,81 @@ public class RestApiDaoImple implements RestApiDao {
 						rawData.getRevision(), 
 						rawData.getAttachmentId() 
 						);
+	}
+
+	/**
+	 * Returns how much logs are stored in DB ( by applications )
+	 * @author susu
+	 * Date Nov 14, 2014
+	 * @param param
+	 * @return
+	 * @throws DatabaseConnectionException
+	 */
+	@Override
+	public Map<String, Object> appCount(RequestParameter param) throws DatabaseConnectionException {
+		
+		logger.info( param.getUserHashId() + " Statistic Query" );
+		
+		CouchDbConnector db = connector.getCouchDbConnetor("user_" + param.getUserHashId());
+		
+		ViewQuery query = new ViewQuery().designDocId("_design/shack").viewName("appcount").group(true);
+		
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		
+		try {
+			List<Row> rows = db.queryView(query).getRows();
+			
+			for ( Row i : rows ) {
+				resultMap.put( i.getKey(), i.getValue() );
+			}
+			
+			return resultMap;
+			
+		} catch (DocumentNotFoundException e) {
+			// if there were no documents to the specific query
+			e.printStackTrace();
+			throw e;
+		}
+	}
+
+	@Override
+	public List<RawData> getDataByDate(RequestParameter param) throws Exception {
+		
+		logger.info( param.getUserHashId() + " Data by Date" );
+		
+		CouchDbConnector db = connector.getCouchDbConnetor("user_" + param.getUserHashId());
+		
+		String[] date = param.getDate();
+		
+		String[] startDate = new String[7]; startDate[0] = param.getAppId();
+		String[] endDate = new String[7]; endDate[0] = param.getAppId();
+		
+		int i;
+		for ( i=0; i< date.length; i++ ) {
+			startDate[i+1] = date[i];
+			endDate[i+1] = date[i];
+		}
+		
+		for ( i=date.length; i<6; i++ ) {
+			startDate[i+1] = "00";
+			endDate[i+1] = "99";
+		}
+		
+		ComplexKey startKey = ComplexKey.of( startDate[0],startDate[1],startDate[2],startDate[3],startDate[4],startDate[5],startDate[6] );
+		ComplexKey endKey = ComplexKey.of( endDate[0],endDate[1],endDate[2],endDate[3],endDate[4],endDate[5],endDate[6] );
+		
+		ViewQuery query = new ViewQuery().designDocId("_design/shack").viewName("appdate").startKey(startKey).endKey(endKey);
+		
+		List<RawData> rawDatas;
+		try {
+			rawDatas = db.queryView(query, RawData.class);
+		} catch (DocumentNotFoundException e) {
+			// if there were no documents to the specific query
+			e.printStackTrace();
+			throw e;
+		}
+		
+		return rawDatas;
 	}
 
 }

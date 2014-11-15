@@ -78,7 +78,7 @@ public class EsTest {
                 .actionGet();
 	}
 	
-	@Test
+	//@Test
 	public void esQueryTest(){
 		Settings settings = ImmutableSettings
                 .settingsBuilder()

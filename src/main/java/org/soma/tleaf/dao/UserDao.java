@@ -1,4 +1,4 @@
-package org.soma.tleaf.couchdb;
+package org.soma.tleaf.dao;
 
 import org.soma.tleaf.accesskey.AccessKey;
 import org.soma.tleaf.domain.UserInfo;
@@ -14,7 +14,7 @@ public interface UserDao {
 	 * @return JSON String about the SignUp Process 
 	 * @throws CustomException If Email Already Exists or Failed to Connect to Database
 	 */
-	public String userSignUp( UserInfo userInfo ) throws CustomException;
+	public AccessKey userSignUp( UserInfo userInfo ) throws CustomException;
 	
 	/** Creates an Access Token for the Specific User
 	 * 

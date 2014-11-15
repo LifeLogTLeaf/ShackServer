@@ -22,6 +22,10 @@ public class CustomExceptionFactory {
 		case Auth_Info_Insufficient_Exception : return new AuthInfoInsufficientException();
 		case No_Such_Document_Exception : return new NoSuchDocumentException();
 		case Too_Much_File_Upload_Exception : return new TooMuchFileUploadedException();
+		case Invalid_App_Id_Exception : return new InvalidAppIdException();
+		case Json_Data_Mapping_Exception : return new JsonDataMappingException();
+		case Login_Access_Code_Not_Found_Exception : return new LoginAccessCodeNotFoundException();
+		case Login_Access_Code_Incorrect_Exception : return new LoginAccessKeyIncorrectException();
 		
 		}
 		

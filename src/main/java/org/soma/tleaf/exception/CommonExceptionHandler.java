@@ -2,6 +2,8 @@ package org.soma.tleaf.exception;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.soma.tleaf.domain.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -18,17 +20,20 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice
 public class CommonExceptionHandler {
 
+	private static final Logger logger = LoggerFactory.getLogger( CommonExceptionHandler.class );
+	
 	/**
 	 * Author : RichardJ
 	 * Date : Oct 22, 2014 10:14:23 PM
 	 * Description : 인증키에 관한 오류를 처리하는 메소드입니다.
 	 */
 	@ExceptionHandler({ ExpiredAccessKeyException.class, InvalidAccessKeyException.class, WrongAuthenticationInfoException.class,
-			NoSuchUserException.class, AuthInfoInsufficientException.class })
+			NoSuchUserException.class, AuthInfoInsufficientException.class, InvalidAppIdException.class, LoginAccessCodeNotFoundException.class , LoginAccessKeyIncorrectException.class })
 	@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	@ResponseBody
 	public ErrorResponse handleExpiredAccessKeyException(CustomException e, HttpServletResponse response) {
 
+		logger.error(e.getExceptionName());
 		ErrorResponse errorLog = new ErrorResponse();
 		errorLog.setError(e.getExceptionName());
 		errorLog.setReason(e.getMessage());
@@ -45,6 +50,7 @@ public class CommonExceptionHandler {
 	@ResponseBody
 	public ErrorResponse handleMissingServletRequestParameterException(CustomException e, HttpServletResponse response) {
 
+		logger.error(e.getExceptionName());
 		ErrorResponse errorLog = new ErrorResponse();
 		errorLog.setError(e.getExceptionName());
 		errorLog.setReason(e.getMessage());
@@ -61,10 +67,32 @@ public class CommonExceptionHandler {
 	@ResponseBody
 	public ErrorResponse handleUnacceptableUserRequestException(CustomException e, HttpServletResponse response) {
 
+		logger.error(e.getExceptionName());
 		ErrorResponse errorLog = new ErrorResponse();
 		errorLog.setError(e.getExceptionName());
 		errorLog.setReason(e.getMessage());
 		return errorLog;
+	}
+	
+	/**
+	 * Handles Internal Error Exceptions
+	 * @author susu
+	 * Date Nov 15, 2014 11:31:53 AM
+	 * @param e
+	 * @return
+	 */
+	@ExceptionHandler( {DatabaseConnectionException.class } )
+	@ResponseStatus( HttpStatus.INTERNAL_SERVER_ERROR )
+	@ResponseBody
+	public ErrorResponse handleInternalServerErrorException( CustomException e ) {
+		
+		logger.error(e.getExceptionName());
+		ErrorResponse errorLog = new ErrorResponse();
+		errorLog.setError(e.getExceptionName());
+		errorLog.setReason(e.getMessage());
+		
+		return errorLog;
+		
 	}
 
 	/**

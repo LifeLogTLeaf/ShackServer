@@ -1,4 +1,4 @@
-package org.soma.tleaf.couchdb;
+package org.soma.tleaf.dao;
 
 import javax.inject.Inject;
 
@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.soma.tleaf.accesskey.AccessKey;
 import org.soma.tleaf.accesskey.AccessKeyManager;
+import org.soma.tleaf.couchdb.CouchDbConn;
 import org.soma.tleaf.domain.HashId;
 import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.esdb.EsdbConn;
@@ -80,7 +81,7 @@ public class UserDaoImpl implements UserDao {
 	 */
 
 	@Override
-	public String userSignUp( UserInfo userInfo ) throws CustomException {
+	public AccessKey userSignUp( UserInfo userInfo ) throws CustomException {
 
 		// 1. Create User Database  2. Create User HashKey  3. Create UserInfo Document in User DB
 
@@ -126,7 +127,7 @@ public class UserDaoImpl implements UserDao {
 		// elasticSearch DB create
 		esdbConn.replication("user_" + userInfo.getHashId());
 		
-		return "{ \"signup\" : \"sucess\" , \"userId\" : \"" + userInfo.getHashId() + "\" }";
+		return userLogin( userInfo.getEmail() , userInfo.getPassword() );
 	}
 
 	@Override

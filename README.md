@@ -16,10 +16,11 @@ From now on, I will use "HOME" instead of "http://14.63.171.66:8081/tleafstructu
 
 Open up a new tab and call
 
-HOME/oauth?appId=<your_application_id>
+http://HOME/oauth?appId=<your_application_id>
 GET HTTP/1.0
 
 Once the TLeaf User finishes Authrization, You will have the User's Access Key which looks like
+```
 {
    "_id": "3dc93a3c4aeaebde2b910777a80016b1",
    "userId": "344bc889c8bb44dd6e4bb845d40007b9",
@@ -28,12 +29,14 @@ Once the TLeaf User finishes Authrization, You will have the User's Access Key w
    "validTo": "2014-11-16T11:56:33+09:00",
    "valid": true
 }
+```
 
 Now, You can use the APIs below ( HOME/api/* ) by Setting custom headers with AccessKey. For example,
 
 
 For Request,
 
+```
 GET /tleafstructure/api/user HTTP/1.1
 Host: 14.63.171.66:8081
 Connection: keep-alive
@@ -43,9 +46,11 @@ x-tleaf-user-id: 344bc889c8bb44dd6e4bb845d40007b9
 x-tleaf-application-id: 6b22f647ef8f2f3278a1322d8b000f81
 x-tleaf-access-token: 6b22f647ef8f2f3278a1322d8b000210
 Accept: */*
+```
 
 And You will get
 
+```
 {
     "hashId": "344bc889c8bb44dd6e4bb845d40007b9",
     "rev": "1-fbc25ffde83d3429f85ff22374661784",
@@ -56,10 +61,11 @@ And You will get
     "age": 19,
     "services": null
 }
+```
 
 as the Response. Piece of Cake! Isn't it?
 
-
+```javascript
 var url = "http://14.63.171.66:8081/api/user";
                
                $.ajax({
@@ -82,3 +88,4 @@ var url = "http://14.63.171.66:8081/api/user";
                                    + xhr.statusText);
                     }
                });
+```

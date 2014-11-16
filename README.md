@@ -6,7 +6,7 @@ This is TLeaf API Server
 
 **To Use Shack API, contact us at tleafshack@gmail.com FIRST**
 
-###### Once you are Registered, use can start using TLeaf API.
+###### Once you are Registered, you can start using TLeaf API.
 
 1. Make Login with TLeaf
 --------

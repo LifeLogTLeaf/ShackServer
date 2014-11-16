@@ -7,6 +7,6 @@ public interface OauthManager {
 	
 	public boolean isAppIdValid ( String appId ) throws DatabaseConnectionException;
 	public String createLoginAccessCode ( String appId );
-	public boolean checkLoginAccessCode ( String accessCode) throws CustomException;
+	public boolean checkLoginAccessCode ( String accessCode, String appId ) throws CustomException;
 
 }

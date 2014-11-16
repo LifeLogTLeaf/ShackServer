@@ -41,15 +41,15 @@ public class UserController {
 	 * @return AccessKey AccessKey JSON String.
 	 * @throws CustomException DatabaseConnectionException , NoSuchUserException , WrongAuthenticationInfoException
 	 */
-	@RequestMapping(value = "user/login", method = RequestMethod.POST )
-	@ResponseBody
-	//@ApiOperation( httpMethod = "POST" , value = "User Login" )
-	public AccessKey userLogin( @RequestBody UserInfo userInfo )
-			throws CustomException {
-
-		return userDao.userLogin( userInfo.getEmail(), userInfo.getPassword() );
-
-	}
+//	@RequestMapping(value = "user/login", method = RequestMethod.POST )
+//	@ResponseBody
+//	//@ApiOperation( httpMethod = "POST" , value = "User Login" )
+//	public AccessKey userLogin( @RequestBody UserInfo userInfo )
+//			throws CustomException {
+//
+//		return userDao.userLogin( userInfo.getEmail(), userInfo.getPassword() );
+//
+//	}
 	
 	/** New User Signing Up.
 	 * 
@@ -60,15 +60,15 @@ public class UserController {
 	 * @return JSON String to tell about the SignUp Process
 	 * @throws CustomException
 	 */
-	@RequestMapping(value = "user/signup", method = RequestMethod.POST )
-	@ResponseBody
-	//@ApiOperation( httpMethod = "POST" , value = "New User SignUp" )
-	public AccessKey userSignup( @RequestBody UserInfo userInfo )
-			throws CustomException {
-		
-		logger.info( userInfo.getEmail() );
-		return userDao.userSignUp ( userInfo );
-	}
+//	@RequestMapping(value = "user/signup", method = RequestMethod.POST )
+//	@ResponseBody
+//	//@ApiOperation( httpMethod = "POST" , value = "New User SignUp" )
+//	public String userSignup( @RequestBody UserInfo userInfo )
+//			throws CustomException {
+//		
+//		logger.info( userInfo.getEmail() );
+//		return userDao.userSignUp ( userInfo );
+//	}
 
 	/** Deletes User Database,Info if Email and Password is correct
 	 * 
@@ -79,12 +79,12 @@ public class UserController {
 	 * @return JSON String to tell about the SignUp Process
 	 * @throws CustomException
 	 */
-	@RequestMapping(value = "user/signout", method = RequestMethod.DELETE )
-	@ResponseBody
-	//@ApiOperation( httpMethod = "DELETE" , value = "Delete Existing User" )
-	public String userSignout( @RequestBody UserInfo userInfo) throws CustomException {
-
-		return userDao.userSignOut( userInfo.getEmail(), userInfo.getPassword() );
-	}	
+//	@RequestMapping(value = "user/signout", method = RequestMethod.DELETE )
+//	@ResponseBody
+//	//@ApiOperation( httpMethod = "DELETE" , value = "Delete Existing User" )
+//	public String userSignout( @RequestBody UserInfo userInfo) throws CustomException {
+//
+//		return userDao.userSignOut( userInfo.getEmail(), userInfo.getPassword() );
+//	}	
 
 }

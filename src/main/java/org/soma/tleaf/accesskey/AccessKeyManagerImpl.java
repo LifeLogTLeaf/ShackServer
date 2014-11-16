@@ -169,18 +169,18 @@ public class AccessKeyManagerImpl implements AccessKeyManager, OauthManager {
 	@Override
 	public String createLoginAccessCode(String appId) {
 		String rnd = String.valueOf( (int)( Math.random() * 10000000 ) );
-		jedis.set(rnd, appId);
+		jedis.setex(rnd, 300,appId); // User has to login within 5 minutes
 		return rnd;
 	}
 
 	@Override
-	public boolean checkLoginAccessCode(String accessCode) throws CustomException {
+	public boolean checkLoginAccessCode(String accessCode ,String appId) throws CustomException {
 		
 		String tmp = jedis.get( accessCode );
 		if ( tmp == null ) {
 			throw customExceptionFactory.createCustomException( CustomExceptionValue.Login_Access_Code_Not_Found_Exception );
 		}
-		else if ( accessCode.matches(tmp) ) {
+		else if ( appId.matches(tmp) ) {
 			jedis.del( accessCode );
 			return true;
 		}

@@ -10,17 +10,16 @@ This is TLeaf API Server
 
 1. Make Login with TLeaf
 --------
-####### From now on, I will use "HOME" instead of "http://14.63.171.66:8081/tleafstructure"
+From now on, I will use "HOME" instead of "http://14.63.171.66:8081/tleafstructure"
 
 Open up a new tab and call
-
 ```
 HOME/oauth?appId=<your_application_id>
 GET HTTP/1.0
 ```
 
-###### Once the TLeaf User finishes Authrization, You will have the User's Access Key which looks like
-```
+Once the TLeaf User finishes Authrization, You will have the User's Access Key which looks like
+```json
 {
    "_id": "3dc93a3c4aeaebde2b910777a80016b1",
    "userId": "344bc889c8bb44dd6e4bb845d40007b9",
@@ -49,7 +48,7 @@ Accept: */*
 ```
 
 And You will get Something like this.
-```
+```json
 {
     "hashId": "344bc889c8bb44dd6e4bb845d40007b9",
     "rev": "1-fbc25ffde83d3429f85ff22374661784",

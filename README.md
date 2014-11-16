@@ -4,7 +4,7 @@ This is TLeaf API Server
 
 ###### author Swimyoung & Susu 
 
-#### If you Want to Use Our API, You must contact us at tleafshack@gmail.com **FIRST**
+**To Use Shack API, contact us at tleafshack@gmail.com FIRST**
 
 ###### Once you are Registered, use can start using TLeaf API.
 
@@ -62,7 +62,7 @@ And You will get Something like this.
 ```
 as the Response. Piece of Cake! Isn't it?
 
-###### Here is the sample Request
+Here is the sample Request
 ```javascript
 
 var url = "http://14.63.171.66:8081/tleafstructure/api/user";

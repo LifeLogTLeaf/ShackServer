@@ -72,23 +72,27 @@ $.ajax({
 	beforeSend: function ( request )
 	{
         	request.setRequestHeader( "X-Tleaf-User-Id", "344bc889c8bb44dd6e4bb845d40007b9" );
-                request.setRequestHeader( "X-Tleaf-Application-Id", "6b22f647ef8f2f3278a1322d8b000f81" );
-                request.setRequestHeader( "X-Tleaf-Access-Token", "6b22f647ef8f2f3278a1322d8b000210" );
+        	request.setRequestHeader( "X-Tleaf-Application-Id", "6b22f647ef8f2f3278a1322d8b000f81" );
+        	request.setRequestHeader( "X-Tleaf-Access-Token", "6b22f647ef8f2f3278a1322d8b000210" );
 	},
-        url : url,
-        async : true,
-        contentType : 'application/json',
-        success : function(response) {
-        	console.log(response);
-                alert(response);
+	url : url,
+	async : true,
+	contentType : 'application/json',
+	success : function(response) {
+		console.log(response);
+		alert(response);
 	},
-        error : function(xhr) {
-        	alert('Error!  Status = ' + xhr.status + " Message = "
-        	+ xhr.statusText);
-        }
+	error : function(xhr) {
+		alert('Error!  Status = ' + xhr.status + " Message = " + xhr.statusText);
+	}
 });
 ```
 
 3. More APIs
 --------
 figure out more APIs below.
+Would be easier to UnderStand if you use JSON formatter ( or Request with POSTMAN )
+
+* http://14.63.171.66:8081/tleafstructure/api-docs
+* http://14.63.171.66:8081/tleafstructure/api-docs/default/oauth-controller
+* http://14.63.171.66:8081/tleafstructure/api-docs/default/rest-api-controller

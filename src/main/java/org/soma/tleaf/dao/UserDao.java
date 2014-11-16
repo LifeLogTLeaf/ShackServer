@@ -14,7 +14,7 @@ public interface UserDao {
 	 * @return JSON String about the SignUp Process 
 	 * @throws CustomException If Email Already Exists or Failed to Connect to Database
 	 */
-	public AccessKey userSignUp( UserInfo userInfo ) throws CustomException;
+	public String userSignUp( UserInfo userInfo ) throws CustomException;
 	
 	/** Creates an Access Token for the Specific User
 	 * 
@@ -25,7 +25,7 @@ public interface UserDao {
 	 * @return AccessKey AccessKey Object of the Specific User.
 	 * @throws CustomException If Authentication Info is Wrong or Failed to Connect to Database
 	 */
-	public AccessKey userLogin( String email, String password ) throws CustomException;
+	public AccessKey userLogin( String email, String password, String appId ) throws CustomException;
 	
 	/** Deletes User Database, UserInfo Data
 	 * 

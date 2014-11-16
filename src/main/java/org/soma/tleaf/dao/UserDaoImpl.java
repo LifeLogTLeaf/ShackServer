@@ -17,6 +17,7 @@ import org.soma.tleaf.esdb.EsdbConn;
 import org.soma.tleaf.exception.CustomException;
 import org.soma.tleaf.exception.CustomExceptionFactory;
 import org.soma.tleaf.exception.CustomExceptionValue;
+import org.soma.tleaf.exception.DatabaseConnectionException;
 
 public class UserDaoImpl implements UserDao {
 
@@ -40,12 +41,8 @@ public class UserDaoImpl implements UserDao {
 
 	private static final Logger logger = LoggerFactory.getLogger(UserDaoImpl.class);
 	
-	/**
-	 * 2014.10.15
-	 */
-	@Override
-	public AccessKey userLogin(String email, String password) throws CustomException {
-
+	private UserInfo isAuthInfoCorrect ( String email, String password ) throws CustomException {
+		
 		HashId hashId;
 		
 		// DatabaseConnection Exception can be Thrown
@@ -68,10 +65,22 @@ public class UserDaoImpl implements UserDao {
 		UserInfo userInfo = couchDbConnector_users.get( UserInfo.class, hashId.getHashId().toString() );
 
 		if ( password.equals( userInfo.getPassword() ) ) {
-			return accessKeyManager.createAccessKey( userInfo.getHashId(), (long)86400000, true);
+			return userInfo;
 		}
-
 		throw customExceptionFactory.createCustomException( CustomExceptionValue.Wrong_Authentication_Exception );
+	}
+	
+	/**
+	 * 2014.10.15
+	 */
+	@Override
+	public AccessKey userLogin(String email, String password, String appId) throws CustomException {
+		
+		UserInfo userInfo = isAuthInfoCorrect(email, password);
+		
+		return accessKeyManager.createAccessKey( userInfo.getHashId(), (long)86400000, true, appId);
+
+//		throw customExceptionFactory.createCustomException( CustomExceptionValue.Wrong_Authentication_Exception );
 		//return "Your Password is Wrong";
 	}
 
@@ -81,7 +90,7 @@ public class UserDaoImpl implements UserDao {
 	 */
 
 	@Override
-	public AccessKey userSignUp( UserInfo userInfo ) throws CustomException {
+	public String userSignUp( UserInfo userInfo ) throws CustomException {
 
 		// 1. Create User Database  2. Create User HashKey  3. Create UserInfo Document in User DB
 
@@ -126,8 +135,8 @@ public class UserDaoImpl implements UserDao {
 		/* Young edited */
 		// elasticSearch DB create
 		esdbConn.replication("user_" + userInfo.getHashId());
-		
-		return userLogin( userInfo.getEmail() , userInfo.getPassword() );
+	
+		return "{\"signup\":\"success\",\"userHashId\":\"" + userInfo.getHashId() + "\"}";
 	}
 
 	@Override
@@ -136,20 +145,8 @@ public class UserDaoImpl implements UserDao {
 		// 1. Check if email&pw is Correct.  2. if Correct, delete Hashid, Database, UserInfo
 
 		// 1. check Account Info
-		userLogin( email, pw );
-
-		// DatabaseConnection Exception can be Thrown
-		couchDbConnector_hashid = couchDbConn
-				.getCouchDbConnetor("tleaf_hashid");
-
-		couchDbConnector_users = couchDbConn
-				.getCouchDbConnetor("tleaf_users");
-
-		couchDbInstance = couchDbConn.getCouchDbInstance();
-
-
-		HashId hashId = new HashId();
-		UserInfo userInfo = new UserInfo();
+		UserInfo userInfo = isAuthInfoCorrect( email, pw );
+		HashId hashId;
 
 		// 2. delete user data.
 		try {

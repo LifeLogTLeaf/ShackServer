@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.soma.tleaf.accesskey.AccessKey;
 import org.soma.tleaf.accesskey.OauthManager;
 import org.soma.tleaf.dao.UserDao;
+import org.soma.tleaf.domain.LoginRequest;
 import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.exception.CustomException;
 import org.soma.tleaf.exception.CustomExceptionFactory;
@@ -70,21 +71,19 @@ public class OauthController {
 	
 	@RequestMapping( value = "oauth/login" , method = RequestMethod.POST )
 	public ResponseEntity<AccessKey> userLogin (
-			@RequestBody( required = true ) String code, 
-			@RequestBody( required = true ) String appId,
-			@RequestBody( required = true ) String email,
-			@RequestBody( required = true ) String password,
-			@RequestBody( required = true ) String redirect ) throws CustomException {
+			@RequestBody( required = true ) LoginRequest request ) throws CustomException {
+		
+		logger.info( request.getCode() ); logger.info( request.getAppId() );
 		
 		// throws Exception If Not Correct
-		oauthManager.checkLoginAccessCode(code);
+		oauthManager.checkLoginAccessCode( request.getCode(), request.getAppId() );
 		
 		// Still, WrongAuthenticationInfoException Can occur
-		return new ResponseEntity<AccessKey>( userDao.userLogin(email, password), HttpStatus.OK );
+		return new ResponseEntity<AccessKey>( userDao.userLogin( request.getEmail(), request.getPassword(), request.getEmail() ), HttpStatus.OK );
 	}
 	
 	@RequestMapping( value = "oauth/signup" , method = RequestMethod.POST )
-	public ResponseEntity<AccessKey> userSignUp (
+	public ResponseEntity<String> userSignUp (
 			@RequestBody( required = true ) String code, 
 			@RequestBody( required = true ) String appId,
 			@RequestBody( required = true ) String email,
@@ -95,15 +94,16 @@ public class OauthController {
 			@RequestBody( required = true ) String redirect ) throws CustomException {
 		
 		// throws Exception If Not Correct
-		oauthManager.checkLoginAccessCode(code);
+		oauthManager.checkLoginAccessCode(code,appId);
 		
 		UserInfo userInfo = new UserInfo();
 		userInfo.setEmail(email);
 		userInfo.setPassword(password);
+		userInfo.setNickname(nickname);
 		userInfo.setAge(age);
 		userInfo.setGender(gender);
 		
-		return new ResponseEntity<AccessKey>( userDao.userSignUp(userInfo),HttpStatus.CREATED );
+		return new ResponseEntity<String>( userDao.userSignUp(userInfo),HttpStatus.CREATED );
 	}
 
 }

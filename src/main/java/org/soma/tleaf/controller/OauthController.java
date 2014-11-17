@@ -17,6 +17,7 @@ import org.soma.tleaf.exception.CustomExceptionValue;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -53,19 +54,16 @@ public class OauthController {
 	 * @throws CustomException if AppId is Invalid
 	 */
 	@RequestMapping( value = "oauth" , method = RequestMethod.GET )
-	public ModelAndView oauth (
+	public ModelMap oauth ( ModelMap model,
 			@RequestParam( value = "appId" , required = true ) String appId ) throws CustomException {
 		
 		logger.info( appId + " requesting Login API");
 		
 		if ( !oauthManager.isAppIdValid(appId) ) throw customExceptionFactory.createCustomException( CustomExceptionValue.Invalid_App_Id_Exception );
+		 
+		model.put("code", oauthManager.createLoginAccessCode(appId));
+		model.put("appId", appId);
 		
-		ModelAndView model = new ModelAndView("login");
-		
-		HashMap< String,String > modelMap = new HashMap< String,String >(); 
-		modelMap.put("code", oauthManager.createLoginAccessCode(appId));
-		
-		model.addAllObjects(modelMap);
 		return model;
 	}
 	
@@ -74,6 +72,9 @@ public class OauthController {
 			@RequestBody( required = true ) LoginRequest request ) throws CustomException {
 		
 		logger.info( request.getCode() ); logger.info( request.getAppId() );
+		
+		if ( request.getCode() == null || request.getAppId() == null || request.getEmail() == null || request.getPassword() == null )
+			throw customExceptionFactory.createCustomException( CustomExceptionValue.Parameter_Insufficient_Exception );
 		
 		// throws Exception If Not Correct
 		oauthManager.checkLoginAccessCode( request.getCode(), request.getAppId() );
@@ -84,24 +85,21 @@ public class OauthController {
 	
 	@RequestMapping( value = "oauth/signup" , method = RequestMethod.POST )
 	public ResponseEntity<String> userSignUp (
-			@RequestBody( required = true ) String code, 
-			@RequestBody( required = true ) String appId,
-			@RequestBody( required = true ) String email,
-			@RequestBody( required = true ) String password,
-			@RequestBody( required = true ) String nickname,
-			@RequestBody( required = true ) String gender,
-			@RequestBody( required = true ) int age,
-			@RequestBody( required = true ) String redirect ) throws CustomException {
+			@RequestBody( required = true ) LoginRequest request ) throws CustomException {
+		
+		if ( request.getCode() == null || request.getAppId() == null || request.getEmail() == null || request.getPassword() == null
+				|| request.getAge() == null || request.getGender() == null || request.getNickname() == null || request.getRedirect() == null )
+			throw customExceptionFactory.createCustomException( CustomExceptionValue.Parameter_Insufficient_Exception );
 		
 		// throws Exception If Not Correct
-		oauthManager.checkLoginAccessCode(code,appId);
+		oauthManager.checkLoginAccessCode(request.getCode(),request.getAppId());
 		
 		UserInfo userInfo = new UserInfo();
-		userInfo.setEmail(email);
-		userInfo.setPassword(password);
-		userInfo.setNickname(nickname);
-		userInfo.setAge(age);
-		userInfo.setGender(gender);
+		userInfo.setEmail(request.getEmail());
+		userInfo.setPassword(request.getPassword());
+		userInfo.setNickname(request.getNickname());
+		userInfo.setAge(request.getAge());
+		userInfo.setGender(request.getGender());
 		
 		return new ResponseEntity<String>( userDao.userSignUp(userInfo),HttpStatus.CREATED );
 	}

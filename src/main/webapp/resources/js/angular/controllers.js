@@ -5,7 +5,7 @@ function loginCtrl($scope,$http) {
     //커서가 어디쪽을 가리키는지 명시한다.
     //'login'과 'join' 둘중 하나이다.
     $scope.modeLogin = 'login';
-    console.log(getCookie('userId'));
+//    console.log(getCookie('userId'));
 
 
     //로그인과 회원가입의 폼을 바꾸며 보여준다
@@ -33,7 +33,7 @@ function loginCtrl($scope,$http) {
                 nickname:user.nickname ,
                 gender: user.male ,
                 age:user.age });
-        var url = 'http://14.63.171.66:8081/tleafstructure/user/signup';
+        var url = './oauth/signup';
         $http({method: 'POST',
             url: url,
             headers: {'Content-Type': 'application/json'},
@@ -60,9 +60,10 @@ function loginCtrl($scope,$http) {
 
 
     $scope.submitLogin = function (user) {
-        var data = JSON.stringify({ email: user.email , password:user.pw});
+    	console.log(user);
+        var data = JSON.stringify({ email: user.email , password:user.pw , code:user.code , appId:user.appid });
         $http({method: 'POST',
-            url: 'http://14.63.171.66:8081/tleafstructure/user/login',
+            url: './oauth/login',
             headers: {'Content-Type': 'application/json'},
             data: data
 

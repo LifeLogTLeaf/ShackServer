@@ -1,8 +1,9 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html ng-app="login" class="bg-black" ng-controller="loginCtrl">
-
 <head>
-    <meta charset="UTF-8">
+	<meta charset="UTF-8">
     <title>TLeaf :: Login</title>
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
     <!-- bootstrap 3.2.0 Latest compiled and minified CSS -->
@@ -31,9 +32,7 @@
     <script src="./resources/js/angular/angular-menu.js" type="text/javascript"></script>
     <script src="./resources/js/angular/controllers.js" type="text/javascript"></script>
     <script src="./resources/js/custom/match.js"></script>
-
 </head>
-
 <body class="bg-black" >
 
 <div class="form-box" id="login-box">
@@ -78,6 +77,10 @@
                     <input type="password" name="pw" ng-model="user.pw" placeholder="Password"  class="form-control"required>
                     <!--<i class="form-invalid fa fa-fw fa-times" ng-show="formLogin.pw.$invalid"></i>-->
                     <i class="form-valid fa fa-fw fa-check" ng-show="formLogin.pw.$valid"></i>
+                </div>
+                <div class="input-group">
+                	<input type="hidden" name="code" ng-model="user.code" ng-init="user.code='${code}'" id="token" class="form-control" />
+                	<input type="hidden" name="app" ng-model="user.appid" ng-init="user.appid='${appId}'" id="token" class="form-control" />
                 </div>
                 <br>
                 <button type="submit" class="pull-right btn bg-green btn-success "ng-show="formLogin.$valid">Sign In</button>
@@ -163,6 +166,11 @@
                     <!--<i class="form-invalid fa fa-fw fa-times" ng-show="form.age.$error.pattern"></i>-->
                     <i class="form-valid fa fa-fw fa-check" ng-show="!form.age.$error.pattern"></i>
                 </div>
+                
+				<div class="input-group">
+                	<input type="hidden" name="code" ng-model="user.code" ng-init="user.code='${code}'" id="token" class="form-control" />
+                	<input type="hidden" name="app" ng-model="user.appid" ng-init="user.appid='${appId}'" id="token" class="form-control" />
+                </div>
                 <br>
 
                 <button type="submit" class="pull-right btn bg-green btn-success" ng-show="form.$valid">Join in</button>
@@ -193,7 +201,6 @@
 
     </div>
 </div>
-</div>
 
 
 <!-- jQuery 2.0.2 -->
@@ -202,5 +209,4 @@
 <script src="./resources/js/bootstrap.min.js" type="text/javascript"></script>
 
 </body>
-
 </html>

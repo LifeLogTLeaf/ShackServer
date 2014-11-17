@@ -21,7 +21,6 @@ import org.soma.tleaf.domain.UserInfo;
 import org.soma.tleaf.exception.CustomException;
 import org.soma.tleaf.exception.CustomExceptionFactory;
 import org.soma.tleaf.exception.CustomExceptionValue;
-import org.soma.tleaf.exception.DatabaseConnectionException;
 import org.soma.tleaf.service.RestApiService;
 import org.soma.tleaf.util.ISO8601;
 import org.springframework.http.MediaType;
@@ -338,6 +337,15 @@ public class RestApiController {
 		return restApiService.postUserData( rawData );
 	}
 
+	/**
+	 * Fetches User Data by Date ( [ 2014, 11, 07, 22 ] ) 
+	 * @author susu
+	 * Date Nov 17, 2014 2:20:46 PM
+	 * @param request
+	 * @param date
+	 * @return User log Data within the Date
+	 * @throws Exception
+	 */
 	@RequestMapping( value = "/user/date", method = RequestMethod.GET )
 	public ResponseEntity<List<RawData>> getUserDataByDate ( HttpServletRequest request, 
 			@RequestParam( value="date",required = true ) String[] date ) throws Exception {

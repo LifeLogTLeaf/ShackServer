@@ -96,3 +96,4 @@ Would be easier to UnderStand if you use JSON formatter ( or Request with POSTMA
 * http://14.63.171.66:8081/tleafstructure/api-docs
 * http://14.63.171.66:8081/tleafstructure/api-docs/default/oauth-controller
 * http://14.63.171.66:8081/tleafstructure/api-docs/default/rest-api-controller
+* **https://github.com/DevSusu/ShackServer/blob/master/API.md**

@@ -88,7 +88,7 @@ public class OauthController {
 			@RequestBody( required = true ) LoginRequest request ) throws CustomException {
 		
 		if ( request.getCode() == null || request.getAppId() == null || request.getEmail() == null || request.getPassword() == null
-				|| request.getAge() == null || request.getGender() == null || request.getNickname() == null || request.getRedirect() == null )
+				|| request.getAge() == null || /*request.getGender() == null ||*/ request.getNickname() == null /*|| request.getRedirect() == null */)
 			throw customExceptionFactory.createCustomException( CustomExceptionValue.Parameter_Insufficient_Exception );
 		
 		// throws Exception If Not Correct

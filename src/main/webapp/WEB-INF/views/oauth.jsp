@@ -166,6 +166,11 @@
                     <!--<i class="form-invalid fa fa-fw fa-times" ng-show="form.age.$error.pattern"></i>-->
                     <i class="form-valid fa fa-fw fa-check" ng-show="!form.age.$error.pattern"></i>
                 </div>
+                
+				<div class="input-group">
+                	<input type="hidden" name="code" ng-model="user.code" ng-init="user.code='${code}'" id="token" class="form-control" />
+                	<input type="hidden" name="app" ng-model="user.appid" ng-init="user.appid='${appId}'" id="token" class="form-control" />
+                </div>
                 <br>
 
                 <button type="submit" class="pull-right btn bg-green btn-success" ng-show="form.$valid">Join in</button>

@@ -32,7 +32,9 @@ function loginCtrl($scope,$http) {
                 password:user.pw ,
                 nickname:user.nickname ,
                 gender: user.male ,
-                age:user.age });
+                age:user.age,
+                code:user.code,
+                appId:user.appid });
         var url = './oauth/signup';
         $http({method: 'POST',
             url: url,
@@ -41,7 +43,7 @@ function loginCtrl($scope,$http) {
 
         }).success(function(data, status, headers, config) {
             console.log('회원가입 성공 succenss');
-
+            
             //쿠키에 유저 id저장
             console.log(data);
             setCookie('userId',data.userId,5);
@@ -70,6 +72,8 @@ function loginCtrl($scope,$http) {
         }).success(function(data, status, headers, config) {
             console.log('로그인 성공');
 
+            //paretnt Frame에 값 전
+            parent.accesskey( data );
             //쿠키에 유저 id저장
             console.log(data);
             setCookie('accessKey',data.accessKey,5);

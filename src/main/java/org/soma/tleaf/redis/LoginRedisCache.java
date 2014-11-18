@@ -90,7 +90,14 @@ public class LoginRedisCache implements Cache {
 		
 		setJedisFromPool();
 		
-		String tmp = jedis.get( (String)key );
+		String tmp;
+		try {
+			tmp = jedis.get( (String)key );
+		} catch (Exception e ) {
+			e.printStackTrace();
+			returnResource();
+			return new SimpleValueWrapper(null);
+		}
 		
 		returnResource();
 		

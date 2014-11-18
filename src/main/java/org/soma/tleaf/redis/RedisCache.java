@@ -125,9 +125,10 @@ public class RedisCache implements Cache {
 				accessKey = accessKeyManager.findAccessKey( (String) key );
 			} catch (DatabaseConnectionException e) {
 				e.printStackTrace();
-				return null;
+				returnResource();
+				return new SimpleValueWrapper(null);
 			}
-			if ( accessKey == null ) return null;
+			if ( accessKey == null ) { returnResource(); return new SimpleValueWrapper(null); }
 
 			// Put it back again in redis.
 			put ( accessKey.getAccessKey() , accessKey );

@@ -3,6 +3,7 @@ package org.soma.tleaf.configuration;
 import org.soma.tleaf.accesskey.AccessKeyManager;
 import org.soma.tleaf.accesskey.AccessKeyManagerImpl;
 import org.soma.tleaf.accesskey.OauthManager;
+import org.soma.tleaf.accesskey.OauthManagerImpl;
 import org.soma.tleaf.couchdb.CouchDbConn;
 import org.soma.tleaf.couchdb.CouchDbConnImpl;
 import org.soma.tleaf.dao.OauthDao;
@@ -86,7 +87,7 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 	
 	@Bean
 	public OauthManager oauthManager() {
-		return new AccessKeyManagerImpl();
+		return new OauthManagerImpl();
 	}
 
 	@Bean

@@ -1,5 +1,6 @@
 package org.soma.tleaf.configuration;
 
+import org.soma.tleaf.redis.LoginRedisCache;
 import org.soma.tleaf.redis.RedisCache;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -47,6 +48,10 @@ public class RedisConfig {
 	@Bean
 	public RedisCache redisCache () {
 		return new RedisCache();
+	}
+	@Bean
+	public LoginRedisCache loginRedisCache () {
+		return new LoginRedisCache();
 	}
 
 }

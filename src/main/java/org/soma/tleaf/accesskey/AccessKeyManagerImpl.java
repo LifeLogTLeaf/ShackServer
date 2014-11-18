@@ -174,11 +174,11 @@ public class AccessKeyManagerImpl implements AccessKeyManager, OauthManager {
 	@Override
 	public boolean checkLoginAccessCode(String accessCode ,String appId) throws CustomException {
 		
-		String tmp = (String)redisCache.get( accessCode ).get();
+		Object tmp = redisCache.get( accessCode ).get();
 		if ( tmp == null ) {
 			throw customExceptionFactory.createCustomException( CustomExceptionValue.Login_Access_Code_Not_Found_Exception );
 		}
-		else if ( appId.matches(tmp) ) {
+		else if ( appId.matches( (String)tmp ) ) {
 			redisCache.delete( accessCode );
 			return true;
 		}

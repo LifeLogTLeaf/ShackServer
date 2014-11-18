@@ -73,7 +73,7 @@ function loginCtrl($scope,$http) {
             console.log('로그인 성공');
             
             // callAndroid 에서 넘겨줄 변수
-            callAndroid(data);
+            callAndroid1(data);
             //paretnt Frame에 값 전
             parent.accesskey( data );
             //쿠키에 유저 id저장

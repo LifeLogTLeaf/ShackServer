@@ -3,7 +3,6 @@ package org.soma.tleaf.accesskey;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -20,9 +19,8 @@ import org.soma.tleaf.exception.CustomExceptionFactory;
 import org.soma.tleaf.exception.CustomExceptionValue;
 import org.soma.tleaf.exception.DatabaseConnectionException;
 import org.soma.tleaf.exception.InvalidAccessKeyException;
+import org.soma.tleaf.redis.RedisCache;
 import org.soma.tleaf.util.ISO8601;
-
-import redis.clients.jedis.Jedis;
 
 /**
  * Deals with CRUD of AccessKeys
@@ -41,7 +39,7 @@ public class AccessKeyManagerImpl implements AccessKeyManager, OauthManager {
 	private CustomExceptionFactory customExceptionFactory;
 	
 	@Inject
-	private Jedis jedis;
+	private RedisCache redisCache;
 
 	private static Logger logger = LoggerFactory.getLogger(AccessKeyManagerImpl.class);
 	
@@ -169,19 +167,19 @@ public class AccessKeyManagerImpl implements AccessKeyManager, OauthManager {
 	@Override
 	public String createLoginAccessCode(String appId) {
 		String rnd = String.valueOf( (int)( Math.random() * 10000000 ) );
-		jedis.setex(rnd, 300,appId); // User has to login within 5 minutes
+		redisCache.put(rnd, appId); // User has to login within 5 minutes
 		return rnd;
 	}
 
 	@Override
 	public boolean checkLoginAccessCode(String accessCode ,String appId) throws CustomException {
 		
-		String tmp = jedis.get( accessCode );
+		String tmp = (String)redisCache.get( accessCode ).get();
 		if ( tmp == null ) {
 			throw customExceptionFactory.createCustomException( CustomExceptionValue.Login_Access_Code_Not_Found_Exception );
 		}
 		else if ( appId.matches(tmp) ) {
-			jedis.del( accessCode );
+			redisCache.delete( accessCode );
 			return true;
 		}
 		

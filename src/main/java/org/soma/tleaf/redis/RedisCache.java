@@ -11,6 +11,7 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.support.SimpleValueWrapper;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import com.google.gson.Gson;
 
@@ -27,23 +28,25 @@ public class RedisCache implements Cache {
 	@Inject
 	private AccessKeyManager accessKeyManager;
 
-	private Jedis jedis;
+	private static Jedis jedis;
 
+	@Inject
+	private JedisPool jedisPool;
+	
 	private static final Logger logger = LoggerFactory.getLogger(RedisCache.class);
 	private static Gson gson = new Gson();
 
 	private static final int VAILD_FOR_SEC = 300; // 5 min
 	private static final String CACHE_NAME = "accesskey";
 
-	public RedisCache ( Jedis jedis ) {
-		this ( CACHE_NAME , jedis , VAILD_FOR_SEC );
+	public RedisCache () {
+		this ( CACHE_NAME , VAILD_FOR_SEC );
 	}
 
-	public RedisCache ( String name, Jedis jedis, int expireSeconds ) {
+	public RedisCache ( String name, int expireSeconds ) {
 
 		this.name = name;
 		this.expireSeconds = expireSeconds;
-		this.jedis = jedis;
 
 	}
 
@@ -59,6 +62,24 @@ public class RedisCache implements Cache {
 		return accessKey_server.isValid(accessKey, appId, userId);
 
 	}
+	
+	/**
+	 * For MultiThreading. To use Jedis from Pool
+	 * @author susu
+	 * Date Nov 17, 2014 10:45:13 PM
+	 */
+	private void setJedisFromPool() {
+		jedis = jedisPool.getResource();
+	}
+	
+	/**
+	 * Returning Resource
+	 * @author susu
+	 * Date Nov 17, 2014 11:24:26 PM
+	 */
+	private void returnResource () {
+		jedisPool.returnResource(jedis);
+	}
 
 	/**
 	 * Deletes AccessKey in the Cache
@@ -68,10 +89,12 @@ public class RedisCache implements Cache {
 	 */
 	@Override
 	public void evict(Object key) {
+		setJedisFromPool();
 		
 		jedis.del( (String)key );
 		logger.info("Successfully deleted AccessKey");
 
+		returnResource();
 	}
 	public void delete( String key ) {
 		evict ( key );
@@ -86,6 +109,7 @@ public class RedisCache implements Cache {
 	 */
 	@Override
 	public ValueWrapper get(Object key) {
+		setJedisFromPool();
 
 		logger.info("retriving Value by Key...");
 
@@ -114,6 +138,7 @@ public class RedisCache implements Cache {
 			accessKey = gson.fromJson(accessKeyString, AccessKey.class);
 		}
 		
+		returnResource();
 		return new SimpleValueWrapper( accessKey );
 	}
 
@@ -126,6 +151,7 @@ public class RedisCache implements Cache {
 	 */
 	@Override
 	public void put(Object key, Object value) {
+		setJedisFromPool();
 
 		logger.info("Inserting Value...");
 
@@ -138,9 +164,8 @@ public class RedisCache implements Cache {
 		AccessKey accessKey = (AccessKey)value;
 		String accessKeyString = gson.toJson(accessKey);
 		
-		jedis.set(sKey, accessKeyString);
-		jedis.expire(sKey, expireSeconds);
-
+		jedis.setex(sKey, expireSeconds, accessKeyString);
+		returnResource();
 	}
 
 	/**
@@ -150,16 +175,15 @@ public class RedisCache implements Cache {
 	 */
 	@Override
 	public void clear() {
+		setJedisFromPool();
 		jedis.flushAll();
+		returnResource();
 	}
-
 
 	@Override
 	public String getName() {
 		return name;
 	}
-
-
 
 	@Override
 	public Object getNativeCache() {

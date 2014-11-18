@@ -1,7 +1,6 @@
 ﻿'use strict';
 
 function loginCtrl($scope,$http) {
-	var dataforandroid;
     //ng-switch에서 사용.
     //커서가 어디쪽을 가리키는지 명시한다.
     //'login'과 'join' 둘중 하나이다.
@@ -74,12 +73,16 @@ function loginCtrl($scope,$http) {
             console.log('로그인 성공');
             
             // callAndroid 에서 넘겨줄 변수
-            dataforandroid = data;
+            callAndroid(data);
             //paretnt Frame에 값 전
             parent.accesskey( data );
             //쿠키에 유저 id저장
             console.log(data);
             setCookie('accessKey',data.accessKey,5);
+            
+            // 부모 윈도우에 accessKey 값 전달
+            window.opener.getReturnValue( JSON.stringify( data ) );
+            window.close();
         }).
             error(function(data, status, headers, config) {
 
@@ -93,9 +96,9 @@ function loginCtrl($scope,$http) {
     }
 
 
-    function callAndroid () {
-    	console.log( dataforandroid );
-    	window.androidJS.callAndroid( dataforandroid );
+    function callAndroid (data) {
+    	console.log( JSON.stringify(data) );
+    	window.TLeafLogin.callbackAndroid( JSON.stringify(data) );
     }
 
 

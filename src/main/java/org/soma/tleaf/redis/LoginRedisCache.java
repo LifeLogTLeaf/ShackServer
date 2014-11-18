@@ -9,6 +9,7 @@ import org.springframework.cache.support.SimpleValueWrapper;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 
 public class LoginRedisCache implements Cache {
 
@@ -19,12 +20,12 @@ public class LoginRedisCache implements Cache {
 
 	@Inject
 	private JedisPool jedisPool;
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(LoginRedisCache.class);
 
 	private static final int VAILD_FOR_SEC = 300; // 5 min
 	private static final String CACHE_NAME = "login";
-	
+
 	public LoginRedisCache () {
 		this ( CACHE_NAME , VAILD_FOR_SEC );
 	}
@@ -35,7 +36,7 @@ public class LoginRedisCache implements Cache {
 		this.expireSeconds = expireSeconds;
 
 	}
-	
+
 	/**
 	 * For MultiThreading. To use Jedis from Pool
 	 * @author susu
@@ -44,7 +45,7 @@ public class LoginRedisCache implements Cache {
 	private void setJedisFromPool() {
 		jedis = jedisPool.getResource();
 	}
-	
+
 	/**
 	 * Returning Resource to the Pool
 	 * @author susu
@@ -53,28 +54,60 @@ public class LoginRedisCache implements Cache {
 	private void returnResource () {
 		jedisPool.returnResource(jedis);
 	}
-	
+
 	@Override
 	public void clear() {
 		setJedisFromPool();
-		jedis.flushAll();
-		returnResource();
+		try{
+
+			jedis.flushAll();
+
+		} catch( JedisConnectionException e ) {
+
+			logger.info("LoginRedisCache clear Method JedisConnectionException");
+
+			// returnBrokenResource when the state of the object is unrecoverable
+			if (null != jedis) {
+				jedisPool.returnBrokenResource(jedis);
+				jedis = null;
+			}
+
+		} finally {
+			/// ... it's important to return the Jedis instance to the pool once you've finished using it
+			if (null != jedis)
+				jedisPool.returnResource(jedis);
+		}
 	}
 
 	@Override
 	public void evict(Object key) {
-		
+
 		if ( !(key instanceof String) ) {
 			logger.info("Parameters are not Appropriate");
 			return ;
 		}
-		
-		setJedisFromPool();
-		
-		jedis.del( (String)key );
-		logger.info("Successfully deleted AccessKey");
 
-		returnResource();
+		setJedisFromPool();
+
+		try { 
+			jedis.del( (String)key );
+			logger.info("Successfully deleted AccessKey");
+		} catch ( JedisConnectionException e ) {
+
+			logger.info("LoginRedisCache evict Method JedisConnectionException");
+
+			// returnBrokenResource when the state of the object is unrecoverable
+			if (null != jedis) {
+				jedisPool.returnBrokenResource(jedis);
+				jedis = null;
+			}
+
+		} finally {
+			/// ... it's important to return the Jedis instance to the pool once you've finished using it
+			if (null != jedis)
+				jedisPool.returnResource(jedis);
+		}
+
 	}
 	public void delete( String key ) {
 		evict ( key );
@@ -82,25 +115,33 @@ public class LoginRedisCache implements Cache {
 
 	@Override
 	public ValueWrapper get(Object key) {
-		
+
 		if ( !(key instanceof String) ) {
 			logger.info("Parameters are not Appropriate");
 			return new SimpleValueWrapper(null);
 		}
-		
+
 		setJedisFromPool();
-		
+
 		String tmp;
 		try {
 			tmp = jedis.get( (String)key );
-		} catch (Exception e ) {
-			e.printStackTrace();
-			returnResource();
+		} catch ( JedisConnectionException e ) {
+
+			logger.info("LoginRedisCache get Method JedisConnectionException");
+
+			// returnBrokenResource when the state of the object is unrecoverable
+			if (null != jedis) {
+				jedisPool.returnBrokenResource(jedis);
+				jedis = null;
+			}
 			return new SimpleValueWrapper(null);
+		} finally {
+			/// ... it's important to return the Jedis instance to the pool once you've finished using it
+			if (null != jedis)
+				jedisPool.returnResource(jedis);
 		}
-		
-		returnResource();
-		
+
 		return new SimpleValueWrapper( tmp );
 	}
 
@@ -116,19 +157,33 @@ public class LoginRedisCache implements Cache {
 
 	@Override
 	public void put(Object key, Object value) {
-		
+
 		logger.info("Inserting Value...");
 
 		if ( !(key instanceof String) || !(value instanceof String) ) {
 			logger.info("Parameters are not Appropriate");
 			return ;
 		}
-		
+
 		setJedisFromPool();
-		
-		jedis.setex( (String)key, expireSeconds, (String) value );
-		
-		returnResource();
+
+		try{
+			jedis.setex( (String)key, expireSeconds, (String) value );
+		} catch ( JedisConnectionException e ) {
+
+			logger.info("LoginRedisCache get Method JedisConnectionException");
+
+			// returnBrokenResource when the state of the object is unrecoverable
+			if (null != jedis) {
+				jedisPool.returnBrokenResource(jedis);
+				jedis = null;
+			}
+		} finally {
+			/// ... it's important to return the Jedis instance to the pool once you've finished using it
+			if (null != jedis)
+				jedisPool.returnResource(jedis);
+		}
+
 	}
 
 }

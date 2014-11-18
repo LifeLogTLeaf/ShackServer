@@ -197,12 +197,17 @@ public class RestApiServiceImple implements RestApiService {
 		try {
 			AttachmentInputStream attachmentStream = restApiDao.getAttachment(userId, docId, attachmentId);
 			
-			byte[] attachmentBytes = new byte[ (int) attachmentStream.getContentLength() + 1000 ];
+			byte[] attachmentBytes = new byte[ (int)attachmentStream.getContentLength() ];
 			attachmentStream.read( attachmentBytes );
 			
-			HttpHeaders header = new HttpHeaders(); header.set("content-type", attachmentStream.getContentType() );
+			HttpHeaders header = new HttpHeaders();
+			// Set Custom Headers
+			header.set("Content-Type", attachmentStream.getContentType() );
+			header.set("Cache-Control", "must-revalidate");
+			header.set("Content-Length", String.valueOf( attachmentStream.getContentLength() ) );
+			header.set("Accept-Ranges", "bytes");
 			
-			return new ResponseEntity<byte[]>( attachmentBytes, header, HttpStatus.FOUND );
+			return new ResponseEntity<byte[]>( attachmentBytes, header, HttpStatus.OK );
 		
 		} catch (DocumentNotFoundException e) {
 			e.printStackTrace();

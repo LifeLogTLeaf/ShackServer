@@ -3,6 +3,7 @@
  */
 package org.soma.tleaf.service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -197,22 +198,26 @@ public class RestApiServiceImple implements RestApiService {
 		try {
 			AttachmentInputStream attachmentStream = restApiDao.getAttachment(userId, docId, attachmentId);
 			
+			// Create a byte array output stream.
+	        ByteArrayOutputStream bao = new ByteArrayOutputStream();
+			
 			byte[] attachmentBytes = new byte[ (int)attachmentStream.getContentLength() ];
-			attachmentStream.read( attachmentBytes );
+			attachmentStream.read( attachmentBytes, 0, attachmentBytes.length + 100 );
+			attachmentStream.close();
 			
 			HttpHeaders header = new HttpHeaders();
 			// Set Custom Headers
 			header.set("Content-Type", attachmentStream.getContentType() );
-			header.set("Cache-Control", "must-revalidate");
 			header.set("Content-Length", String.valueOf( attachmentStream.getContentLength() ) );
-			header.set("Accept-Ranges", "bytes");
 			
-			return new ResponseEntity<byte[]>( attachmentBytes, header, HttpStatus.OK );
+//			return attachmentBytes;
+			return new ResponseEntity<byte[]>( attachmentBytes, header, HttpStatus.FOUND );
 		
 		} catch (DocumentNotFoundException e) {
 			e.printStackTrace();
 			
-			return new ResponseEntity<byte[]>( new byte[10], HttpStatus.NOT_FOUND );
+//			return null;
+			return new ResponseEntity<byte[]>( HttpStatus.NOT_FOUND );
 		
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -3,6 +3,7 @@
  */
 package org.soma.tleaf.controller;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.soma.tleaf.exception.CustomExceptionFactory;
 import org.soma.tleaf.exception.CustomExceptionValue;
 import org.soma.tleaf.service.RestApiService;
 import org.soma.tleaf.util.ISO8601;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -32,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 //import com.wordnik.swagger.annotations.ApiOperation;
 
@@ -188,6 +191,8 @@ public class RestApiController {
 	 * @param attachmentId
 	 *            Resource's Id inside the document
 	 * @return Need to Decide how are we going to return image resources
+	 * @throws IOException 
+	 * @throws ClientProtocolException 
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "user/file", method = RequestMethod.GET)
@@ -199,6 +204,17 @@ public class RestApiController {
 			throws Exception {
 		return restApiService.getAttachment(userId, docId, attachmentId);
 	}
+	
+//	@RequestMapping(value = "user/file", method = RequestMethod.GET)
+//	public ModelAndView getResourceByFowarding ( HttpServletResponse httpResponse,
+//			@RequestParam(required = true) String userId,
+//			@RequestParam(required = true) String docId,
+//			@RequestParam(required = true) String attachmentId ) throws IOException {
+//		
+//		ModelAndView mv = new ModelAndView(); mv.setViewName("forward:http://localhost:5984/user_"+userId+"/"+docId+"/"+attachmentId);
+//		
+//		return mv;
+//	}
 
 	/**
 	 * Deletes the specific Attachment. Returns the revision of the deleted Doc

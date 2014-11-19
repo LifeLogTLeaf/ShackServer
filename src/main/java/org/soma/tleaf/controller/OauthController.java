@@ -77,7 +77,7 @@ public class OauthController {
 		oauthManager.checkLoginAccessCode( request.getCode(), request.getAppId() );
 		
 		// Still, WrongAuthenticationInfoException Can occur
-		return new ResponseEntity<AccessKey>( userDao.userLogin( request.getEmail(), request.getPassword(), request.getEmail() ), HttpStatus.OK );
+		return new ResponseEntity<AccessKey>( userDao.userLogin( request.getEmail(), request.getPassword(), request.getAppId() ), HttpStatus.OK );
 	}
 	
 	@RequestMapping( value = "oauth/signup" , method = RequestMethod.POST )

@@ -62,7 +62,7 @@ public class UserDaoImpl implements UserDao {
 
 		logger.info( "Email : " + email + "\nPassWord : " + password );
 		
-		UserInfo userInfo = couchDbConnector_users.get( UserInfo.class, hashId.getHashId().toString() );
+		UserInfo userInfo = couchDbConnector_users.get( UserInfo.class, hashId.getHashId() );
 
 		if ( password.equals( userInfo.getPassword() ) ) {
 			return userInfo;

@@ -12,6 +12,7 @@ import org.springframework.cache.support.SimpleValueWrapper;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import com.google.gson.Gson;
 
@@ -90,9 +91,25 @@ public class RedisCache implements Cache {
 	@Override
 	public void evict(Object key) {
 		setJedisFromPool();
-		
-		jedis.del( (String)key );
-		logger.info("Successfully deleted AccessKey");
+
+		try { 
+			jedis.del( (String)key );
+			logger.info("Successfully deleted AccessKey");
+		} catch ( JedisConnectionException e ) {
+
+			logger.info("LoginRedisCache evict Method JedisConnectionException");
+
+			// returnBrokenResource when the state of the object is unrecoverable
+			if (null != jedis) {
+				jedisPool.returnBrokenResource(jedis);
+				jedis = null;
+			}
+
+		} finally {
+			/// ... it's important to return the Jedis instance to the pool once you've finished using it
+			if (null != jedis)
+				jedisPool.returnResource(jedis);
+		}
 
 		returnResource();
 	}
@@ -113,9 +130,25 @@ public class RedisCache implements Cache {
 
 		logger.info("retriving Value by Key...");
 
-		String accessKeyString; AccessKey accessKey = null;
+		String accessKeyString = null; AccessKey accessKey = null;
 			
-		accessKeyString = jedis.get( (String)key );
+		try {
+			accessKeyString = jedis.get( (String)key );
+		} catch ( JedisConnectionException e ) {
+
+			logger.info("RedisCache get Method JedisConnectionException");
+
+			// returnBrokenResource when the state of the object is unrecoverable
+			if (null != jedis) {
+				jedisPool.returnBrokenResource(jedis);
+				jedis = null;
+			}
+			
+		} finally {
+			/// ... it's important to return the Jedis instance to the pool once you've finished using it
+			if (null != jedis)
+				jedisPool.returnResource(jedis);
+		}
 		
 		if ( accessKeyString == null ) { 
 
@@ -125,9 +158,10 @@ public class RedisCache implements Cache {
 				accessKey = accessKeyManager.findAccessKey( (String) key );
 			} catch (DatabaseConnectionException e) {
 				e.printStackTrace();
-				return null;
+				returnResource();
+				return new SimpleValueWrapper(null);
 			}
-			if ( accessKey == null ) return null;
+			if ( accessKey == null ) { returnResource(); return new SimpleValueWrapper(null); }
 
 			// Put it back again in redis.
 			put ( accessKey.getAccessKey() , accessKey );
@@ -138,7 +172,6 @@ public class RedisCache implements Cache {
 			accessKey = gson.fromJson(accessKeyString, AccessKey.class);
 		}
 		
-		returnResource();
 		return new SimpleValueWrapper( accessKey );
 	}
 
@@ -164,8 +197,22 @@ public class RedisCache implements Cache {
 		AccessKey accessKey = (AccessKey)value;
 		String accessKeyString = gson.toJson(accessKey);
 		
-		jedis.setex(sKey, expireSeconds, accessKeyString);
-		returnResource();
+		try{
+			jedis.setex( sKey, expireSeconds, accessKeyString );
+		} catch ( JedisConnectionException e ) {
+
+			logger.info("RedisCache get Method JedisConnectionException");
+
+			// returnBrokenResource when the state of the object is unrecoverable
+			if (null != jedis) {
+				jedisPool.returnBrokenResource(jedis);
+				jedis = null;
+			}
+		} finally {
+			/// ... it's important to return the Jedis instance to the pool once you've finished using it
+			if (null != jedis)
+				jedisPool.returnResource(jedis);
+		}
 	}
 
 	/**
@@ -176,8 +223,25 @@ public class RedisCache implements Cache {
 	@Override
 	public void clear() {
 		setJedisFromPool();
-		jedis.flushAll();
-		returnResource();
+		try{
+
+			jedis.flushAll();
+
+		} catch( JedisConnectionException e ) {
+
+			logger.info("RedisCache clear Method JedisConnectionException");
+
+			// returnBrokenResource when the state of the object is unrecoverable
+			if (null != jedis) {
+				jedisPool.returnBrokenResource(jedis);
+				jedis = null;
+			}
+
+		} finally {
+			/// ... it's important to return the Jedis instance to the pool once you've finished using it
+			if (null != jedis)
+				jedisPool.returnResource(jedis);
+		}
 	}
 
 	@Override

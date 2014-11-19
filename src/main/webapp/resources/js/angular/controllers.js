@@ -74,15 +74,13 @@ function loginCtrl($scope,$http) {
             
             // callAndroid 에서 넘겨줄 변수
             callAndroid(data);
-            //paretnt Frame에 값 전
-            parent.accesskey( data );
-            //쿠키에 유저 id저장
+
             console.log(data);
-            setCookie('accessKey',data.accessKey,5);
+//            setCookie('accessKey',data.accessKey,5);
             
             // 부모 윈도우에 accessKey 값 전달
-            window.opener.getReturnValue( JSON.stringify( data ) );
-            window.close();
+//            window.opener.getReturnValue( JSON.stringify( data ) );
+//            window.close();
         }).
             error(function(data, status, headers, config) {
 

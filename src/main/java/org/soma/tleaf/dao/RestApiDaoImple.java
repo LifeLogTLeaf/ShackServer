@@ -454,9 +454,9 @@ public class RestApiDaoImple implements RestApiDao {
 		try {
 			viewResult = db.queryView(query).getRows();
 			
-			tmp = new HashMap<String,Object>();
-			tmp.put("rows", viewResult.size());
-			result.add(tmp);
+//			tmp = new HashMap<String,Object>();
+//			tmp.put("rows", viewResult.size());
+//			result.add(tmp);
 			
 			for ( Row i : viewResult ) {
 				tmp = new HashMap<String,Object>();
@@ -490,9 +490,9 @@ public class RestApiDaoImple implements RestApiDao {
 		try {
 			viewResult = db.queryView(query).getRows();
 			
-			tmp = new HashMap<String,Object>();
-			tmp.put("rows", viewResult.size());
-			result.add(tmp);
+//			tmp = new HashMap<String,Object>();
+//			tmp.put("rows", viewResult.size());
+//			result.add(tmp);
 			
 			for ( Row i : viewResult ) {
 				tmp = new HashMap<String,Object>();

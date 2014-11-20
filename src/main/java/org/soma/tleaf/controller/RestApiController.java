@@ -442,7 +442,8 @@ public class RestApiController {
 			@RequestParam(value = "limit", required = false, defaultValue="1000") String limit,
 			@RequestParam(value = "startKey", required = false, defaultValue=ISO8601.FAR_FAR_AWAY) String startKey,
 			@RequestParam(value = "endKey", required = false, defaultValue=ISO8601.LONG_LONG_AGO) String endKey,
-			@RequestParam(value = "descend", required = false , defaultValue="true") boolean descend) throws Exception {
+			@RequestParam(value = "descend", required = false , defaultValue="true") boolean descend ,
+			@RequestParam(value = "appId", required = true ) String appIdFromQuery ) throws Exception {
 
 		// HttpServletRequest.getAttribute Returns null if Values are not found
 		if (request.getAttribute("FilterException") != null)
@@ -457,7 +458,7 @@ public class RestApiController {
 		param.setEndKey(endKey);
 		param.setLimit(limit);
 		param.setDescend(descend);
-		param.setAppId( request.getHeader(APPID_HEADER_NAME) );
+		param.setAppId(appIdFromQuery);
 
 		// Delegate Request to RestApiService Object
 		return restApiService.getUserDataFromAppId(param);

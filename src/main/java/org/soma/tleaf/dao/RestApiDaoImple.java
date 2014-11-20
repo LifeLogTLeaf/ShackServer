@@ -508,4 +508,37 @@ public class RestApiDaoImple implements RestApiDao {
 	
 		return result;
 	}
+
+	
+	@Override
+	public List<Map<String, Object>> facebookInfo(RequestParameter param)
+			throws Exception {
+		
+		logger.info("Fetching facebook like,comment,post info" + param.getUserHashId() );
+		
+		CouchDbConnector db = connector.getCouchDbConnetor("user_" + param.getUserHashId());
+		
+		ViewQuery query = new ViewQuery().designDocId("_design/tns").viewName("facebook").group(true);
+		
+		List<Row> viewResult;
+		HashMap<String,Object> tmp = new HashMap<String, Object>();
+		List<Map<String,Object>> result = new ArrayList<Map<String,Object>>();
+		
+		try {
+			viewResult = db.queryView(query).getRows();
+			
+			for ( Row i : viewResult ) {
+				tmp = new HashMap<String,Object>();
+				tmp.put( i.getKey() , i.getValueAsInt());
+				result.add(tmp);
+			}
+			
+		} catch (DocumentNotFoundException e) {
+			// if there were no documents to the specific query
+			e.printStackTrace();
+			throw e;
+		}
+		
+		return result;
+	}
 }

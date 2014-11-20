@@ -37,4 +37,5 @@ public interface RestApiDao {
 	public List<RawData> getDataByDate( RequestParameter param ) throws Exception;
 	public List<Map<String,Object>> wordCount ( RequestParameter param ) throws Exception;
 	public List<Map<String,Object>> tagCount ( RequestParameter param ) throws Exception;
+	public List<Map<String,Object>> facebookInfo ( RequestParameter param ) throws Exception;
 }

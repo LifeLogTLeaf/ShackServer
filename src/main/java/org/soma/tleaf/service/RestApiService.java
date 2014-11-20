@@ -37,4 +37,5 @@ public interface RestApiService {
 	public ResponseEntity<List<Map<String, Object>>> wordCount ( RequestParameter param ) throws DatabaseConnectionException, Exception;
 	public ResponseEntity<List<Map<String, Object>>> tagCount ( RequestParameter param ) throws Exception;
 	public ResponseEntity<List<RawData>> getUserDataFromDate ( RequestParameter param ) throws Exception;
+	public ResponseEntity<List<Map<String, Object>>> getFacebookInfo ( RequestParameter param ) throws Exception;
 }

@@ -367,6 +367,14 @@ public class RestApiController {
 		return restApiService.getUserDataFromDate(param);
 	}
 	
+	/**
+	 * Counts the words within the Tiary Content
+	 * @author susu
+	 * Date Nov 21, 2014 2:15:25 AM
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping( value = "/user/word", method = RequestMethod.GET )
 	public ResponseEntity<List<Map<String,Object>>> getWordCount ( 
 			HttpServletRequest request ) throws Exception {
@@ -383,6 +391,14 @@ public class RestApiController {
 		return restApiService.wordCount(param);
 	}
 	
+	/**
+	 * Counts the tags within the Tiary Content
+	 * @author susu
+	 * Date Nov 21, 2014 2:19:25 AM
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping( value = "/user/tag", method = RequestMethod.GET )
 	public ResponseEntity<List<Map<String,Object>>> getTagCount ( 
 			HttpServletRequest request ) throws Exception {
@@ -398,6 +414,21 @@ public class RestApiController {
 		
 		return restApiService.tagCount(param);
 	}
+
+	@RequestMapping( value = "/user/sns", method = RequestMethod.GET )
+	public ResponseEntity<List<Map<String,Object>>> getFacebookInfo ( HttpServletRequest request ) throws Exception {
+		
+		logger.info("/user/sns.GET");
+		
+		// HttpServletRequest.getAttribute Returns null if Values are not found
+		if (request.getAttribute("FilterException") != null)
+			throw customExceptionFactory.createCustomException((CustomExceptionValue) request.getAttribute("FilterException"));
+		
+		RequestParameter param = new RequestParameter();
+		param.setUserHashId( request.getHeader(USERID_HEADER_NAME) );
+		
+		return restApiService.getFacebookInfo(param);
+	}
 	
 	/**
 	 * Author : RichardJ
@@ -412,7 +443,7 @@ public class RestApiController {
 			@RequestParam(value = "startKey", required = false, defaultValue=ISO8601.FAR_FAR_AWAY) String startKey,
 			@RequestParam(value = "endKey", required = false, defaultValue=ISO8601.LONG_LONG_AGO) String endKey, 
 			@RequestParam(value = "descend", required = false , defaultValue="true") boolean descend) throws Exception{
-
+logger.info(startKey);logger.info(endKey);
 		// HttpServletRequest.getAttribute Returns null if Values are not found
 		if (request.getAttribute("FilterException") != null)
 			throw customExceptionFactory.createCustomException((CustomExceptionValue) request.getAttribute("FilterException"));

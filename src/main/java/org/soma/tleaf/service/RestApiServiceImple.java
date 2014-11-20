@@ -332,9 +332,8 @@ public class RestApiServiceImple implements RestApiService {
 		try {
 			return new ResponseEntity<List<Map<String,Object>>>( restApiDao.wordCount(param) , HttpStatus.OK );
 		} catch ( DocumentNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return new ResponseEntity<List<Map<String,Object>>>( restApiDao.wordCount(param) , HttpStatus.NOT_FOUND );
+			return new ResponseEntity<List<Map<String,Object>>>( HttpStatus.NOT_FOUND );
 		}
 	}
 
@@ -344,9 +343,18 @@ public class RestApiServiceImple implements RestApiService {
 		try {
 			return new ResponseEntity<List<Map<String,Object>>>( restApiDao.tagCount(param) , HttpStatus.OK );
 		} catch ( DocumentNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return new ResponseEntity<List<Map<String,Object>>>( restApiDao.tagCount(param) , HttpStatus.NOT_FOUND );
+			return new ResponseEntity<List<Map<String,Object>>>( HttpStatus.NOT_FOUND );
+		}
+	}
+
+	@Override
+	public ResponseEntity<List<Map<String, Object>>> getFacebookInfo(
+			RequestParameter param) throws Exception {
+		try{
+			return new ResponseEntity<List<Map<String, Object>>>( restApiDao.facebookInfo(param) , HttpStatus.OK );
+		} catch ( DocumentNotFoundException e ) {
+			return new ResponseEntity<List<Map<String, Object>>>( HttpStatus.NOT_FOUND );
 		}
 	}
 

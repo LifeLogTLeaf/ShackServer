@@ -379,9 +379,24 @@ public class RestApiController {
 		
 		RequestParameter param = new RequestParameter();
 		param.setUserHashId( request.getHeader(USERID_HEADER_NAME) );
-		param.setAppId( request.getHeader(APPID_HEADER_NAME) );
 		
 		return restApiService.wordCount(param);
+	}
+	
+	@RequestMapping( value = "/user/tag", method = RequestMethod.GET )
+	public ResponseEntity<List<Map<String,Object>>> getTagCount ( 
+			HttpServletRequest request ) throws Exception {
+		
+		logger.info("/user/tag.GET");
+		
+		// HttpServletRequest.getAttribute Returns null if Values are not found
+		if (request.getAttribute("FilterException") != null)
+			throw customExceptionFactory.createCustomException((CustomExceptionValue) request.getAttribute("FilterException"));
+		
+		RequestParameter param = new RequestParameter();
+		param.setUserHashId( request.getHeader(USERID_HEADER_NAME) );
+		
+		return restApiService.tagCount(param);
 	}
 	
 	/**

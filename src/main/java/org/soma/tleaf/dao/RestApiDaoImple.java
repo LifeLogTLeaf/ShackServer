@@ -442,7 +442,7 @@ public class RestApiDaoImple implements RestApiDao {
 //		ComplexKey startKey = ComplexKey.of( param.getDocumentId() );
 //		ComplexKey endKey = ComplexKey.of( param.getDocumentId() + "a" );
 		
-		ViewQuery query = new ViewQuery().designDocId("_design/shack")
+		ViewQuery query = new ViewQuery().designDocId("_design/tiary")
 				.viewName("wordcount")
 //				.startKey(startKey)
 //				.endKey(endKey)
@@ -460,7 +460,7 @@ public class RestApiDaoImple implements RestApiDao {
 			
 			for ( Row i : viewResult ) {
 				tmp = new HashMap<String,Object>();
-				tmp.put( i.getKey().substring( 2, i.getKey().length()-2 ), i.getValueAsInt() );
+				tmp.put( i.getKey(), i.getValueAsInt() );
 				result.add(tmp);
 			}
 			
@@ -473,4 +473,39 @@ public class RestApiDaoImple implements RestApiDao {
 		return result;
 	}
 
+	@Override
+	public List<Map<String, Object>> tagCount(RequestParameter param)
+			throws Exception {
+		
+		logger.info( param.getUserHashId() + " Tag Count" );
+		
+		CouchDbConnector db = connector.getCouchDbConnetor("user_" + param.getUserHashId());
+		
+		ViewQuery query = new ViewQuery().designDocId("_design/tiary")
+				.viewName("tagcount").group(true);
+		
+		HashMap<String,Object> tmp;
+		List< Map<String,Object> > result = new ArrayList<Map<String,Object>>();
+		List<Row> viewResult;
+		try {
+			viewResult = db.queryView(query).getRows();
+			
+			tmp = new HashMap<String,Object>();
+			tmp.put("rows", viewResult.size());
+			result.add(tmp);
+			
+			for ( Row i : viewResult ) {
+				tmp = new HashMap<String,Object>();
+				tmp.put( i.getKey(), i.getValueAsInt() );
+				result.add(tmp);
+			}
+			
+		} catch (DocumentNotFoundException e) {
+			// if there were no documents to the specific query
+			e.printStackTrace();
+			throw e;
+		}
+	
+		return result;
+	}
 }

@@ -367,6 +367,23 @@ public class RestApiController {
 		return restApiService.getUserDataFromDate(param);
 	}
 	
+	@RequestMapping( value = "/user/word", method = RequestMethod.GET )
+	public ResponseEntity<List<Map<String,Object>>> getWordCount ( 
+			HttpServletRequest request ) throws Exception {
+		
+		logger.info("/user/word.GET");
+		
+		// HttpServletRequest.getAttribute Returns null if Values are not found
+		if (request.getAttribute("FilterException") != null)
+			throw customExceptionFactory.createCustomException((CustomExceptionValue) request.getAttribute("FilterException"));
+		
+		RequestParameter param = new RequestParameter();
+		param.setUserHashId( request.getHeader(USERID_HEADER_NAME) );
+		param.setAppId( request.getHeader(APPID_HEADER_NAME) );
+		
+		return restApiService.wordCount(param);
+	}
+	
 	/**
 	 * Author : RichardJ
 	 * Date : Oct 20, 2014 18:55:06

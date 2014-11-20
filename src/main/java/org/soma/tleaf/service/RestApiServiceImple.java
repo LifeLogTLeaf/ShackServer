@@ -325,4 +325,17 @@ public class RestApiServiceImple implements RestApiService {
 		return new ResponseEntity< Map<String,Object>>( restApiDao.appCount(param), HttpStatus.OK );
 	}
 
+	
+	@Override
+	public ResponseEntity<List<Map<String,Object>>> wordCount(RequestParameter param)
+			throws Exception {
+		try {
+			return new ResponseEntity<List<Map<String,Object>>>( restApiDao.wordCount(param) , HttpStatus.OK );
+		} catch ( DocumentNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return new ResponseEntity<List<Map<String,Object>>>( restApiDao.wordCount(param) , HttpStatus.NOT_FOUND );
+		}
+	}
+
 }

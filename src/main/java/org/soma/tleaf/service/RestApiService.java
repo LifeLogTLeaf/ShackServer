@@ -34,5 +34,6 @@ public interface RestApiService {
 	public ResponseEntity<Map<String,Object>> postAttachment( RawData[] rawData, List< InputStream > fileList ) throws Exception;
 	public ResponseEntity<Map<String,Object>> deleteAttachment( RawData rawData ) throws Exception;
 	public ResponseEntity<Map<String,Object>> appCount ( RequestParameter param ) throws DatabaseConnectionException;
+	public ResponseEntity<List<Map<String, Object>>> wordCount ( RequestParameter param ) throws DatabaseConnectionException, Exception;
 	public ResponseEntity<List<RawData>> getUserDataFromDate ( RequestParameter param ) throws Exception;
 }

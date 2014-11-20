@@ -16,6 +16,7 @@ import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.DocumentNotFoundException;
 import org.ektorp.ViewQuery;
+import org.ektorp.ViewResult;
 import org.ektorp.ViewResult.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -428,6 +429,48 @@ public class RestApiDaoImple implements RestApiDao {
 		}
 		
 		return rawDatas;
+	}
+
+	@Override
+	public List<Map<String,Object>> wordCount(RequestParameter param)
+			throws Exception { 
+
+		logger.info( param.getUserHashId() + " Word Count" );
+		
+		CouchDbConnector db = connector.getCouchDbConnetor("user_" + param.getUserHashId());
+		
+//		ComplexKey startKey = ComplexKey.of( param.getDocumentId() );
+//		ComplexKey endKey = ComplexKey.of( param.getDocumentId() + "a" );
+		
+		ViewQuery query = new ViewQuery().designDocId("_design/shack")
+				.viewName("wordcount")
+//				.startKey(startKey)
+//				.endKey(endKey)
+				.group(true);
+		
+		HashMap<String,Object> tmp;
+		List< Map<String,Object> > result = new ArrayList<Map<String,Object>>();
+		List<Row> viewResult;
+		try {
+			viewResult = db.queryView(query).getRows();
+			
+			tmp = new HashMap<String,Object>();
+			tmp.put("rows", viewResult.size());
+			result.add(tmp);
+			
+			for ( Row i : viewResult ) {
+				tmp = new HashMap<String,Object>();
+				tmp.put( i.getKey().substring( 2, i.getKey().length()-2 ), i.getValueAsInt() );
+				result.add(tmp);
+			}
+			
+		} catch (DocumentNotFoundException e) {
+			// if there were no documents to the specific query
+			e.printStackTrace();
+			throw e;
+		}
+		
+		return result;
 	}
 
 }

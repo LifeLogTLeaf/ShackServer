@@ -1,6 +1,7 @@
 package org.soma.tleaf.controller;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,31 +66,39 @@ public class OauthController {
 	}
 	
 	@RequestMapping( value = "oauth/login" , method = RequestMethod.POST )
-	public ResponseEntity<AccessKey> userLogin (
+	public ResponseEntity<AccessKey> userLogin ( HttpServletRequest httpRequest,
 			@RequestBody( required = true ) LoginRequest request ) throws CustomException {
 		
-		logger.info( request.getCode() ); logger.info( request.getAppId() );
+		String userAgent = httpRequest.getHeader("user-agent");
+		logger.info( userAgent ); logger.info( request.getCode() ); logger.info( request.getAppId() );
 		
-		if ( request.getCode() == null || request.getAppId() == null || request.getEmail() == null || request.getPassword() == null )
+		if ( request.getAppId() == null || request.getEmail() == null || request.getPassword() == null || ( userAgent.contains("Android") && request.getCode() == null ) )
 			throw customExceptionFactory.createCustomException( CustomExceptionValue.Parameter_Insufficient_Exception );
 		
-		// throws Exception If Not Correct
-		oauthManager.checkLoginAccessCode( request.getCode(), request.getAppId() );
+		if ( userAgent.contains("Android") ) {
+			// throws Exception If Not Correct
+			oauthManager.checkLoginAccessCode( request.getCode(), request.getAppId() );
+		}
 		
 		// Still, WrongAuthenticationInfoException Can occur
 		return new ResponseEntity<AccessKey>( userDao.userLogin( request.getEmail(), request.getPassword(), request.getAppId() ), HttpStatus.OK );
 	}
 	
 	@RequestMapping( value = "oauth/signup" , method = RequestMethod.POST )
-	public ResponseEntity<String> userSignUp (
+	public ResponseEntity<String> userSignUp ( HttpServletRequest httpRequest,
 			@RequestBody( required = true ) LoginRequest request ) throws CustomException {
 		
-		if ( request.getCode() == null || request.getAppId() == null || request.getEmail() == null || request.getPassword() == null
+		String userAgent = httpRequest.getHeader("user-agent");
+		logger.info( userAgent );
+		
+		if ( ( userAgent.contains("Android") && request.getCode() == null ) || request.getAppId() == null || request.getEmail() == null || request.getPassword() == null
 				|| request.getAge() == null || /*request.getGender() == null ||*/ request.getNickname() == null /*|| request.getRedirect() == null */)
 			throw customExceptionFactory.createCustomException( CustomExceptionValue.Parameter_Insufficient_Exception );
 		
-		// throws Exception If Not Correct
-		oauthManager.checkLoginAccessCode(request.getCode(),request.getAppId());
+		if ( userAgent.contains("Android") ) {
+			// throws Exception If Not Correct
+			oauthManager.checkLoginAccessCode(request.getCode(),request.getAppId());
+		}
 		
 		UserInfo userInfo = new UserInfo();
 		userInfo.setEmail(request.getEmail());

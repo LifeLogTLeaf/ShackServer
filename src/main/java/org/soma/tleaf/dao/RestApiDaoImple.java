@@ -460,7 +460,7 @@ public class RestApiDaoImple implements RestApiDao {
 			
 			for ( Row i : viewResult ) {
 				tmp = new HashMap<String,Object>();
-				tmp.put( i.getKey(), i.getValueAsInt() );
+				tmp.put( "label", i.getKey()); tmp.put( "value", i.getValueAsInt() );
 				result.add(tmp);
 			}
 			
@@ -496,7 +496,7 @@ public class RestApiDaoImple implements RestApiDao {
 			
 			for ( Row i : viewResult ) {
 				tmp = new HashMap<String,Object>();
-				tmp.put( i.getKey(), i.getValueAsInt() );
+				tmp.put( "label", i.getKey()); tmp.put( "value", i.getValueAsInt() );
 				result.add(tmp);
 			}
 			

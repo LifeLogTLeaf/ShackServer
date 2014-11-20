@@ -321,8 +321,8 @@ public class RestApiServiceImple implements RestApiService {
 	 * @throws DatabaseConnectionException
 	 */
 	@Override
-	public ResponseEntity<Map<String, Object>> appCount(RequestParameter param) throws DatabaseConnectionException {
-		return new ResponseEntity< Map<String,Object>>( restApiDao.appCount(param), HttpStatus.OK );
+	public ResponseEntity<List<Map<String, Object>>> appCount(RequestParameter param) throws DatabaseConnectionException {
+		return new ResponseEntity<List<Map<String,Object>>>( restApiDao.appCount(param), HttpStatus.OK );
 	}
 
 	

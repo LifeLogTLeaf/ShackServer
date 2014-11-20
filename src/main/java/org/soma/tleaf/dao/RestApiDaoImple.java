@@ -365,7 +365,7 @@ public class RestApiDaoImple implements RestApiDao {
 	 * @throws DatabaseConnectionException
 	 */
 	@Override
-	public Map<String, Object> appCount(RequestParameter param) throws DatabaseConnectionException {
+	public List<Map<String, Object>> appCount(RequestParameter param) throws DatabaseConnectionException {
 		
 		logger.info( param.getUserHashId() + " Statistic Query" );
 		
@@ -373,16 +373,20 @@ public class RestApiDaoImple implements RestApiDao {
 		
 		ViewQuery query = new ViewQuery().designDocId("_design/shack").viewName("appcount").group(true);
 		
-		Map<String,Object> resultMap = new HashMap<String,Object>();
+		Map<String,Object> tmp;
+		ArrayList< Map<String,Object> > result = new ArrayList< Map<String,Object> >();
 		
 		try {
 			List<Row> rows = db.queryView(query).getRows();
 			
 			for ( Row i : rows ) {
-				resultMap.put( i.getKey(), i.getValue() );
+				tmp = new HashMap<String,Object>();
+				tmp.put( "app", i.getKey() );
+				tmp.put( "value", i.getValueAsInt() );
+				result.add(tmp);
 			}
 			
-			return resultMap;
+			return result;
 			
 		} catch (DocumentNotFoundException e) {
 			// if there were no documents to the specific query

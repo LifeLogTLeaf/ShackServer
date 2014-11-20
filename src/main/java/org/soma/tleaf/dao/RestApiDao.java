@@ -33,7 +33,7 @@ public interface RestApiDao {
 	public RawData getRawData( String rawDataId, String userId ) throws CustomException;
 	public AttachmentInputStream getAttachment( String userId, String docId, String attachmentId ) throws Exception;
 	public String deleteAttachment( RawData rawData ) throws Exception;
-	public Map<String, Object> appCount ( RequestParameter param ) throws DatabaseConnectionException;
+	public List<Map<String, Object>> appCount ( RequestParameter param ) throws DatabaseConnectionException;
 	public List<RawData> getDataByDate( RequestParameter param ) throws Exception;
 	public List<Map<String,Object>> wordCount ( RequestParameter param ) throws Exception;
 	public List<Map<String,Object>> tagCount ( RequestParameter param ) throws Exception;

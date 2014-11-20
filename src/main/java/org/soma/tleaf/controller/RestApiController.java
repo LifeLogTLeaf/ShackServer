@@ -111,7 +111,7 @@ public class RestApiController {
 	 * @throws Exception
 	 */
 	@RequestMapping( value = "/user/statistic" , method = RequestMethod.GET )
-	public ResponseEntity<Map<String,Object>> getUserStat ( HttpServletRequest request ) throws Exception {
+	public ResponseEntity<List<Map<String,Object>>> getUserStat ( HttpServletRequest request ) throws Exception {
 		
 		RequestParameter param = new RequestParameter();
 		param.setUserHashId( request.getHeader(USERID_HEADER_NAME) );

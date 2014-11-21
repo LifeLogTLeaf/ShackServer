@@ -3,6 +3,7 @@
  */
 package org.soma.tleaf.controller;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.soma.tleaf.exception.CustomExceptionFactory;
 import org.soma.tleaf.exception.CustomExceptionValue;
 import org.soma.tleaf.service.RestApiService;
 import org.soma.tleaf.util.ISO8601;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -32,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 //import com.wordnik.swagger.annotations.ApiOperation;
 
@@ -111,7 +114,7 @@ public class RestApiController {
 	 * @throws Exception
 	 */
 	@RequestMapping( value = "/user/statistic" , method = RequestMethod.GET )
-	public ResponseEntity<Map<String,Object>> getUserStat ( HttpServletRequest request ) throws Exception {
+	public ResponseEntity<List<Map<String,Object>>> getUserStat ( HttpServletRequest request ) throws Exception {
 		
 		RequestParameter param = new RequestParameter();
 		param.setUserHashId( request.getHeader(USERID_HEADER_NAME) );
@@ -188,6 +191,8 @@ public class RestApiController {
 	 * @param attachmentId
 	 *            Resource's Id inside the document
 	 * @return Need to Decide how are we going to return image resources
+	 * @throws IOException 
+	 * @throws ClientProtocolException 
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "user/file", method = RequestMethod.GET)
@@ -199,6 +204,17 @@ public class RestApiController {
 			throws Exception {
 		return restApiService.getAttachment(userId, docId, attachmentId);
 	}
+	
+//	@RequestMapping(value = "user/file", method = RequestMethod.GET)
+//	public ModelAndView getResourceByFowarding ( HttpServletResponse httpResponse,
+//			@RequestParam(required = true) String userId,
+//			@RequestParam(required = true) String docId,
+//			@RequestParam(required = true) String attachmentId ) throws IOException {
+//		
+//		ModelAndView mv = new ModelAndView(); mv.setViewName("forward:http://localhost:5984/user_"+userId+"/"+docId+"/"+attachmentId);
+//		
+//		return mv;
+//	}
 
 	/**
 	 * Deletes the specific Attachment. Returns the revision of the deleted Doc
@@ -368,6 +384,69 @@ public class RestApiController {
 	}
 	
 	/**
+	 * Counts the words within the Tiary Content
+	 * @author susu
+	 * Date Nov 21, 2014 2:15:25 AM
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping( value = "/user/word", method = RequestMethod.GET )
+	public ResponseEntity<List<Map<String,Object>>> getWordCount ( 
+			HttpServletRequest request ) throws Exception {
+		
+		logger.info("/user/word.GET");
+		
+		// HttpServletRequest.getAttribute Returns null if Values are not found
+		if (request.getAttribute("FilterException") != null)
+			throw customExceptionFactory.createCustomException((CustomExceptionValue) request.getAttribute("FilterException"));
+		
+		RequestParameter param = new RequestParameter();
+		param.setUserHashId( request.getHeader(USERID_HEADER_NAME) );
+		
+		return restApiService.wordCount(param);
+	}
+	
+	/**
+	 * Counts the tags within the Tiary Content
+	 * @author susu
+	 * Date Nov 21, 2014 2:19:25 AM
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping( value = "/user/tag", method = RequestMethod.GET )
+	public ResponseEntity<List<Map<String,Object>>> getTagCount ( 
+			HttpServletRequest request ) throws Exception {
+		
+		logger.info("/user/tag.GET");
+		
+		// HttpServletRequest.getAttribute Returns null if Values are not found
+		if (request.getAttribute("FilterException") != null)
+			throw customExceptionFactory.createCustomException((CustomExceptionValue) request.getAttribute("FilterException"));
+		
+		RequestParameter param = new RequestParameter();
+		param.setUserHashId( request.getHeader(USERID_HEADER_NAME) );
+		
+		return restApiService.tagCount(param);
+	}
+
+	@RequestMapping( value = "/user/sns", method = RequestMethod.GET )
+	public ResponseEntity<List<Map<String,Object>>> getFacebookInfo ( HttpServletRequest request ) throws Exception {
+		
+		logger.info("/user/sns.GET");
+		
+		// HttpServletRequest.getAttribute Returns null if Values are not found
+		if (request.getAttribute("FilterException") != null)
+			throw customExceptionFactory.createCustomException((CustomExceptionValue) request.getAttribute("FilterException"));
+		
+		RequestParameter param = new RequestParameter();
+		param.setUserHashId( request.getHeader(USERID_HEADER_NAME) );
+		
+		return restApiService.getFacebookInfo(param);
+	}
+	
+	/**
 	 * Author : RichardJ
 	 * Date : Oct 20, 2014 18:55:06
 	 * Description : 해당 엑세스키를 사용하는 사용자의 전체 데이터 조회입니다.
@@ -380,7 +459,7 @@ public class RestApiController {
 			@RequestParam(value = "startKey", required = false, defaultValue=ISO8601.FAR_FAR_AWAY) String startKey,
 			@RequestParam(value = "endKey", required = false, defaultValue=ISO8601.LONG_LONG_AGO) String endKey, 
 			@RequestParam(value = "descend", required = false , defaultValue="true") boolean descend) throws Exception{
-
+logger.info(startKey);logger.info(endKey);
 		// HttpServletRequest.getAttribute Returns null if Values are not found
 		if (request.getAttribute("FilterException") != null)
 			throw customExceptionFactory.createCustomException((CustomExceptionValue) request.getAttribute("FilterException"));
@@ -410,7 +489,8 @@ public class RestApiController {
 			@RequestParam(value = "limit", required = false, defaultValue="1000") String limit,
 			@RequestParam(value = "startKey", required = false, defaultValue=ISO8601.FAR_FAR_AWAY) String startKey,
 			@RequestParam(value = "endKey", required = false, defaultValue=ISO8601.LONG_LONG_AGO) String endKey,
-			@RequestParam(value = "descend", required = false , defaultValue="true") boolean descend) throws Exception {
+			@RequestParam(value = "descend", required = false , defaultValue="true") boolean descend ,
+			@RequestParam(value = "appId", required = true ) String appIdFromQuery ) throws Exception {
 
 		// HttpServletRequest.getAttribute Returns null if Values are not found
 		if (request.getAttribute("FilterException") != null)
@@ -425,7 +505,7 @@ public class RestApiController {
 		param.setEndKey(endKey);
 		param.setLimit(limit);
 		param.setDescend(descend);
-		param.setAppId( request.getHeader(APPID_HEADER_NAME) );
+		param.setAppId(appIdFromQuery);
 
 		// Delegate Request to RestApiService Object
 		return restApiService.getUserDataFromAppId(param);

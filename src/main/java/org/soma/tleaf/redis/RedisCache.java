@@ -78,9 +78,9 @@ public class RedisCache implements Cache {
 	 * @author susu
 	 * Date Nov 17, 2014 11:24:26 PM
 	 */
-	private void returnResource () {
-		jedisPool.returnResource(jedis);
-	}
+//	private void returnResource () {
+//		jedisPool.returnResource(jedis);
+//	}
 
 	/**
 	 * Deletes AccessKey in the Cache
@@ -110,8 +110,6 @@ public class RedisCache implements Cache {
 			if (null != jedis)
 				jedisPool.returnResource(jedis);
 		}
-
-		returnResource();
 	}
 	public void delete( String key ) {
 		evict ( key );
@@ -158,10 +156,9 @@ public class RedisCache implements Cache {
 				accessKey = accessKeyManager.findAccessKey( (String) key );
 			} catch (DatabaseConnectionException e) {
 				e.printStackTrace();
-				returnResource();
 				return new SimpleValueWrapper(null);
 			}
-			if ( accessKey == null ) { returnResource(); return new SimpleValueWrapper(null); }
+			if ( accessKey == null ) { /*returnResource();*/ return new SimpleValueWrapper(null); }
 
 			// Put it back again in redis.
 			put ( accessKey.getAccessKey() , accessKey );

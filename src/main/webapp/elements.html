@@ -1,0 +1,358 @@
+<!DOCTYPE HTML>
+<!--
+	Alpha by HTML5 UP
+	html5up.net | @n33co
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>TLeaf API</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		<!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
+		<script src="resources/js/jquery.min.js"></script>
+		<script src="resources/js/jquery.dropotron.min.js"></script>
+		<script src="resources/js/jquery.scrollgress.min.js"></script>
+		<script src="resources/js/skel.min.js"></script>
+		<script src="resources/js/skel-layers.min.js"></script>
+		<script src="resources/js/init.js"></script>
+			<link rel="stylesheet" href="resources/css/skel.css" />
+			<link rel="stylesheet" href="resources/css/style.css" />
+			<link rel="stylesheet" href="resources/css/style-wide.css" />
+		<!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
+	</head>
+
+	<body>
+
+		<!-- Header -->
+			<header id="header" class="skel-layers-fixed">
+				<h1><a href="index.html">Developed</a> by TLeaf</h1>
+				<nav id="nav">
+					<ul>
+						<li><a href="index.html">Home</a></li>
+					</ul>
+				</nav>
+			</header>
+
+		<!-- Main -->
+			<section id="main" class="container">
+				<header>
+					<h2>RESTful API<sup><i>Beta</i></sup></h2>
+					<p>TLeaf Platform REST APIs</p>
+				</header>
+				<div class="row">
+					<div class="12u">
+
+						<!-- Text -->
+							<section class="box">
+								<h3>TLeaf API<sup><i>Beta</i></sup></h3>
+								<p>This is <b>TLeaf RESTful API</b><sup><i>Beta</i></sup> <b>documentation</b>. Unfortunatly this is not completely open.</br> If you want to <b>Join<b> our family, plase contact us at <a href="tleafshack@gmail.com">HERE</a>.</p>
+							</section>
+
+							<!-- Table -->
+							<section class="box">
+								<h3>Simple REST APIs</h3>
+								
+								<h3>Users</h3>
+								<div class="table-wrapper">
+									<table>
+										<thead>
+											<tr>
+												<th>URL</th>
+												<th>Description</th>
+												<th>Permission</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>GET</br>/oauth?</br>appId=registered_app_id</td>
+												<td>Requests login page to TLeaf Oauth Server.</td>
+												<td>MEDIUM</td>
+											</tr>
+											<tr>
+												<td>GET,POST</br>/api/user</td>
+												<td>Fetch, Updates user information.</td>
+												<td>HIGH</td>
+											</tr>
+										</tbody>
+										<tfoot>
+											<tr>
+												<td colspan="2"></td>
+											</tr>
+										</tfoot>
+									</table>
+								</div>
+
+								<h3>Shack as a Repository</h3>
+								<div class="table-wrapper">
+									<table>
+										<thead>
+											<tr>
+												<th>URL</th>
+												<th>Description</th>
+												<th>Permission</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>GET,POST,DELETE</br>/api/file</td>
+												<td>Fetch,Update,Delete media files of the user</td>
+												<td>HIGH</td>
+											</tr>
+											<tr>
+												<td>GET,POST,DELETE</br>/api/user/log</td>
+												<td>Fetch,Update,Deletes specific user log.</td>
+												<td>HIGH</td>
+											</tr>
+											<tr>
+												<td>POST</br>/api/user/app/log</td>
+												<td>Creates new user log.</td>
+												<td>HIGH</td>
+											</tr>
+										</tbody>
+										<tfoot>
+											<tr>
+												<td colspan="2"></td>
+											</tr>
+										</tfoot>
+									</table>
+								</div>
+
+								<h3>Querying</h3>
+								<div class="table-wrapper">
+									<table>
+										<thead>
+											<tr>
+												<th>URL</th>
+												<th>Description</th>
+												<th>Permission</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>GET</br>/api/user/statistic</td>
+												<td>Fetch users app log status</td>
+												<td>LOW</td>
+											</tr>
+											<tr>
+												<td>GET</br>/api/user/date?</br>date=2014&date=11&date=30</td>
+												<td>Fetch user log within the specific date.</td>
+												<td>HIGH</td>
+											</tr>
+											<tr>
+												<td>GET</br>/api/user/word</td>
+												<td>Counts how much words are used in user log.</td>
+												<td>LOW</td>
+											</tr>
+											<tr>
+												<td>GET</br>/api/user/sns</td>
+												<td>Shows sns-related number such as like,comment,posts.</td>
+												<td>LOW</td>
+											</tr>
+											<tr>
+												<td>GET</br>/api/user/app/logs?</br>startKey=2014-11-01T09:04:35+09:00&</br>endKey=2014-11-20T10:33:49+09:00&</br>appId=registered_app_id</td>
+												<td>Fetches specific application's log data within the time.</td>
+												<td>LOW</td>
+											</tr>
+										</tbody>
+										<tfoot>
+											<tr>
+												<td colspan="2"></td>
+											</tr>
+										</tfoot>
+									</table>
+								</div>
+
+							</section>
+								
+							<section class="box">
+								<header>
+									<h3>How to Start</h3>
+									<p>Once you're registered as TLeaf family</p>
+								</header>
+
+								<hr />
+
+								<h4>Starting with Users</h4>
+								<blockquote>Let's Start with handling user <b>Login</b>, <b>Signin</b> requests.</blockquote>
+
+								<h4>Request Oauth Login Page</h4>
+								<pre>GET /oauth?appId=registered_app_id_here HTTP/1.0
+Host : rest.tleaf.us
+</pre>
+<h4>Then, TLeaf's Oauth Server Handles the rest!</br>If the user authorizes your app, you will get an Access Token, which looks like this.</h4>
+<pre>{
+     "_id": "8b9083be3f670f9faced3ea18e026841",
+     "userId": “8b9083be3f670f9faced3ea18e0039d4",
+     "appId": "41bfdd372e1d60c37baba4cdec003b0f",
+     "validFrom": "2014-11-20T17:15:03+09:00",
+     "validTo": "2014-12-21T17:15:03+09:00",
+     "valid": true
+}
+</pre>
+<h4>_id , userId , appId Field should be contained in <b>every</b> Header of following requests, so keep it in a secure place.</h4>
+<hr />
+								<h4>Basic CRUD</h4>
+								<blockquote>Before starting, just remember. Every api specified below needes HTTP Header Authorization.</br>Let's start with fetching user infos.</blockquote>
+
+								<h4>Fetch UserInfo Data</h4>
+								<pre>GET /api/user HTTP/1.0
+x-tleaf-access-token : ${ Access-Token._id }
+x-tleaf-application-id : ${ Access-Token.appId }
+x-tleaf-user-id : ${ Access-Token.userId }
+Host : rest.tleaf.us
+</pre>
+<h4>The response is the UserInfo JSON String.</h4>
+<pre>{
+    "hashId": "8b9083be3f670f9faced3ea18e0039d4",
+    "rev": "25-08457ec3e1a285f5679cf6144ffc32f8",
+    "nickname": "susu",
+    "email": "abc@na.com",
+    "password": "123",
+    "gender": "male",
+    "age": 19,
+    "services": [
+        {
+            "appId": "6bf388c44969b9b9a84242e1b201d80d"
+        }
+    ]
+}</pre>
+
+								<blockquote>Now lets UPDATE user information</blockquote>
+
+								<h4>Update UserInfo Data</h4>
+								<pre>POST /api/user HTTP/1.0
+x-tleaf-access-token : ${ Access-Token._id }
+x-tleaf-application-id : ${ Access-Token.appId }
+x-tleaf-user-id : ${ Access-Token.userId }
+Host : rest.tleaf.us
+{
+	"hashId": "8b9083be3f670f9faced3ea18e0039d4",
+    "rev": "25-08457ec3e1a285f5679cf6144ffc32f8",
+    "nickname": "DevSusu",  // Changed nickname
+    "email": "abc@na.com",
+    "password": "123456",  // Changed password
+    "gender": "male",
+    "age": 19,
+    "services": [
+        {
+            "appId": "6bf388c44969b9b9a84242e1b201d80d"
+        }
+    ]
+}
+</pre>
+<h4>The response is the Changed data's _rev.</h4>
+
+<hr />
+								<h4>Using Shack Repository</h4>
+								<blockquote>Your application can access user's Shack repository with APIs below</blockquote>
+
+</section>
+
+
+
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="12u">
+						
+						<!-- Form -->
+							<section class="box">
+								<h3>Form</h3>
+								<form method="post" action="#">
+									<div class="row uniform 50%">
+										<div class="6u 12u(3)">
+											<input type="text" name="name" id="name" value="" placeholder="Name" />
+										</div>
+										<div class="6u 12u(3)">
+											<input type="email" name="email" id="email" value="" placeholder="Email" />
+										</div>
+									</div>
+									<div class="row uniform 50%">
+										<div class="12u">
+											<div class="select-wrapper">
+												<select name="category" id="category">
+													<option value="">- Category -</option>
+													<option value="1">Manufacturing</option>
+													<option value="1">Shipping</option>
+													<option value="1">Administration</option>
+													<option value="1">Human Resources</option>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="row uniform 50%">
+										<div class="4u 12u(2)">
+											<input type="radio" id="priority-low" name="priority" checked>
+											<label for="priority-low">Low Priority</label>
+										</div>
+										<div class="4u 12u(2)">
+											<input type="radio" id="priority-normal" name="priority">
+											<label for="priority-normal">Normal Priority</label>
+										</div>
+										<div class="4u 12u(2)">
+											<input type="radio" id="priority-high" name="priority">
+											<label for="priority-high">High Priority</label>
+										</div>
+									</div>
+									<div class="row uniform 50%">
+										<div class="6u 12u(2)">
+											<input type="checkbox" id="copy" name="copy">
+											<label for="copy">Email me a copy of this message</label>
+										</div>
+										<div class="6u 12u(2)">
+											<input type="checkbox" id="human" name="human" checked>
+											<label for="human">I am a human and not a robot</label>
+										</div>
+									</div>
+									<div class="row uniform 50%">
+										<div class="12u">
+											<textarea name="message" id="message" placeholder="Enter your message" rows="6"></textarea>
+										</div>
+									</div>
+									<div class="row uniform">
+										<div class="12u">
+											<ul class="actions">
+												<li><input type="submit" value="Send Message" /></li>
+												<li><input type="reset" value="Reset" class="alt" /></li>
+											</ul>
+										</div>
+									</div>
+								</form>
+							
+								<hr />
+								
+								<form method="post" action="#">
+									<div class="row uniform 50%">
+										<div class="9u 12u(3)">
+											<input type="text" name="query" id="query" value="" placeholder="Query" />
+										</div>
+										<div class="3u 12u(3)">
+											<input type="submit" value="Search" class="fit" />
+										</div>
+									</div>
+								</form>
+							</section>
+
+					</div>
+				</div>
+			
+		<!-- Footer -->
+			<footer id="footer">
+				<ul class="icons">
+					<li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
+					<li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
+					<li><a href="#" class="icon fa-instagram"><span class="label">Instagram</span></a></li>
+					<li><a href="#" class="icon fa-github"><span class="label">Github</span></a></li>
+					<li><a href="#" class="icon fa-dribbble"><span class="label">Dribbble</span></a></li>
+					<li><a href="#" class="icon fa-google-plus"><span class="label">Google+</span></a></li>
+				</ul>
+				<ul class="copyright">
+					<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+				</ul>
+			</footer>
+
+	</body>
+</html>

@@ -51,9 +51,9 @@ public class LoginRedisCache implements Cache {
 	 * @author susu
 	 * Date Nov 17, 2014 11:24:26 PM
 	 */
-	private void returnResource () {
-		jedisPool.returnResource(jedis);
-	}
+//	private void returnResource () {
+//		jedisPool.returnResource(jedis);
+//	}
 
 	@Override
 	public void clear() {

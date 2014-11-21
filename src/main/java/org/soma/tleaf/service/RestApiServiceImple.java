@@ -326,8 +326,41 @@ public class RestApiServiceImple implements RestApiService {
 	 * @throws DatabaseConnectionException
 	 */
 	@Override
-	public ResponseEntity<Map<String, Object>> appCount(RequestParameter param) throws DatabaseConnectionException {
-		return new ResponseEntity< Map<String,Object>>( restApiDao.appCount(param), HttpStatus.OK );
+	public ResponseEntity<List<Map<String, Object>>> appCount(RequestParameter param) throws DatabaseConnectionException {
+		return new ResponseEntity<List<Map<String,Object>>>( restApiDao.appCount(param), HttpStatus.OK );
+	}
+
+	
+	@Override
+	public ResponseEntity<List<Map<String,Object>>> wordCount(RequestParameter param)
+			throws Exception {
+		try {
+			return new ResponseEntity<List<Map<String,Object>>>( restApiDao.wordCount(param) , HttpStatus.OK );
+		} catch ( DocumentNotFoundException e) {
+			e.printStackTrace();
+			return new ResponseEntity<List<Map<String,Object>>>( HttpStatus.NOT_FOUND );
+		}
+	}
+
+	@Override
+	public ResponseEntity<List<Map<String, Object>>> tagCount(
+			RequestParameter param) throws Exception {
+		try {
+			return new ResponseEntity<List<Map<String,Object>>>( restApiDao.tagCount(param) , HttpStatus.OK );
+		} catch ( DocumentNotFoundException e) {
+			e.printStackTrace();
+			return new ResponseEntity<List<Map<String,Object>>>( HttpStatus.NOT_FOUND );
+		}
+	}
+
+	@Override
+	public ResponseEntity<List<Map<String, Object>>> getFacebookInfo(
+			RequestParameter param) throws Exception {
+		try{
+			return new ResponseEntity<List<Map<String, Object>>>( restApiDao.facebookInfo(param) , HttpStatus.OK );
+		} catch ( DocumentNotFoundException e ) {
+			return new ResponseEntity<List<Map<String, Object>>>( HttpStatus.NOT_FOUND );
+		}
 	}
 
 }

@@ -114,7 +114,7 @@ public class RestApiController {
 	 * @throws Exception
 	 */
 	@RequestMapping( value = "/user/statistic" , method = RequestMethod.GET )
-	public ResponseEntity<Map<String,Object>> getUserStat ( HttpServletRequest request ) throws Exception {
+	public ResponseEntity<List<Map<String,Object>>> getUserStat ( HttpServletRequest request ) throws Exception {
 		
 		RequestParameter param = new RequestParameter();
 		param.setUserHashId( request.getHeader(USERID_HEADER_NAME) );
@@ -384,6 +384,69 @@ public class RestApiController {
 	}
 	
 	/**
+	 * Counts the words within the Tiary Content
+	 * @author susu
+	 * Date Nov 21, 2014 2:15:25 AM
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping( value = "/user/word", method = RequestMethod.GET )
+	public ResponseEntity<List<Map<String,Object>>> getWordCount ( 
+			HttpServletRequest request ) throws Exception {
+		
+		logger.info("/user/word.GET");
+		
+		// HttpServletRequest.getAttribute Returns null if Values are not found
+		if (request.getAttribute("FilterException") != null)
+			throw customExceptionFactory.createCustomException((CustomExceptionValue) request.getAttribute("FilterException"));
+		
+		RequestParameter param = new RequestParameter();
+		param.setUserHashId( request.getHeader(USERID_HEADER_NAME) );
+		
+		return restApiService.wordCount(param);
+	}
+	
+	/**
+	 * Counts the tags within the Tiary Content
+	 * @author susu
+	 * Date Nov 21, 2014 2:19:25 AM
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping( value = "/user/tag", method = RequestMethod.GET )
+	public ResponseEntity<List<Map<String,Object>>> getTagCount ( 
+			HttpServletRequest request ) throws Exception {
+		
+		logger.info("/user/tag.GET");
+		
+		// HttpServletRequest.getAttribute Returns null if Values are not found
+		if (request.getAttribute("FilterException") != null)
+			throw customExceptionFactory.createCustomException((CustomExceptionValue) request.getAttribute("FilterException"));
+		
+		RequestParameter param = new RequestParameter();
+		param.setUserHashId( request.getHeader(USERID_HEADER_NAME) );
+		
+		return restApiService.tagCount(param);
+	}
+
+	@RequestMapping( value = "/user/sns", method = RequestMethod.GET )
+	public ResponseEntity<List<Map<String,Object>>> getFacebookInfo ( HttpServletRequest request ) throws Exception {
+		
+		logger.info("/user/sns.GET");
+		
+		// HttpServletRequest.getAttribute Returns null if Values are not found
+		if (request.getAttribute("FilterException") != null)
+			throw customExceptionFactory.createCustomException((CustomExceptionValue) request.getAttribute("FilterException"));
+		
+		RequestParameter param = new RequestParameter();
+		param.setUserHashId( request.getHeader(USERID_HEADER_NAME) );
+		
+		return restApiService.getFacebookInfo(param);
+	}
+	
+	/**
 	 * Author : RichardJ
 	 * Date : Oct 20, 2014 18:55:06
 	 * Description : 해당 엑세스키를 사용하는 사용자의 전체 데이터 조회입니다.
@@ -396,7 +459,7 @@ public class RestApiController {
 			@RequestParam(value = "startKey", required = false, defaultValue=ISO8601.FAR_FAR_AWAY) String startKey,
 			@RequestParam(value = "endKey", required = false, defaultValue=ISO8601.LONG_LONG_AGO) String endKey, 
 			@RequestParam(value = "descend", required = false , defaultValue="true") boolean descend) throws Exception{
-
+logger.info(startKey);logger.info(endKey);
 		// HttpServletRequest.getAttribute Returns null if Values are not found
 		if (request.getAttribute("FilterException") != null)
 			throw customExceptionFactory.createCustomException((CustomExceptionValue) request.getAttribute("FilterException"));
@@ -426,7 +489,8 @@ public class RestApiController {
 			@RequestParam(value = "limit", required = false, defaultValue="1000") String limit,
 			@RequestParam(value = "startKey", required = false, defaultValue=ISO8601.FAR_FAR_AWAY) String startKey,
 			@RequestParam(value = "endKey", required = false, defaultValue=ISO8601.LONG_LONG_AGO) String endKey,
-			@RequestParam(value = "descend", required = false , defaultValue="true") boolean descend) throws Exception {
+			@RequestParam(value = "descend", required = false , defaultValue="true") boolean descend ,
+			@RequestParam(value = "appId", required = true ) String appIdFromQuery ) throws Exception {
 
 		// HttpServletRequest.getAttribute Returns null if Values are not found
 		if (request.getAttribute("FilterException") != null)
@@ -441,7 +505,7 @@ public class RestApiController {
 		param.setEndKey(endKey);
 		param.setLimit(limit);
 		param.setDescend(descend);
-		param.setAppId( request.getHeader(APPID_HEADER_NAME) );
+		param.setAppId(appIdFromQuery);
 
 		// Delegate Request to RestApiService Object
 		return restApiService.getUserDataFromAppId(param);

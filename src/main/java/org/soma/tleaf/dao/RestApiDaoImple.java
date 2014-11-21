@@ -16,6 +16,7 @@ import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.DocumentNotFoundException;
 import org.ektorp.ViewQuery;
+import org.ektorp.ViewResult;
 import org.ektorp.ViewResult.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -364,7 +365,7 @@ public class RestApiDaoImple implements RestApiDao {
 	 * @throws DatabaseConnectionException
 	 */
 	@Override
-	public Map<String, Object> appCount(RequestParameter param) throws DatabaseConnectionException {
+	public List<Map<String, Object>> appCount(RequestParameter param) throws DatabaseConnectionException {
 		
 		logger.info( param.getUserHashId() + " Statistic Query" );
 		
@@ -372,16 +373,20 @@ public class RestApiDaoImple implements RestApiDao {
 		
 		ViewQuery query = new ViewQuery().designDocId("_design/shack").viewName("appcount").group(true);
 		
-		Map<String,Object> resultMap = new HashMap<String,Object>();
+		Map<String,Object> tmp;
+		ArrayList< Map<String,Object> > result = new ArrayList< Map<String,Object> >();
 		
 		try {
 			List<Row> rows = db.queryView(query).getRows();
 			
 			for ( Row i : rows ) {
-				resultMap.put( i.getKey(), i.getValue() );
+				tmp = new HashMap<String,Object>();
+				tmp.put( "app", i.getKey() );
+				tmp.put( "value", i.getValueAsInt() );
+				result.add(tmp);
 			}
 			
-			return resultMap;
+			return result;
 			
 		} catch (DocumentNotFoundException e) {
 			// if there were no documents to the specific query
@@ -430,4 +435,114 @@ public class RestApiDaoImple implements RestApiDao {
 		return rawDatas;
 	}
 
+	@Override
+	public List<Map<String,Object>> wordCount(RequestParameter param)
+			throws Exception { 
+
+		logger.info( param.getUserHashId() + " Word Count" );
+		
+		CouchDbConnector db = connector.getCouchDbConnetor("user_" + param.getUserHashId());
+		
+//		ComplexKey startKey = ComplexKey.of( param.getDocumentId() );
+//		ComplexKey endKey = ComplexKey.of( param.getDocumentId() + "a" );
+		
+		ViewQuery query = new ViewQuery().designDocId("_design/tiary")
+				.viewName("wordcount")
+//				.startKey(startKey)
+//				.endKey(endKey)
+				.group(true);
+		
+		HashMap<String,Object> tmp;
+		List< Map<String,Object> > result = new ArrayList<Map<String,Object>>();
+		List<Row> viewResult;
+		try {
+			viewResult = db.queryView(query).getRows();
+			
+//			tmp = new HashMap<String,Object>();
+//			tmp.put("rows", viewResult.size());
+//			result.add(tmp);
+			
+			for ( Row i : viewResult ) {
+				tmp = new HashMap<String,Object>();
+				tmp.put( "label", i.getKey()); tmp.put( "value", i.getValueAsInt() );
+				result.add(tmp);
+			}
+			
+		} catch (DocumentNotFoundException e) {
+			// if there were no documents to the specific query
+			e.printStackTrace();
+			throw e;
+		}
+		
+		return result;
+	}
+
+	@Override
+	public List<Map<String, Object>> tagCount(RequestParameter param)
+			throws Exception {
+		
+		logger.info( param.getUserHashId() + " Tag Count" );
+		
+		CouchDbConnector db = connector.getCouchDbConnetor("user_" + param.getUserHashId());
+		
+		ViewQuery query = new ViewQuery().designDocId("_design/tiary")
+				.viewName("tagcount").group(true);
+		
+		HashMap<String,Object> tmp;
+		List< Map<String,Object> > result = new ArrayList<Map<String,Object>>();
+		List<Row> viewResult;
+		try {
+			viewResult = db.queryView(query).getRows();
+			
+//			tmp = new HashMap<String,Object>();
+//			tmp.put("rows", viewResult.size());
+//			result.add(tmp);
+			
+			for ( Row i : viewResult ) {
+				tmp = new HashMap<String,Object>();
+				tmp.put( "label", i.getKey()); tmp.put( "value", i.getValueAsInt() );
+				result.add(tmp);
+			}
+			
+		} catch (DocumentNotFoundException e) {
+			// if there were no documents to the specific query
+			e.printStackTrace();
+			throw e;
+		}
+	
+		return result;
+	}
+
+	
+	@Override
+	public List<Map<String, Object>> facebookInfo(RequestParameter param)
+			throws Exception {
+		
+		logger.info("Fetching facebook like,comment,post info" + param.getUserHashId() );
+		
+		CouchDbConnector db = connector.getCouchDbConnetor("user_" + param.getUserHashId());
+		
+		ViewQuery query = new ViewQuery().designDocId("_design/tns").viewName("facebook").group(true);
+		
+		List<Row> viewResult;
+		HashMap<String,Object> tmp = new HashMap<String, Object>();
+		List<Map<String,Object>> result = new ArrayList<Map<String,Object>>();
+		
+		try {
+			viewResult = db.queryView(query).getRows();
+			
+			for ( Row i : viewResult ) {
+				tmp = new HashMap<String,Object>();
+				tmp.put( i.getKey() , i.getValueAsInt());
+				result.add(tmp);
+			}
+			
+		} catch (DocumentNotFoundException e) {
+			// if there were no documents to the specific query
+			e.printStackTrace();
+			throw e;
+		}
+		
+		return result;
+	}
 }
